@@ -7,11 +7,11 @@ AVRDUDE=avrdude
 
 # parts: t2313 m8
 if [ $2 = 't2313' ]; then
-  CFLAGS=$CFLAGS' -mmcu=attiny2313'
+  CFLAGS=$CFLAGS' -mmcu=attiny2313 -DATTINY2313'
   echo $CFLAGS
 fi
 if [ $2 = 'm8' ]; then
-  CFLAGS=$CFLAGS' -mmcu=atmega8'
+  CFLAGS=$CFLAGS' -mmcu=atmega8 -DATMEGA8'
 fi
 
 $CC $CFLAGS $3 -o $3.obj

@@ -6,23 +6,20 @@
 #include <math.h>
 
 #include "common.h"
+#ifdef ATTINY2313
+  #include "avr/attiny2313.h"
+#else
+  #ifdef ATMEGA8
+    #include "avr/atmega8.h"
+  #endif
+#endif
 
-/* project-wide constants */
+#include "preferences.h"
 
-#define CLKPORT PORTB
-#define CLKPIN PB1
-#define RSTPORT PORTB
-#define RSTPIN PB2
-#define SCEPORT PORTB
-#define SCEPIN PB3
-#define SDAPORT PORTB
-#define SDAPIN PB4
-#define D_CPORT PORTB
-#define D_CPIN PB5
 
+/* advanced options */
 #define MAXBUFFERX 10
 #define FRAC_BITS 14
-//#define HIGH_PRECISION_SPEED // makes speed calculation 32-bit instead of truncating to 16
 
 /* imports depending on constants */
 
@@ -47,6 +44,8 @@ LOG
 10.08
     added flexible vertical size for glyphs
     created common.h
+14.08
+    initial support for atmega8
     
 TODO
 - hide ugly timers, interrupts and bit assumptions/optimizations etc to ./avr
@@ -55,12 +54,7 @@ TODO
 
 */
 
-
-
-/* PREFERENCES */
-#define DISTANCE
-#define CURRENT_SPEED
-#define METRIC_PULSE_DIST 2133L // millimeters
+/* ADVANCED OPTIONS */
 
 #ifdef CURRENT_SPEED
     #define SPEED_DIGITS 1 // better than my sigma
@@ -244,14 +238,6 @@ inline uint16_t get_time() { // XXX: use it!!!
 void set_trigger_time(const uint16_t time) { // XXX: optimize: inline
   OCR1A = time;
   TIMSK |= 1 << OCIE1A;
-}
-
-void setup_cpu(void) {
-// makes CPU clock 1 MHz
-#ifdef TINY2313
-// clock prescaler, device clock must be 8 MHz
-  clock_prescale_set(clock_div_8);
-#endif
 }
 
 ISR(TIMER1_COMPA_vect) {
