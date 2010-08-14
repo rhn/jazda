@@ -46,6 +46,13 @@ LOG
     added stop timeout
 10.08
     added flexible vertical size for glyphs
+    created common.h
+    
+TODO
+- hide ugly timers, interrupts and bit assumptions/optimizations etc to ./avr
+- separate screen and drawing to buffer
+- near-vertical lines
+
 */
 
 
@@ -53,7 +60,7 @@ LOG
 /* PREFERENCES */
 #define DISTANCE
 #define CURRENT_SPEED
-#define METRIC_PULSE_DIST 2333L // millimeters
+#define METRIC_PULSE_DIST 2133L // millimeters
 
 #ifdef CURRENT_SPEED
     #define SPEED_DIGITS 1 // better than my sigma
@@ -110,9 +117,9 @@ LOG
     volatile uint8_t oldest_pulse_index = 0;
 #endif
 
-void print_number(uint32_t bin, upoint_t position, upoint_t glyph_size, const uint8_t digits) {
+void print_number(uint32_t bin, upoint_t position, const glyphdesc_t glyph_info, const uint8_t digits) {
 // prints a number, aligned to right, throwing in 0's when necessary
- // TODO: fake decimal point
+ // TODO: fake decimal point?
 // TODO: move to 16-bit (ifdef 32?)
     // integer only
     uint32_t bcd = 0;
@@ -184,8 +191,8 @@ void print_number(uint32_t bin, upoint_t position, upoint_t glyph_size, const ui
             tmp = 10;
         }
         if (print) {
-            print_digit(tmp, glyph_size, position, 1);
-            position.x += glyph_size.x + 1;
+            print_digit(tmp, glyph_info, position);
+            position.x += glyph_info.size.x + glyph_info.line_width;
         }
     } // 1452 bytes
     /*
@@ -209,8 +216,7 @@ void setup_pulse(void) {
   /* -----  hwint button */  
   DDRD &= ~(1<<PD2); /* set PD2 to input */
   PORTD |= 1<<PD2; // enable pullup resistor
-  PCMSK |= (1<<PCINT0);
-  
+    
   // interrupt on INT0 pin falling edge (sensor triggered)
   MCUCR |= (1<<ISC01);
   MCUCR &= ~(1<<ISC00);
@@ -241,9 +247,11 @@ void set_trigger_time(const uint16_t time) { // XXX: optimize: inline
 }
 
 void setup_cpu(void) {
-// makes CPU clock 1 MHz, device clock must be 8 MHz
-  CLKPR = 1 << CLKPCE;
-  CLKPR = 0b00000011; // 8
+// makes CPU clock 1 MHz
+#ifdef TINY2313
+// clock prescaler, device clock must be 8 MHz
+  clock_prescale_set(clock_div_8);
+#endif
 }
 
 ISR(TIMER1_COMPA_vect) {
@@ -270,7 +278,7 @@ ISR(INT0_vect) {
     pulse_table[i] = pulse_table[i - 1];
   }
 
-  if (oldest_pulse_index > 1) { // XXX: check pulse_table index
+  if (oldest_pulse_index > 1) {
     uint16_t ahead = TCNT1 - pulse_table[2];
     // NOTE: remove ahead / 4 to save 10 bytes
     set_trigger_time(TCNT1 + ahead + (ahead / 4));
@@ -296,25 +304,21 @@ void main(void) {
   MCUCR &= ~((1 << SM1) | (1 << SM0));
   
   upoint_t position;
-  upoint_t glyph_size;
+  glyphdesc_t glyph_info;
   sei();
   for (; ; ) {
-    glyph_size.x = glyph_size.y = 8;
+    glyph_info.size.x = glyph_info.size.y = 8;
+    glyph_info.line_width = 1;
     #ifdef DISTANCE
        position.x = 0; position.y = 5;
-       print_number(distance >> FRAC_BITS, position, glyph_size, DIST_DIGITS);
+       print_number(distance >> FRAC_BITS, position, glyph_info, DIST_DIGITS);
     #endif
     #ifdef CURRENT_SPEED
        uint16_t speed;
        if (oldest_pulse_index > 1) {
          // speed going down when no pulses present
-         // XXX: employ timer triggers instead of busy loop
          uint16_t newest_pulse = pulse_table[0];
          uint16_t pulse_time = newest_pulse - pulse_table[oldest_pulse_index];
-/*         if (TCNT1 - newest_pulse > pulse_time) {
-           newest_pulse = TCNT1;
-         }*/
-         
                   
          #ifdef HIGH_PRECISION_SPEED
            // SPEED_FACTOR is fixed point with FRAC_BITS fractional bits
@@ -332,10 +336,11 @@ void main(void) {
        } else {
            speed = 0;
        }
-       position.x = 14; position.y = 0;
-       glyph_size.x = 10;
-       glyph_size.y *= 2;
-       print_number(speed, position, glyph_size, SPEED_DIGITS);
+       position.x = 0; position.y = 0;
+       glyph_info.size.x = 10;
+       glyph_info.size.y *= 2;
+       glyph_info.line_width *= 2;
+       print_number(speed, position, glyph_info, SPEED_DIGITS);
     #endif
 /*    position.x = 20; position.y = 3;
     glyph_size.y *= 2;

@@ -18,6 +18,12 @@ __attribute__((progmem)) const uint8_t glyphs[] = { POINT(2, 0, 1), POINT(5, 0, 
                            POINT(0, 15, 1), POINT(5, 15, 1), POINT(7, 12, 1), POINT(7, 2, 1), POINT(5, 0, 1), POINT(2, 0, 1), POINT(0, 2, 1), POINT(0, 6, 1), POINT(2, 8, 1), POINT(7, 8, 1), 0, // 9
                            }; 
 
+typedef struct glyph_desc {
+    upoint_t size;
+    uint8_t line_width;
+} glyphdesc_t;
+
+
 //digit table
 const uint8_t letter[] = { 0, 10, 14, 21, 32, 37, 46, 58, 62, 76};
 
@@ -139,10 +145,10 @@ void scale(upoint_t *point, const upoint_t pxsize) {
    }*/
 }
 
-void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const upoint_t size, const int8_t xoffset, const int8_t yoffset, const int8_t width) {
+void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const glyphdesc_t glyph_info, const int8_t xoffset, const int8_t yoffset) {
    upoint_t prev;
    upoint_t next;
-   upoint_t pxsize = {size.x - width + 1, size.y - width + 1};
+   upoint_t pxsize = {glyph_info.size.x - glyph_info.line_width + 1, glyph_info.size.y - glyph_info.line_width + 1};
    int8_t i;
 
    prev.x = pgm_read_byte(&(glyph[0]));
@@ -161,20 +167,20 @@ void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const upoint_t size, cons
       next.x -= xoffset;
       next.y -= yoffset;
       scale(&next, pxsize);
-      draw_line(buffer, prev.x, prev.y, next.x, next.y, width);
+      draw_line(buffer, prev.x, prev.y, next.x, next.y, glyph_info.line_width);
       prev = next;
    }
 }
 
-void print_digit(const uint8_t digit, const upoint_t size, upoint_t position, const int8_t width) {
+void print_digit(const uint8_t digit, const glyphdesc_t glyph_info, upoint_t position) {
    // TODO: draw into viewport
    uint8_t buffer [MAXBUFFERX]; // for drawing characters
    const uint8_t *glyph = glyphs + letter[digit];
    uint8_t line;
    int8_t i;
    
-   for (line = 0; line <= (size.y - 1) / 8; line++) {
-       for (i = 0; i < size.x; i++) { // commented out because GCC disabled interrupts and wrote to reserved space...
+   for (line = 0; line <= (glyph_info.size.y - 1) / 8; line++) {
+       for (i = 0; i < glyph_info.size.x; i++) { // commented out because GCC disabled interrupts and wrote to reserved space...
           buffer[i] = 0;
        }
               /*  asm volatile("movw r30, %A0" "\n"
@@ -187,11 +193,11 @@ void print_digit(const uint8_t digit, const upoint_t size, upoint_t position, co
             "brne zero%=" "\n" : : "r" (buffer) : "r30", "r31");
     */
        if (digit < 10) {
-           draw_glyph(buffer, glyph, size, 0, line * 8, width);    
+           draw_glyph(buffer, glyph, glyph_info, 0, line * 8);    
        }
        set_column(position.x);
        set_row(position.y + line);
-       for (i = 0; i < size.x; i++) {
+       for (i = 0; i < glyph_info.size.x; i++) {
            send_raw_byte(buffer[i], true);
        }
    }
