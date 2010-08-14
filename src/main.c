@@ -117,7 +117,7 @@ TODO
     volatile uint8_t oldest_pulse_index = 0;
 #endif
 
-void print_number(uint32_t bin, upoint_t position, const glyphdesc_t glyph_info, const uint8_t digits) {
+void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const uint8_t digits) {
 // prints a number, aligned to right, throwing in 0's when necessary
  // TODO: fake decimal point?
 // TODO: move to 16-bit (ifdef 32?)
@@ -191,8 +191,8 @@ void print_number(uint32_t bin, upoint_t position, const glyphdesc_t glyph_info,
             tmp = 10;
         }
         if (print) {
-            print_digit(tmp, glyph_info, position);
-            position.x += glyph_info.size.x + glyph_info.line_width;
+            print_digit(tmp, glyph_size, width, position);
+            position.x += glyph_size.x + width;
         }
     } // 1452 bytes
     /*
@@ -304,14 +304,13 @@ void main(void) {
   MCUCR &= ~((1 << SM1) | (1 << SM0));
   
   upoint_t position;
-  glyphdesc_t glyph_info;
+  upoint_t glyph_size;
   sei();
   for (; ; ) {
-    glyph_info.size.x = glyph_info.size.y = 8;
-    glyph_info.line_width = 1;
+    glyph_size.x = glyph_size.y = 8;
     #ifdef DISTANCE
        position.x = 0; position.y = 5;
-       print_number(distance >> FRAC_BITS, position, glyph_info, DIST_DIGITS);
+       print_number(distance >> FRAC_BITS, position, glyph_size, 1, DIST_DIGITS);
     #endif
     #ifdef CURRENT_SPEED
        uint16_t speed;
@@ -337,10 +336,9 @@ void main(void) {
            speed = 0;
        }
        position.x = 0; position.y = 0;
-       glyph_info.size.x = 10;
-       glyph_info.size.y *= 2;
-       glyph_info.line_width *= 2;
-       print_number(speed, position, glyph_info, SPEED_DIGITS);
+       glyph_size.x = 10;
+       glyph_size.y *= 2;
+       print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
     #endif
 /*    position.x = 20; position.y = 3;
     glyph_size.y *= 2;

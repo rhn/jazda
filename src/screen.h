@@ -145,10 +145,10 @@ void scale(upoint_t *point, const upoint_t pxsize) {
    }*/
 }
 
-void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const glyphdesc_t glyph_info, const int8_t xoffset, const int8_t yoffset) {
+void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const upoint_t glyph_size, const uint8_t width, const int8_t xoffset, const int8_t yoffset) {
    upoint_t prev;
    upoint_t next;
-   upoint_t pxsize = {glyph_info.size.x - glyph_info.line_width + 1, glyph_info.size.y - glyph_info.line_width + 1};
+   upoint_t pxsize = {glyph_size.x - width + 1, glyph_size.y - width + 1};
    int8_t i;
 
    prev.x = pgm_read_byte(&(glyph[0]));
@@ -167,20 +167,20 @@ void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const glyphdesc_t glyph_i
       next.x -= xoffset;
       next.y -= yoffset;
       scale(&next, pxsize);
-      draw_line(buffer, prev.x, prev.y, next.x, next.y, glyph_info.line_width);
+      draw_line(buffer, prev.x, prev.y, next.x, next.y, width);
       prev = next;
    }
 }
 
-void print_digit(const uint8_t digit, const glyphdesc_t glyph_info, upoint_t position) {
+void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t width, upoint_t position) {
    // TODO: draw into viewport
    uint8_t buffer [MAXBUFFERX]; // for drawing characters
    const uint8_t *glyph = glyphs + letter[digit];
    uint8_t line;
    int8_t i;
    
-   for (line = 0; line <= (glyph_info.size.y - 1) / 8; line++) {
-       for (i = 0; i < glyph_info.size.x; i++) { // commented out because GCC disabled interrupts and wrote to reserved space...
+   for (line = 0; line <= (glyph_size.y - 1) / 8; line++) {
+       for (i = 0; i < glyph_size.x; i++) { // commented out because GCC disabled interrupts and wrote to reserved space...
           buffer[i] = 0;
        }
               /*  asm volatile("movw r30, %A0" "\n"
@@ -193,11 +193,11 @@ void print_digit(const uint8_t digit, const glyphdesc_t glyph_info, upoint_t pos
             "brne zero%=" "\n" : : "r" (buffer) : "r30", "r31");
     */
        if (digit < 10) {
-           draw_glyph(buffer, glyph, glyph_info, 0, line * 8);    
+           draw_glyph(buffer, glyph, glyph_size, width, 0, line * 8);    
        }
        set_column(position.x);
        set_row(position.y + line);
-       for (i = 0; i < glyph_info.size.x; i++) {
+       for (i = 0; i < glyph_size.x; i++) {
            send_raw_byte(buffer[i], true);
        }
    }
