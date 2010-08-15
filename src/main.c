@@ -326,9 +326,9 @@ void main(void) {
        glyph_size.y *= 2;
        print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
     #endif
-/*    position.x = 20; position.y = 3;
+    position.x = 20; position.y = 3;
     glyph_size.y *= 2;
-    print_number(loops++, position, glyph_size, 0);*/
+    print_number(loops++, position, glyph_size, 1, 0);
     sleep_mode();
   }
 }

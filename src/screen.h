@@ -28,7 +28,12 @@ typedef struct glyph_desc {
 const uint8_t letter[] = { 0, 10, 14, 21, 32, 37, 46, 58, 62, 76};
 
 void lcd_setup() {
-  DDRB |= 1<<PB1 | 1<<PB2 | 1<<PB3 | 1<<PB4 | 1<<PB5; /* set Pb1-5 to output */
+  //DDRB |= 1<<PB1 | 1<<PB2 | 1<<PB3 | 1<<PB4 | 1<<PB5; /* set Pb1-5 to output */
+  RSTDIR |= 1 << RSTPIN;
+  D_CDIR |= 1 << D_CPIN;
+  CLKDIR |= 1 << CLKPIN;
+  SCEDIR |= 1 << SCEPIN;
+  SDADIR |= 1 << SDAPIN;
   LOW(RSTPORT, RSTPIN);
   LOW(D_CPORT, D_CPIN);
   LOW(CLKPORT, CLKPIN);
