@@ -13,10 +13,12 @@
 #define SCEDIR DDRC
 #define SCEPORT PORTC
 #define SCEPIN PC2
-
+   
 #define RSTDIR DDRC
 #define RSTPORT PORTC
-#define RSTPIN PC0   
+#define RSTPIN PC0
+
+#define HIGH_PRECISION_SPEED
 
 void setup_cpu(void) {
    // makes CPU clock 1 MHz

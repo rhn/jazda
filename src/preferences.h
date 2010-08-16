@@ -24,6 +24,7 @@
 //#define HIGH_PRECISION_SPEED // makes speed calculation 32-bit instead of truncating to 16
 
 /* PREFERENCES */
+#define DEBUG
 #define DISTANCE
 #define CURRENT_SPEED
 #define METRIC_PULSE_DIST 2133L // millimeters

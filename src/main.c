@@ -91,7 +91,7 @@ TODO
     #ifdef HIGH_PRECISION_SPEED
         #define SPEED_FACTOR PULSE_DIST * 36 * 10 // T and N excluded as variable
     #else
-        #define SPEED_TRUNCATION_BITS 2
+        #define SPEED_TRUNCATION_BITS 1
         #define SPEED_FACTOR (uint16_t)((PULSE_DIST * 36 * 10) >> (FRAC_BITS - TIMER_BITS + SPEED_TRUNCATION_BITS)) // T and N excluded as variable
     #endif
 #endif
@@ -278,12 +278,17 @@ ISR(INT0_vect) {
 
 void main() __attribute__ ((noreturn));
 void main(void) {
-  uint8_t loops = 0;
+  #ifdef DEBUG
+   uint8_t loops = 0;
+  #endif
   setup_cpu();
   lcd_setup();
   lcd_init();
   setup_pulse();
   setup_timer();
+/*  for (uint8_t i = 0; ; i++) {
+    send_raw_byte(i, true);
+  }*/
   // sleep enable bit
   MCUCR |= 1 << SE;
   // sleep mode
@@ -316,7 +321,7 @@ void main(void) {
            // pulse_time is fixed point with TIMER_BITS fractional bits
            // to get correct division, pulse_time needs to be truncated by SPEED_TRUNCATION_BITS
            speed = ((uint16_t)(SPEED_FACTOR * (oldest_pulse_index - 1))) / (pulse_time >> SPEED_TRUNCATION_BITS);
-           // TODO: calcluation error: not measured
+           // calculation error: 1% at 30 km/h and proportional to square of speed
          #endif
        } else {
            speed = 0;
@@ -326,9 +331,10 @@ void main(void) {
        glyph_size.y *= 2;
        print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
     #endif
-    position.x = 20; position.y = 3;
-    glyph_size.y *= 2;
-    print_number(loops++, position, glyph_size, 1, 0);
+    #ifdef DEBUG
+     position.x = 20; position.y = 3;
+     print_number(loops++, position, glyph_size, 1, 0);
+    #endif
     sleep_mode();
   }
 }
