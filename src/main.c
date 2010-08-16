@@ -57,20 +57,27 @@ TODO
 /* ADVANCED OPTIONS */
 
 #ifdef CURRENT_SPEED
-    #define SPEED_DIGITS 1 // better than my sigma
+    #define SPEED_SIGNIFICANT_DIGITS 2 // 99km/h is good enough
+    #define SPEED_FRACTION_DIGITS 1 // better than my sigma
     #define PULSE_TABLE_SIZE 3
     #define STOPPED_TIMEOUT 3 // seconds
 #endif
 
 #ifdef DISTANCE
-    #define DIST_DIGITS 2 // same as my sigma
+    #define DIST_SIGNIFICANT_DIGITS 3 // 999km is good enough
+    #define DIST_FRACTION_DIGITS 2 // same as my sigma
 #endif
 
 /* GENERATED VALUES */
 #define PULSE_DIST (uint64_t)((uint64_t)(METRIC_PULSE_DIST << FRAC_BITS) / 10000L) // TODO: power 10 ^ (6 - DIST_DIGITS) : 6 = mm->km
 
+#ifdef DISTANCE
+    #define DIST_DIGITS NIBBLEPAIR(DIST_SIGNIFICANT_DIGITS, DIST_FRACTION_DIGITS)
+#endif
+
 #ifdef CURRENT_SPEED
-    #define TIMER_BITS 10 // one second TODO: drop in favor of ONE_SECOND
+    #define SPEED_DIGITS NIBBLEPAIR(SPEED_SIGNIFICANT_DIGITS, SPEED_FRACTION_DIGITS)
+    #define TIMER_BITS 10 // one second TODO: drop in favor of something more flexible
     #define ONE_SECOND (1 << TIMER_BITS) // TODO: autocalculate
 /* Speed calculations:
   X - rotation distance in internal units
@@ -111,13 +118,15 @@ TODO
     volatile uint8_t oldest_pulse_index = 0;
 #endif
 
-void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const nibbles_t digits) {
+void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const nibblepair_t digits) {
 // prints a number, aligned to right, throwing in 0's when necessary
  // TODO: fake decimal point?
 // TODO: move to 16-bit (ifdef 32?)
     // integer only
     uint32_t bcd = 0;
     register uint8_t *ptr;
+    uint8_t frac_digits = digits & 0x0F;
+    uint8_t all_digits = (digits >> 4) + frac_digits;
 
     for (int8_t i = 31; ; i--) { //32 should be size of int - FRACBITS
         asm("lsl	%A0" "\n"
@@ -177,10 +186,10 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
         if (tmp) {
             print = 2;
         }
-        if (i == digits + 1) { // a pre-point number hit
+        if (i == frac_digits + 1) { // a pre-point number hit
             print = 2;
         }
-        if ((i < 6) && (print < 2)) {
+        if ((i <= all_digits) && (print < 2)) {
             print = 1;
             tmp = 10;
         }
@@ -332,8 +341,9 @@ void main(void) {
        print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
     #endif
     #ifdef DEBUG
-     position.x = 20; position.y = 3;
-     print_number(loops++, position, glyph_size, 1, 0);
+     position.x = 40; position.y = 0;
+     glyph_size.y /= 2;
+     print_number(loops++, position, glyph_size, 1, NIBBLEPAIR(3, 0));
     #endif
     sleep_mode();
   }

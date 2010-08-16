@@ -11,5 +11,5 @@ typedef struct unsigned_point {
     uint8_t y;
 } upoint_t;
 
-#define nibbles_t uint8_t
-#define NIBBLES(num1, num2) (nibbles_t)((num1 << 4) | (num2 & 0b00001111))
+#define nibblepair_t uint8_t
+#define NIBBLEPAIR(num1, num2) (nibblepair_t)((num1 << 4) | (num2 & 0x0F))
