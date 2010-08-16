@@ -68,6 +68,13 @@ TODO
     #define DIST_FRACTION_DIGITS 2 // same as my sigma
 #endif
 
+#ifdef SPEED_VS_DISTANCE_PLOT
+    // TODO: notofication that CURRENT_SPEED is required
+    // TODO: vertical size. Currently hard-coded to 3 * 8
+    #define SVDPLOT_SIZE 48 // size in pizels (distance axis)
+    #define SVDPLOT_LENGTH_KM 1 // distance axis length
+#endif
+
 /* GENERATED VALUES */
 #define PULSE_DIST (uint64_t)((uint64_t)(METRIC_PULSE_DIST << FRAC_BITS) / 10000L) // TODO: power 10 ^ (6 - DIST_DIGITS) : 6 = mm->km
 
@@ -103,6 +110,11 @@ TODO
     #endif
 #endif
 
+#ifdef SPEED_VS_DISTANCE_PLOT
+    #define SVDPLOT_SPEED_TRUNC 5
+    #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
+#endif
+
 /* DATA DECLARATIONS */
 #ifdef DISTANCE
     volatile uint32_t distance = 0;
@@ -116,6 +128,44 @@ TODO
     volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
     // index of the oldest pulse in the table
     volatile uint8_t oldest_pulse_index = 0;
+#endif
+
+#ifdef SPEED_VS_DISTANCE_PLOT
+    volatile uint8_t svd_averages[SVDPLOT_SIZE]; // newer frames have higher number
+    // speeds are truncated, 1 bit shift
+    // circular buffer
+    volatile uint8_t svd_next_average = 0; // index of the next average to be recorded
+    volatile uint8_t svd_average_frames = 0; // number of recorded frames
+
+    volatile uint8_t svd_pulse_number; // validity of the last pulse is checked by other means
+    volatile uint16_t previous_frame_time; // the last recorded pulse time
+#endif
+
+/* FUNCTIONS */
+
+#ifdef CURRENT_SPEED
+    uint16_t get_int_average(const uint16_t time_amount, const uint8_t pulse_count) {
+       uint16_t speed;
+       // SPEED_FACTOR is fixed point with FRAC_BITS fractional bits
+       // pulse_time is fixed point with TIMER_BITS fractional bits
+       speed = ((uint32_t)SPEED_FACTOR * pulse_count) / time_amount;
+       // speed is fixed point with FRAC_BITS - TIMER_BITS fractional bits
+       speed >>= (FRAC_BITS - TIMER_BITS);
+       return speed;
+    }
+#endif
+
+#ifdef SPEED_VS_DISTANCE_PLOT
+    void svd_insert_average(const uint8_t speed) {
+        svd_averages[svd_next_average] = speed;
+        svd_next_average++;
+        if (svd_average_frames < SVDPLOT_SIZE) {
+          svd_average_frames++;
+        }
+        if (svd_next_average == SVDPLOT_SIZE) {
+          svd_next_average = 0;
+        }
+    }
 #endif
 
 void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const nibblepair_t digits) {
@@ -140,6 +190,8 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
 	    if (i == 0) {
 	        break;
 	    }
+	    
+	    // WARNING: Endianness
         // while (ptr > &bcd)
         for (ptr = ((uint8_t*)&bcd) + 3; ptr >= ((uint8_t*)&bcd); ptr--) { //ptr points to MSB
         // roll two parts into one to save space. example below with printing
@@ -279,6 +331,33 @@ ISR(INT0_vect) {
     set_trigger_time(TCNT1 + ahead + (ahead / 4));
   }
 
+  #ifdef SPEED_VS_DISTANCE_PLOT
+    if (oldest_pulse_index == 0) { // if first pulse after a stop
+        previous_frame_time = TCNT1; // set a new start time
+        svd_pulse_number = 0; // clear counter
+        svd_insert_average(0); // insert a space
+    } else if (svd_pulse_number == SVDPLOT_FRAME_PULSES - 1) { // if last pulse of a count
+        uint16_t avg = get_int_average(TCNT1 - previous_frame_time, SVDPLOT_FRAME_PULSES); // TODO: move away to main loop
+        previous_frame_time = TCNT1;
+        svd_pulse_number = 0; // clear counter
+        
+        /*
+        // TRUNCATING AVERAGE
+        avg >>= SVDPLOT_SPEED_TRUNC;
+        */
+        // ROUNDING AVERAGE
+        avg >>= SVDPLOT_SPEED_TRUNC - 1;
+        if (avg & 1) {
+          avg |= 0x00000010; // avg++; works better for longer types
+        }
+        avg >>= 1;
+        
+        svd_insert_average(avg);
+    } else {
+        svd_pulse_number++;
+    }
+  #endif
+
   if (oldest_pulse_index < PULSE_TABLE_SIZE) {
     oldest_pulse_index++;
   }
@@ -318,13 +397,14 @@ void main(void) {
          // speed going down when no pulses present
          uint16_t newest_pulse = pulse_table[0];
          uint16_t pulse_time = newest_pulse - pulse_table[oldest_pulse_index];
-                  
-         #ifdef HIGH_PRECISION_SPEED
+         
+         #ifdef HIGH_PRECISION_SPEED // XXX: move to functions
            // SPEED_FACTOR is fixed point with FRAC_BITS fractional bits
            // pulse_time is fixed point with TIMER_BITS fractional bits
-           speed = ((uint32_t)SPEED_FACTOR * (oldest_pulse_index - 1)) / pulse_time;
+//           speed = ((uint32_t)SPEED_FACTOR * (oldest_pulse_index - 1)) / pulse_time;
            // speed is fixed point with FRAC_BITS - TIMER_BITS fractional bits
-           speed >>= (FRAC_BITS - TIMER_BITS);
+  //         speed >>= (FRAC_BITS - TIMER_BITS);
+           speed = get_int_average(pulse_time, (oldest_pulse_index - 1));
          #else
            // SPEED_FACTOR is fixed point with TIMER_BITS fractional bits truncated by SPEED_TRUNCATION_BITS bits
            // pulse_time is fixed point with TIMER_BITS fractional bits
@@ -339,6 +419,35 @@ void main(void) {
        glyph_size.x = 10;
        glyph_size.y *= 2;
        print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
+       
+       #ifdef SPEED_VS_DISTANCE_PLOT
+         if (svd_pulse_number == 0) { // there's been a change, redraw
+           for (uint8_t line = 0; line < 2; line++) { // XXX: lines
+             uint8_t maxheight = (2 - line) * 8; // XXX: lines
+             set_column(84 - svd_average_frames);
+             set_row(line + 2);
+             int8_t current_frame = svd_next_average - svd_average_frames;
+             if (current_frame < 0) {
+                 current_frame -= SVDPLOT_SIZE;
+             }
+             
+             for (uint8_t i = 0; i < svd_average_frames; i++)
+             {
+               uint8_t height = svd_averages[current_frame];
+               current_frame++;
+               if (current_frame == SVDPLOT_SIZE) {
+                   current_frame = 0;
+               }
+
+               uint8_t bar = 0xFF;
+               if (height < maxheight) {
+                 bar <<= maxheight - height;
+               }
+               send_raw_byte(bar, true);
+             }
+           }
+         }
+       #endif
     #endif
     #ifdef DEBUG
      position.x = 40; position.y = 0;

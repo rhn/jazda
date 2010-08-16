@@ -27,4 +27,5 @@
 #define DEBUG
 #define DISTANCE
 #define CURRENT_SPEED
+#define SPEED_VS_DISTANCE_PLOT
 #define METRIC_PULSE_DIST 2133L // millimeters
