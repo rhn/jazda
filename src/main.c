@@ -111,7 +111,7 @@ TODO
     volatile uint8_t oldest_pulse_index = 0;
 #endif
 
-void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const uint8_t digits) {
+void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const nibbles_t digits) {
 // prints a number, aligned to right, throwing in 0's when necessary
  // TODO: fake decimal point?
 // TODO: move to 16-bit (ifdef 32?)
