@@ -71,7 +71,7 @@ TODO
 #ifdef SPEED_VS_DISTANCE_PLOT
     // TODO: notofication that CURRENT_SPEED is required
     // TODO: vertical size. Currently hard-coded to 3 * 8
-    #define SVDPLOT_SIZE 48 // size in pizels (distance axis)
+    #define SVDPLOT_SIZE 10 // size in pixels (distance axis)
     #define SVDPLOT_LENGTH_KM 1 // distance axis length
 #endif
 
@@ -112,7 +112,8 @@ TODO
 
 #ifdef SPEED_VS_DISTANCE_PLOT
     #define SVDPLOT_SPEED_TRUNC 5
-    #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
+//    #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
+    #define SVDPLOT_FRAME_PULSES 9
 #endif
 
 /* DATA DECLARATIONS */
@@ -341,16 +342,16 @@ ISR(INT0_vect) {
         previous_frame_time = TCNT1;
         svd_pulse_number = 0; // clear counter
         
-        /*
+        
         // TRUNCATING AVERAGE
         avg >>= SVDPLOT_SPEED_TRUNC;
-        */
+        
         // ROUNDING AVERAGE
-        avg >>= SVDPLOT_SPEED_TRUNC - 1;
+        /*avg >>= SVDPLOT_SPEED_TRUNC - 1;
         if (avg & 1) {
           avg |= 0x00000010; // avg++; works better for longer types
         }
-        avg >>= 1;
+        avg >>= 1;*/
         
         svd_insert_average(avg);
     } else {
@@ -428,7 +429,7 @@ void main(void) {
              set_row(line + 2);
              int8_t current_frame = svd_next_average - svd_average_frames;
              if (current_frame < 0) {
-                 current_frame -= SVDPLOT_SIZE;
+                 current_frame = SVDPLOT_SIZE + current_frame;
              }
              
              for (uint8_t i = 0; i < svd_average_frames; i++)
