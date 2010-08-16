@@ -72,7 +72,7 @@ TODO
     // TODO: compile-time notification that CURRENT_SPEED is required
     // TODO: vertical size. Currently hard-coded to 2 * 8
     // TODO: speed axis adjusting to maximum value
-    #define SVDPLOT_SIZE 10 // size in pixels (distance axis)
+    #define SVDPLOT_SIZE 84 // size in pixels (distance axis)
     #define SVDPLOT_LENGTH_KM 1 // distance axis length
 #endif
 
@@ -113,8 +113,7 @@ TODO
 
 #ifdef SPEED_VS_DISTANCE_PLOT
     #define SVDPLOT_SPEED_TRUNC 5
-//    #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
-    #define SVDPLOT_FRAME_PULSES 9
+    #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
 #endif
 
 /* DATA DECLARATIONS */
