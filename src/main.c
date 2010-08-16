@@ -127,6 +127,7 @@ TODO
     // 1 is the newest pulse
     // 0 contains newest time to be used for display purposes, thus +1
     // TODO: optimize: move 0 to variable on ts own and see if size decreases
+    // TODO: check if volatile is necessary with tables
     volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
     // index of the oldest pulse in the table
     volatile uint8_t oldest_pulse_index = 0;
@@ -398,7 +399,11 @@ void main(void) {
        if (oldest_pulse_index > 1) {
          // speed going down when no pulses present
          uint16_t newest_pulse = pulse_table[0];
-         uint16_t pulse_time = newest_pulse - pulse_table[oldest_pulse_index];
+         uint16_t *table = pulse_table;
+         if (newest_pulse != pulse_table[1]) { // if pulse 0 is artificial
+           table -= 1; // pretend it is a real pulse by moving it to place 1
+         }
+         uint16_t pulse_time = newest_pulse - table[oldest_pulse_index];
          
          #ifdef HIGH_PRECISION_SPEED // XXX: move to functions
            // SPEED_FACTOR is fixed point with FRAC_BITS fractional bits
