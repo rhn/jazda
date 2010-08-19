@@ -73,7 +73,7 @@ TODO
     // TODO: vertical size. Currently hard-coded to 2 * 8
     // TODO: speed axis adjusting to maximum value
     #define SVDPLOT_SIZE 84 // size in pixels (distance axis)
-    #define SVDPLOT_LENGTH_KM 1 // distance axis length
+    #define SVDPLOT_LENGTH_KM 4 // distance axis length
 #endif
 
 /* GENERATED VALUES */
@@ -368,13 +368,23 @@ ISR(INT0_vect) {
 
 void main() __attribute__ ((noreturn));
 void main(void) {
+  setup_pulse();
   #ifdef DEBUG
-   uint8_t loops = 0;
+   uint8_t loops;
+   if (PIND & 1<<PD2) {
+       lcd_setup();
+       lcd_init();
+       for (uint8_t i = 0; i < 2; i++) {
+           for (loops = 1; loops != 0; loops++) {
+               send_raw_byte(loops, true);
+           }
+       }
+   }
+   loops = 0;
   #endif
   setup_cpu();
   lcd_setup();
   lcd_init();
-  setup_pulse();
   setup_timer();
 /*  for (uint8_t i = 0; ; i++) {
     send_raw_byte(i, true);
