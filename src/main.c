@@ -371,10 +371,10 @@ void main(void) {
   setup_pulse();
   #ifdef DEBUG
    uint8_t loops;
-   if (PIND & 1<<PD2) {
+   while (PIND & 1<<PD2) {
        lcd_setup();
        lcd_init();
-       for (uint8_t i = 0; i < 2; i++) {
+       for (uint8_t i = 0; i < 4; i++) {
            for (loops = 1; loops != 0; loops++) {
                send_raw_byte(loops, true);
            }
