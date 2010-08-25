@@ -1,9 +1,16 @@
+#include <avr/pgmspace.h>
+
+/* Drawing on a monochrome line-based 8-bit height screen procedures */
+
+/* REQUIRES:
+pcd8544.h or compatible
+*/
+
 #define LETTERX _BV(3)
 #define LETTERY _BV(4)
 #define POINT(x, y, break) break << 7 | x << 4 | y
 
 #define FIXED_POINT_BITS 3
-
 __attribute__((progmem)) const uint8_t glyphs[] = { POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 2, 1), POINT(7, 13, 1), POINT(5, 15, 1), POINT(2, 15, 1), POINT(0, 13, 1), POINT(0, 2, 1), POINT(2, 0, 1), 0, // 0
                            POINT(1, 4, 1), POINT(5, 0, 1), POINT(5, 15, 1), 0, // 1
                            POINT(0, 3, 1), POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 3, 1), POINT(0, 15, 1), POINT(7, 15, 1), 0, // 2
@@ -145,3 +152,101 @@ void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t w
    }
 }
 
+void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const nibblepair_t digits) {
+// prints a number, aligned to right, throwing in 0's when necessary
+ // TODO: fake decimal point?
+// TODO: move to 16-bit (ifdef 32?)
+    // integer only
+    uint32_t bcd = 0;
+    register uint8_t *ptr;
+    uint8_t frac_digits = digits & 0x0F;
+    uint8_t all_digits = (digits >> 4) + frac_digits;
+
+    for (int8_t i = 31; ; i--) { //32 should be size of int - FRACBITS
+        asm("lsl    %A0" "\n"
+            "rol    %B0" "\n"
+            "rol    %C0" "\n"
+            "rol    %D0" "\n"
+            "rol    %A1" "\n" // reduce this shit
+            "rol    %B1" "\n"
+            "rol    %C1" "\n"
+            "rol    %D1" "\n" : "+r" (bin), "+r" (bcd));
+        if (i == 0) {
+            break;
+        }
+        
+        // WARNING: Endianness
+        // while (ptr > &bcd)
+        for (ptr = ((uint8_t*)&bcd) + 3; ptr >= ((uint8_t*)&bcd); ptr--) { //ptr points to MSB
+        // roll two parts into one to save space. example below with printing
+//            print_digit(ptr - (uint8_t*)&bcd, 8, 8, 1);
+            if (((*ptr) + 0x03) & _BV(3)) {
+                *ptr += 0x03;
+            }
+            if (((*ptr) + 0x30) & _BV(7)) {
+                *ptr += 0x30;
+            }
+        }
+        /*
+        uint8_t tmp;
+        asm("mov r30, %3" "\n"
+            "inc r30" "\n"
+"incloops%=: ld __tmp_reg__, -Z" "\n" // Z!!!
+            "ldi %2, 0x03" "\n"
+            "add __tmp_reg__, %2" "\n"
+            "sbrc __tmp_reg__, 3" "\n"
+            "st Z, __tmp_reg__" "\n"
+            "ld __tmp_reg__, -Z" "\n" // Z!!!
+            "ldi %2, 0x30" "\n"
+            "add __tmp_reg__, %2" "\n"
+            "sbrc __tmp_reg__, 7" "\n"
+            "st Z, __tmp_reg__" "\n"
+            "cp r30, %3" "\n"
+            "brne incloops%=" "\n" : "+r" (bcd), "+z" (ptr), "=d" (tmp) : "x" (resptr)); */
+    }    
+ 
+    uint8_t tmp;
+    uint8_t print = 0; // 0: don't print
+                       // 1: leave space
+                       // 2: print
+    
+    ptr = ((uint8_t*)&bcd) + 3;
+    
+    for (uint8_t i = 8; i > 0; i--) {
+        if (i & 1) {
+            tmp = (*ptr) & 0x0F;
+            ptr--;
+        } else {
+            tmp = (*ptr) >> 4;
+        }
+        if (tmp) {
+            print = 2;
+        }
+        if (i == frac_digits + 1) { // a pre-point number hit
+            print = 2;
+        }
+        if ((i <= all_digits) && (print < 2)) {
+            print = 1;
+            tmp = 10;
+        }
+        if (print) {
+            print_digit(tmp, glyph_size, width, position);
+            position.x += glyph_size.x + width;
+        }
+    } // 1452 bytes
+    /*
+    for (ptr = ((uint8_t*)&bcd) + 3; ptr >= ((uint8_t*)&bcd); ptr--) { //ptr points to MSB
+        tmp = *ptr;
+        if (tmp) {
+            print = true;
+        }
+        if (print) {
+            if (tmp >> 4) {
+                print_digit(tmp >> 4, 8, 8, 1);
+            }
+            if (tmp & 0x0F) {
+                print_digit(tmp & 0x0F, 8, 8, 1);
+            }
+        }
+    } 1474 bytes*/
+}

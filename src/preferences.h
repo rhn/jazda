@@ -1,5 +1,8 @@
 /* project-wide constants */
 
+/* REQUIRES: none
+*/
+
 /*  
 #define CLKDIR DDRB
 #define CLKPORT PORTB

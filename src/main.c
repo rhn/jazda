@@ -1,11 +1,12 @@
 #define F_CPU 1000000L
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <avr/sleep.h>
-#include <avr/pgmspace.h>
 #include <math.h>
 
 #include "common.h"
+
+#include "values.h"
+
 #ifdef ATTINY2313
   #include "avr/attiny2313.h"
 #else
@@ -13,9 +14,6 @@
     #include "avr/atmega8.h"
   #endif
 #endif
-
-#include "preferences.h"
-
 
 /* advanced options */
 #define MAXBUFFERX 10 // used for drawing, defines maximum width of a character // TODO: move somewhere else
@@ -53,68 +51,6 @@ TODO
 - near-vertical lines
 - fix low-precision speed calculation
 */
-
-/* ADVANCED OPTIONS */
-
-#ifdef CURRENT_SPEED
-    #define SPEED_SIGNIFICANT_DIGITS 2 // 99km/h is good enough
-    #define SPEED_FRACTION_DIGITS 1 // better than my sigma
-    #define PULSE_TABLE_SIZE 3
-    #define STOPPED_TIMEOUT 3 // seconds
-#endif
-
-#ifdef DISTANCE
-    #define DIST_SIGNIFICANT_DIGITS 3 // 999km is good enough
-    #define DIST_FRACTION_DIGITS 2 // same as my sigma
-#endif
-
-#ifdef SPEED_VS_DISTANCE_PLOT
-    // TODO: compile-time notification that CURRENT_SPEED is required
-    // TODO: vertical size. Currently hard-coded to 2 * 8
-    // TODO: speed axis adjusting to maximum value
-    #define SVDPLOT_SIZE 84 // size in pixels (distance axis)
-    #define SVDPLOT_LENGTH_KM 4 // distance axis length
-#endif
-
-/* GENERATED VALUES */
-#define PULSE_DIST (uint64_t)((uint64_t)(METRIC_PULSE_DIST << FRAC_BITS) / 10000L) // TODO: power 10 ^ (6 - DIST_DIGITS) : 6 = mm->km
-
-#ifdef DISTANCE
-    #define DIST_DIGITS NIBBLEPAIR(DIST_SIGNIFICANT_DIGITS, DIST_FRACTION_DIGITS)
-#endif
-
-#ifdef CURRENT_SPEED
-    #define SPEED_DIGITS NIBBLEPAIR(SPEED_SIGNIFICANT_DIGITS, SPEED_FRACTION_DIGITS)
-    #define ONE_SECOND 986 // in timer ticks // TODO: autocalculate
-/* Speed calculations:
-  X - rotation distance in internal units
-  N - rotation count
-  T - rotations time in internal units
-  L - internal time units making one second
-  Y - speed in internal units
-  a - decimal point in distance
-  b - decimal point in speed
-  
-  General:
-  \frac{NX}{10^{a}}\cdot\frac{km}{Ts\frac{1}{L}}=\frac{Y}{10^{b}}\cdot\frac{km}{h}
-
-  Solution:
-  Y=\frac{NL}{T}36\cdot10^{b-a+2}X
-
-  */
-  // TODO: power 10 ** (SPEED_DIGITS - DIST_DIGITS + 2)
-    #ifdef HIGH_PRECISION_SPEED
-        #define SPEED_FACTOR PULSE_DIST * ONE_SECOND * 36 * 10 // T and N excluded as variable
-    #else
-        #define SPEED_TRUNCATION_BITS 1
-        #define SPEED_FACTOR (uint16_t)((PULSE_DIST * 36 * 10) >> (FRAC_BITS - TIMER_BITS + SPEED_TRUNCATION_BITS)) // T and N excluded as variable
-    #endif
-#endif
-
-#ifdef SPEED_VS_DISTANCE_PLOT
-    #define SVDPLOT_SPEED_TRUNC 5
-    #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
-#endif
 
 /* DATA DECLARATIONS */
 #ifdef DISTANCE
@@ -170,106 +106,7 @@ TODO
     }
 #endif
 
-void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const nibblepair_t digits) {
-// prints a number, aligned to right, throwing in 0's when necessary
- // TODO: fake decimal point?
-// TODO: move to 16-bit (ifdef 32?)
-    // integer only
-    uint32_t bcd = 0;
-    register uint8_t *ptr;
-    uint8_t frac_digits = digits & 0x0F;
-    uint8_t all_digits = (digits >> 4) + frac_digits;
-
-    for (int8_t i = 31; ; i--) { //32 should be size of int - FRACBITS
-        asm("lsl    %A0" "\n"
-            "rol    %B0" "\n"
-            "rol    %C0" "\n"
-            "rol    %D0" "\n"
-            "rol    %A1" "\n" // reduce this shit
-            "rol    %B1" "\n"
-            "rol    %C1" "\n"
-            "rol    %D1" "\n" : "+r" (bin), "+r" (bcd));
-        if (i == 0) {
-            break;
-        }
-        
-        // WARNING: Endianness
-        // while (ptr > &bcd)
-        for (ptr = ((uint8_t*)&bcd) + 3; ptr >= ((uint8_t*)&bcd); ptr--) { //ptr points to MSB
-        // roll two parts into one to save space. example below with printing
-//            print_digit(ptr - (uint8_t*)&bcd, 8, 8, 1);
-            if (((*ptr) + 0x03) & _BV(3)) {
-                *ptr += 0x03;
-            }
-            if (((*ptr) + 0x30) & _BV(7)) {
-                *ptr += 0x30;
-            }
-        }
-        /*
-        uint8_t tmp;
-        asm("mov r30, %3" "\n"
-            "inc r30" "\n"
-"incloops%=: ld __tmp_reg__, -Z" "\n" // Z!!!
-            "ldi %2, 0x03" "\n"
-            "add __tmp_reg__, %2" "\n"
-            "sbrc __tmp_reg__, 3" "\n"
-            "st Z, __tmp_reg__" "\n"
-            "ld __tmp_reg__, -Z" "\n" // Z!!!
-            "ldi %2, 0x30" "\n"
-            "add __tmp_reg__, %2" "\n"
-            "sbrc __tmp_reg__, 7" "\n"
-            "st Z, __tmp_reg__" "\n"
-            "cp r30, %3" "\n"
-            "brne incloops%=" "\n" : "+r" (bcd), "+z" (ptr), "=d" (tmp) : "x" (resptr)); */
-    }    
- 
-    uint8_t tmp;
-    uint8_t print = 0; // 0: don't print
-                       // 1: leave space
-                       // 2: print
-    
-    ptr = ((uint8_t*)&bcd) + 3;
-    
-    for (uint8_t i = 8; i > 0; i--) {
-        if (i & 1) {
-            tmp = (*ptr) & 0x0F;
-            ptr--;
-        } else {
-            tmp = (*ptr) >> 4;
-        }
-        if (tmp) {
-            print = 2;
-        }
-        if (i == frac_digits + 1) { // a pre-point number hit
-            print = 2;
-        }
-        if ((i <= all_digits) && (print < 2)) {
-            print = 1;
-            tmp = 10;
-        }
-        if (print) {
-            print_digit(tmp, glyph_size, width, position);
-            position.x += glyph_size.x + width;
-        }
-    } // 1452 bytes
-    /*
-    for (ptr = ((uint8_t*)&bcd) + 3; ptr >= ((uint8_t*)&bcd); ptr--) { //ptr points to MSB
-        tmp = *ptr;
-        if (tmp) {
-            print = true;
-        }
-        if (print) {
-            if (tmp >> 4) {
-                print_digit(tmp >> 4, 8, 8, 1);
-            }
-            if (tmp & 0x0F) {
-                print_digit(tmp & 0x0F, 8, 8, 1);
-            }
-        }
-    } 1474 bytes*/
-}
-
-ISR(TIMER1_COMPA_vect) {
+inline void on_trigger(void) {
   uint16_t now = get_time();
   pulse_table[0] = now;
   // will never be triggered with 1 pulse in table
@@ -281,7 +118,7 @@ ISR(TIMER1_COMPA_vect) {
   }
 }
 
-ISR(INT0_vect) {
+inline void on_pulse(void) {
 // speed interrupt
 #ifdef DISTANCE
   distance += PULSE_DIST;
