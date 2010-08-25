@@ -18,6 +18,8 @@
 #define D_CPORT PORTB
 #define D_CPIN PB5
 
+#include "avr.h"
+
 void setup_cpu(void) {
 // makes CPU run at 1 MHz
 // clock prescaler, device clock must be 8 MHz

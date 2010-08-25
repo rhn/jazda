@@ -51,7 +51,7 @@ TODO
 - hide ugly timers, interrupts and bit assumptions/optimizations etc to ./avr
 - separate screen and drawing to buffer
 - near-vertical lines
-
+- fix low-precision speed calculation
 */
 
 /* ADVANCED OPTIONS */
@@ -85,26 +85,26 @@ TODO
 
 #ifdef CURRENT_SPEED
     #define SPEED_DIGITS NIBBLEPAIR(SPEED_SIGNIFICANT_DIGITS, SPEED_FRACTION_DIGITS)
-    #define TIMER_BITS 10 // one second TODO: drop in favor of something more flexible
-    #define ONE_SECOND (1 << TIMER_BITS) // TODO: autocalculate
+    #define ONE_SECOND 986 // in timer ticks // TODO: autocalculate
 /* Speed calculations:
   X - rotation distance in internal units
   N - rotation count
-  T - rotations time
+  T - rotations time in internal units
+  L - internal time units making one second
   Y - speed in internal units
   a - decimal point in distance
   b - decimal point in speed
   
   General:
-  \frac{NX}{10^{a}}\cdot\frac{km}{Ts}=\frac{Y}{10^{b}}\cdot\frac{km}{h}
+  \frac{NX}{10^{a}}\cdot\frac{km}{Ts\frac{1}{L}}=\frac{Y}{10^{b}}\cdot\frac{km}{h}
 
   Solution:
-  Y=\frac{N}{T}36\cdot10^{b-a+2}X
+  Y=\frac{NL}{T}36\cdot10^{b-a+2}X
 
   */
   // TODO: power 10 ** (SPEED_DIGITS - DIST_DIGITS + 2)
     #ifdef HIGH_PRECISION_SPEED
-        #define SPEED_FACTOR PULSE_DIST * 36 * 10 // T and N excluded as variable
+        #define SPEED_FACTOR PULSE_DIST * ONE_SECOND * 36 * 10 // T and N excluded as variable
     #else
         #define SPEED_TRUNCATION_BITS 1
         #define SPEED_FACTOR (uint16_t)((PULSE_DIST * 36 * 10) >> (FRAC_BITS - TIMER_BITS + SPEED_TRUNCATION_BITS)) // T and N excluded as variable
@@ -149,10 +149,10 @@ TODO
     uint16_t get_int_average(const uint16_t time_amount, const uint8_t pulse_count) {
        uint16_t speed;
        // SPEED_FACTOR is fixed point with FRAC_BITS fractional bits
-       // pulse_time is fixed point with TIMER_BITS fractional bits
+       // pulse_time is integer
        speed = ((uint32_t)SPEED_FACTOR * pulse_count) / time_amount;
-       // speed is fixed point with FRAC_BITS - TIMER_BITS fractional bits
-       speed >>= (FRAC_BITS - TIMER_BITS);
+       // speed is fixed point with FRAC_BITS fractional bits
+       speed >>= FRAC_BITS;
        return speed;
     }
 #endif
@@ -269,46 +269,13 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
     } 1474 bytes*/
 }
 
-void setup_pulse(void) {
-  /* -----  hwint button */  
-  DDRD &= ~(1<<PD2); /* set PD2 to input */
-  PORTD |= 1<<PD2; // enable pullup resistor
-    
-  // interrupt on INT0 pin falling edge (sensor triggered)
-  MCUCR |= (1<<ISC01);
-  MCUCR &= ~(1<<ISC00);
-  /* ------ end */
-
-  // turn on interrupts!
-  GIMSK |= (1<<INT0);
-}
-
-void setup_timer(void) {
-// sets up millisecond precision 16-bit timer
-/* TODO: consider using 8-bit timer overflowing every (half) second + 4-bit USI*/
-// set up prescaler to /1024 XXX CPU must be 8 MHz...
-  uint8_t clksrc;
-  clksrc = TCCR1B;
-  clksrc |= 1<<CS12 | 1<<CS10;
-  clksrc &= ~(1<<CS11);
-  TCCR1B = clksrc;
-}
-
-inline uint16_t get_time() { // XXX: use it!!!
-  return TCNT1;
-}
-
-void set_trigger_time(const uint16_t time) { // XXX: optimize: inline
-  OCR1A = time;
-  TIMSK |= 1 << OCIE1A;
-}
-
 ISR(TIMER1_COMPA_vect) {
-  pulse_table[0] = TCNT1;
+  uint16_t now = get_time();
+  pulse_table[0] = now;
   // will never be triggered with 1 pulse in table
   // delay can be actually anything. No possibility of prediction. The following just looks good.
-  if (TCNT1 - pulse_table[1] < STOPPED_TIMEOUT * ONE_SECOND) {
-    set_trigger_time(TCNT1 +  pulse_table[1] - pulse_table[2]);
+  if (now - pulse_table[1] < STOPPED_TIMEOUT * ONE_SECOND) {
+    set_trigger_time(now +  pulse_table[1] - pulse_table[2]);
   } else {
     oldest_pulse_index = 0;
   }
@@ -321,26 +288,27 @@ ISR(INT0_vect) {
   // TODO: asm this to use 1 tmp reg?
 #endif
 #ifdef CURRENT_SPEED
-  pulse_table[0] = TCNT1;
+  uint16_t now = get_time();
+  pulse_table[0] = now;
 
   for (uint8_t i = PULSE_TABLE_SIZE; i > 0; --i) {
     pulse_table[i] = pulse_table[i - 1];
   }
 
   if (oldest_pulse_index > 1) {
-    uint16_t ahead = TCNT1 - pulse_table[2];
+    uint16_t ahead = now - pulse_table[2];
     // NOTE: remove ahead / 4 to save 10 bytes
-    set_trigger_time(TCNT1 + ahead + (ahead / 4));
+    set_trigger_time(now + ahead + (ahead / 4));
   }
 
   #ifdef SPEED_VS_DISTANCE_PLOT
     if (oldest_pulse_index == 0) { // if first pulse after a stop
-        previous_frame_time = TCNT1; // set a new start time
+        previous_frame_time = now; // set a new start time
         svd_pulse_number = 0; // clear counter
         svd_insert_average(0); // insert a space
     } else if (svd_pulse_number == SVDPLOT_FRAME_PULSES - 1) { // if last pulse of a count
-        uint16_t avg = get_int_average(TCNT1 - previous_frame_time, SVDPLOT_FRAME_PULSES); // TODO: move away to main loop
-        previous_frame_time = TCNT1;
+        uint16_t avg = get_int_average(now - previous_frame_time, SVDPLOT_FRAME_PULSES); // TODO: move away to main loop
+        previous_frame_time = now;
         svd_pulse_number = 0; // clear counter
         
         
@@ -371,7 +339,8 @@ void main(void) {
   setup_pulse();
   #ifdef DEBUG
    uint8_t loops;
-   while (PIND & 1<<PD2) {
+   PORTB &= ~(1 << PB3);
+   while (!(PINB & 1<<PB3)) {
        lcd_setup();
        lcd_init();
        for (uint8_t i = 0; i < 4; i++) {
@@ -414,12 +383,7 @@ void main(void) {
          }
          uint16_t pulse_time = newest_pulse - table[oldest_pulse_index];
          
-         #ifdef HIGH_PRECISION_SPEED // XXX: move to functions
-           // SPEED_FACTOR is fixed point with FRAC_BITS fractional bits
-           // pulse_time is fixed point with TIMER_BITS fractional bits
-//           speed = ((uint32_t)SPEED_FACTOR * (oldest_pulse_index - 1)) / pulse_time;
-           // speed is fixed point with FRAC_BITS - TIMER_BITS fractional bits
-  //         speed >>= (FRAC_BITS - TIMER_BITS);
+         #ifdef HIGH_PRECISION_SPEED
            speed = get_int_average(pulse_time, (oldest_pulse_index - 1));
          #else
            // SPEED_FACTOR is fixed point with TIMER_BITS fractional bits truncated by SPEED_TRUNCATION_BITS bits
