@@ -18,12 +18,12 @@
 
 
 /* advanced options */
-#define MAXBUFFERX 10
+#define MAXBUFFERX 10 // used for drawing, defines maximum width of a character // TODO: move somewhere else
 #define FRAC_BITS 14
 
 /* imports depending on constants */
-
-#include "screen.h"
+#include "display/pcd8544.h"
+#include "drawing.h"
 
 /* DISTANCE + CURRENT SPEED PROGRAM
 distance stored in 10s of meters, fraction never displayed, fake decimal point
@@ -181,19 +181,19 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
     uint8_t all_digits = (digits >> 4) + frac_digits;
 
     for (int8_t i = 31; ; i--) { //32 should be size of int - FRACBITS
-        asm("lsl	%A0" "\n"
-	        "rol	%B0" "\n"
-	        "rol	%C0" "\n"
-	        "rol	%D0" "\n"
-	        "rol	%A1" "\n" // reduce this shit
-	        "rol	%B1" "\n"
-	        "rol	%C1" "\n"
-	        "rol	%D1" "\n" : "+r" (bin), "+r" (bcd));
-	    if (i == 0) {
-	        break;
-	    }
-	    
-	    // WARNING: Endianness
+        asm("lsl    %A0" "\n"
+            "rol    %B0" "\n"
+            "rol    %C0" "\n"
+            "rol    %D0" "\n"
+            "rol    %A1" "\n" // reduce this shit
+            "rol    %B1" "\n"
+            "rol    %C1" "\n"
+            "rol    %D1" "\n" : "+r" (bin), "+r" (bcd));
+        if (i == 0) {
+            break;
+        }
+        
+        // WARNING: Endianness
         // while (ptr > &bcd)
         for (ptr = ((uint8_t*)&bcd) + 3; ptr >= ((uint8_t*)&bcd); ptr--) { //ptr points to MSB
         // roll two parts into one to save space. example below with printing
@@ -221,7 +221,7 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
             "st Z, __tmp_reg__" "\n"
             "cp r30, %3" "\n"
             "brne incloops%=" "\n" : "+r" (bcd), "+z" (ptr), "=d" (tmp) : "x" (resptr)); */
-	}    
+    }    
  
     uint8_t tmp;
     uint8_t print = 0; // 0: don't print
