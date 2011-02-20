@@ -5,8 +5,6 @@
 
 #include "common.h"
 
-#include "values.h"
-
 #ifdef ATTINY2313
   #include "avr/attiny2313.h"
 #else
@@ -14,6 +12,8 @@
     #include "avr/atmega8.h"
   #endif
 #endif
+
+#include "values.h"
 
 /* advanced options */
 #define MAXBUFFERX 10 // used for drawing, defines maximum width of a character // TODO: move somewhere else

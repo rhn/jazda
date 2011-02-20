@@ -19,6 +19,8 @@
 #define RSTPIN PC0
 
 #define HIGH_PRECISION_SPEED
+#define MSTIMER
+#define PULSEINT
 
 #include "avr.h"
 
