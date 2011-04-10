@@ -1,0 +1,19 @@
+pcd8544
+symptom: nothing on the screen
+possible cause: wrong connection
+solution: check order of cables
+possible cause: data not passed properly
+solution: check electrical connections
+possible cause: wrong initialization
+solution: check if there's voltage on VOut capacitor. if there is, switch to basic instruction set mode and send normal screen
+    if there's no voltage, set voltage or try other options
+possible cause: lousy internal connection
+solution: check if there's voltage on VOut. press the top metal. squeeze the top metal.
+
+symptom: horizontal line on disconnection
+possible cause:???
+solution: squeeze the top bar
+
+symptom: screen goes gradually black
+possible cause: VOut goes uncontrollably high
+solution: insert a capacitor between VOut and GND

@@ -3,10 +3,17 @@
 /* Monochrome line-based display, each line is 8 bits high */
 /* HARDWARE
  * Nokia 5110
+ * #defines required:
+   * pin/direction/port: (*PIN, *DIR, *PORT)
+   RST - reset
+   D_C - data/command
+   CLK - serial clock
+   SCE - select
+   SDA - serial data
 */
 
+/* prepares the chip for using the display */
 void lcd_setup() {
-  //DDRB |= 1<<PB1 | 1<<PB2 | 1<<PB3 | 1<<PB4 | 1<<PB5; /* set Pb1-5 to output */
   RSTDIR |= 1 << RSTPIN;
   D_CDIR |= 1 << D_CPIN;
   CLKDIR |= 1 << CLKPIN;
@@ -15,12 +22,13 @@ void lcd_setup() {
   LOW(RSTPORT, RSTPIN);
   LOW(D_CPORT, D_CPIN);
   LOW(CLKPORT, CLKPIN);
-  LOW(SCEPORT, SCEPIN);
   LOW(SDAPORT, SDAPIN);
+  LOW(SCEPORT, SCEPIN);
   _delay_ms(200);
   HIGH(RSTPORT, RSTPIN);
 }
 
+/* low-level function to send data to the chip. mostly used internally */
 void send_raw_byte(const uint8_t payload, const uint8_t data) {
    uint8_t mask = 1 << 7;
    uint8_t i;
@@ -31,22 +39,22 @@ void send_raw_byte(const uint8_t payload, const uint8_t data) {
            LOW(SDAPORT, SDAPIN);
        }
        
-       if ((i == 7) && data) {
+       if ((i == 1) && data) {
            HIGH(D_CPORT, D_CPIN);
        }
        HIGH(CLKPORT, CLKPIN);
        LOW(CLKPORT, CLKPIN);
        
-       LOW(D_CPORT, D_CPIN);
-       
-       mask = mask / 2;
+       mask = mask >> 1;
    }
+   LOW(SDAPORT, SDAPIN);
+   LOW(D_CPORT, D_CPIN);
 }
 
-#define blank_screen() send_raw_byte(0b00001000, false);
-#define darken_screen() send_raw_byte(0b00001001, false);
-#define normal_screen() send_raw_byte(0b00001100, false);
-#define inverse_screen() send_raw_byte(0b00001101, false);
+#define blank_screen() send_raw_byte(0b00001000, false)
+#define darken_screen() send_raw_byte(0b00001001, false)
+#define normal_screen() send_raw_byte(0b00001100, false)
+#define inverse_screen() send_raw_byte(0b00001101, false)
 
 void set_column(const uint8_t col) {
     if (col < 84) {
@@ -60,13 +68,14 @@ void set_row(const uint8_t row) {
     }
 }
 
+/* prepares the display for operation */
 void lcd_init() {
+//    for(;;){
   send_raw_byte(0b00100001, false); // extended instruction set
-//  send_raw_byte(0b11000101, false); // set voltage to what some other guy did
-  send_raw_byte(0xC2, false);       // Set LCD Voltage to about 7V.
+  send_raw_byte(0b10000000 | 66, false); // set voltage to just under 7V (3V+66*0.06V steps)
+  send_raw_byte(0b00000100, false); // set temp coeff
   send_raw_byte(0b00010011, false); // set bias
   send_raw_byte(0b00100000, false); //poweron, horz addr, basic instruction set
-//  send_raw_byte(0b00100010, false); //poweron, vert addr, basic instruction set
-//  darken_screen();
-  normal_screen();      
+
+  normal_screen();
 }

@@ -20,12 +20,12 @@ void main(void) {
     {
         /* set PC0 on PORTC (digital high) and delay for 500mS */
         PORTC &= ~_BV(PC0);                
-        PORTB = 0;
+        PORTB = 0b00001000;
         _delay_ms(200);
         
         /*  PC0 on PORTC (digital 0) and delay for 500mS */
         PORTC |= _BV(PC0);
-        PORTB = 0xFF;
+        PORTB = 0b00000000;
         _delay_ms(500);
     }
 

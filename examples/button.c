@@ -14,9 +14,10 @@ Connect buttons to pins PB0-7.
 int main(void) {
   DDRD |= 1<<PD5; /* set Pd5 to output */
   PORTD |= 1<<PD5; /* LED on */
-  DDRB = 0; /* set port b to input */
+  DDRB = 1<<PB0; /* set port b to input */
+  PORTB = 1<<PB0; /* enable pullup resistors */
   while(1) {
-    if (PORTB)
+    if (PINB & 1<<PB0)
     {
         PORTD &= ~(1<<PD5); /* LED on */
     } else {
