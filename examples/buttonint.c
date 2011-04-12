@@ -1,10 +1,10 @@
-#define F_CPU 10000000UL
+#define F_CPU 1000000UL
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
 /* EXAMPLE 3
-Switching diodes
+Switching diodes /XXX: broken on atmega8
 
 Features: Hardware interrupt, pin input, pin output
 
