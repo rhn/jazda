@@ -1,5 +1,5 @@
 #include <avr/pgmspace.h>
-
+#include <stdlib.h>
 /* Drawing on a monochrome line-based 8-bit height screen procedures */
 
 /* REQUIRES:
@@ -12,7 +12,7 @@ DEFINES: MAXBUFFERX: maximum allowed width of a character in a viewport. Wider c
 #define LETTERY _BV(4)
 #define POINT(x, y, break) break << 7 | x << 4 | y
 
-#define FIXED_POINT_BITS 3
+#define FIXED_POINT_BITS 8
 __attribute__((progmem)) const uint8_t glyphs[] = { POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 2, 1), POINT(7, 13, 1), POINT(5, 15, 1), POINT(2, 15, 1), POINT(0, 13, 1), POINT(0, 2, 1), POINT(2, 0, 1), 0, // 0
                            POINT(1, 4, 1), POINT(5, 0, 1), POINT(5, 15, 1), 0, // 1
                            POINT(0, 3, 1), POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 3, 1), POINT(0, 15, 1), POINT(7, 15, 1), 0, // 2
@@ -39,7 +39,8 @@ void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t t
 // draws a line into the buffer
    uint8_t stamp = 0;
    int8_t i;
-   int8_t incr;
+   int16_t incr;
+   int16_t vert_position;
    if (fromx > tox) { // swap
        int8_t tmp;
        tmp = tox;
@@ -49,7 +50,6 @@ void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t t
        toy = fromy;
        fromy = tmp;
    } else if (fromx == tox) {
-//       print_vert_line(buffer, fromx, fromy, toy, width);
        int8_t tmp;
        if (fromy > toy) {
            tmp = toy;
@@ -63,61 +63,56 @@ void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t t
            if ((i >= 0) && (i < MAXBUFFERX)) {
                buffer[i] |= stamp;
            }
-  //         send_raw_byte(i, true);
        }    
-       send_raw_byte(0b01000011, true);
        return;
    }
-   incr = ((toy - fromy) << FIXED_POINT_BITS) / (int8_t)(tox - fromx); // guaranteed positive
-   for (i = 0; i < width; i++) { // LSB is x=0
+   incr = ((toy - fromy) << FIXED_POINT_BITS) / (uint8_t)(tox - fromx); // tox-fromx guaranteed positive
+   for (i = 0; i < width; i++) { // LSBit is x=0, that is upper row
        stamp <<= 1;
        stamp |= 1;
    }
-   fromy <<= FIXED_POINT_BITS; // fromy becomes fixed-point, might be negative
+   vert_position = fromy << FIXED_POINT_BITS; // fixed-point, might be negative
    // from starting point to ending point + line width
-   for (i = fromx; i < tox + width; i++, fromy += incr) {
-       if ((i >= 0) && (i < MAXBUFFERX) && (fromy >= 0)) { //   && (fromy < (8 << FIXED_POINT_BITS))) { // 
-           buffer[i] |= (uint8_t)(stamp << (uint8_t)(fromy >> FIXED_POINT_BITS)); //  / _BV(FIXED_POINT_BITS))); //
+   // NOTE: the first stamp is placed when whole stamp is inside viewport (vert_position >= 0). For wide lines this might cause disconnects on upper viewport boundary. It saves a lot of program space though
+   for (i = fromx; i < tox + width; i++, vert_position += incr) {
+       if ((i >= 0) && (i < MAXBUFFERX) && (vert_position >= 0)) {
+           buffer[i] |= (uint8_t)(stamp << (uint8_t)(vert_position >> FIXED_POINT_BITS));
        }
    }
 }
 
-void scale(upoint_t *point, const upoint_t pxsize) {
-   uint16_t tmp;
+
+void scale(point_t *point, const upoint_t pxsize) {
+// Scales point inside a character assuming that new character size is pxsize
+   int16_t tmp;
    tmp = (*point).x * pxsize.x;
    (*point).x = tmp / LETTERX;
-/*   if (tmp & (LETTERX / 2)) { // rounding
-      (*x)++;
-   }*/
    tmp = (*point).y * pxsize.y;
    (*point).y = tmp / LETTERY;
-/*   if (tmp & (LETTERY / 2)) {
-      (*y)++;
-   }*/
 }
 
 void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const upoint_t glyph_size, const uint8_t width, const int8_t xoffset, const int8_t yoffset) {
-   upoint_t prev;
-   upoint_t next;
+// user must take care that characters have proper line width
+   uint8_t byte;
+   point_t prev;
+   point_t next;
    upoint_t pxsize = {glyph_size.x - width + 1, glyph_size.y - width + 1};
    int8_t i;
 
-   prev.x = pgm_read_byte(&(glyph[0]));
-   prev.y = prev.x & 0b00001111;
-   prev.x >>= 4;
-   prev.x &= 0b00000111;
+   byte = pgm_read_byte(&(glyph[0]));
+   prev.y = byte & 0b00001111;
+   prev.x = (byte >> 4) & 0b00000111;
    prev.x -= xoffset;
    prev.y -= yoffset;
-     
    scale(&prev, pxsize);
    for (i = 1; pgm_read_byte(&(glyph[i])); i++) {
-      next.x = pgm_read_byte(&(glyph[i]));
-      next.y = next.x & 0b00001111; 
-      next.x >>= 4;
-      next.x &= 0b00000111;
+      byte = pgm_read_byte(&(glyph[i]));
+      next.y = byte & 0b00001111;
+      next.x = (byte >> 4) & 0b00000111;
       next.x -= xoffset;
       next.y -= yoffset;
       scale(&next, pxsize);
+
       draw_line(buffer, prev.x, prev.y, next.x, next.y, width);
       prev = next;
    }
@@ -149,6 +144,9 @@ void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t w
        set_column(position.x);
        set_row(position.y + line);
        for (i = 0; i < glyph_size.x; i++) {
+/*           if (i == 0) {
+            send_raw_byte(buffer[i], true);
+           }*/
            send_raw_byte(buffer[i], true);
        }
    }

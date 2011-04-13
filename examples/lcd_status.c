@@ -252,9 +252,9 @@ int main(void) {
         print_number(state[0], position, glyph_size, 1, NIBBLEPAIR(3, 0));
         
         position.y = 2;
-        glyph_size.x = 10;
-        glyph_size.y = 12;
-        print_number(state[1], position, glyph_size, 1, NIBBLEPAIR(3, 0));
+        glyph_size.x = 6;
+        glyph_size.y = 16;
+        print_number(state[1], position, glyph_size, 2, NIBBLEPAIR(3, 0));
         
         
         send_raw_byte(0xff, true);

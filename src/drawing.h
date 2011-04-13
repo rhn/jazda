@@ -47,7 +47,6 @@ void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t t
        toy = fromy;
        fromy = tmp;
    } else if (fromx == tox) {
-//       print_vert_line(buffer, fromx, fromy, toy, width);
        int8_t tmp;
        if (fromy > toy) {
            tmp = toy;
@@ -61,9 +60,7 @@ void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t t
            if ((i >= 0) && (i < MAXBUFFERX)) {
                buffer[i] |= stamp;
            }
-  //         send_raw_byte(i, true);
        }    
-       send_raw_byte(0b01000011, true);
        return;
    }
    incr = ((toy - fromy) << FIXED_POINT_BITS) / (int8_t)(tox - fromx); // guaranteed positive
