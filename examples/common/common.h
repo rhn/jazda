@@ -11,7 +11,7 @@ typedef struct unsigned_point {
     uint8_t y;
 } upoint_t;
 
-typedef struct nsigned_point {
+typedef struct signed_point {
     int8_t x;
     int8_t y;
 } point_t;
