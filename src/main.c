@@ -21,7 +21,7 @@
 
 /* imports depending on constants */
 #include "display/pcd8544.h"
-#include "drawing.h"
+#include "display/drawing.h"
 
 /* DISTANCE + CURRENT SPEED PROGRAM
 distance stored in 10s of meters, fraction never displayed, fake decimal point
@@ -44,10 +44,15 @@ LOG
     created common.h
 14.08
     initial support for atmega8
+18.06 2011
+    moved files from examples to main part
     
 TODO
+
+- separate configuration, code and defaults
+- clean up code
+- implement module interface
 - hide ugly timers, interrupts and bit assumptions/optimizations etc to ./avr
-- separate screen and drawing to buffer
 - near-vertical lines
 - fix low-precision speed calculation
 */

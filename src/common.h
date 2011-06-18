@@ -11,5 +11,10 @@ typedef struct unsigned_point {
     uint8_t y;
 } upoint_t;
 
+typedef struct signed_point {
+    int8_t x;
+    int8_t y;
+} point_t;
+
 #define nibblepair_t uint8_t
 #define NIBBLEPAIR(num1, num2) (nibblepair_t)((num1 << 4) | (num2 & 0x0F))

@@ -6,23 +6,23 @@
 
 #define CLKDIR DDRC
 #define CLKPORT PORTC
-#define CLKPIN PC5
+#define CLKPIN PC4
 
 #define SDADIR DDRC
 #define SDAPORT PORTC
-#define SDAPIN PC4
+#define SDAPIN PC3
 
 #define D_CDIR DDRC
 #define D_CPORT PORTC
-#define D_CPIN PC3
+#define D_CPIN PC2
 
 #define SCEDIR DDRC
 #define SCEPORT PORTC
-#define SCEPIN PC2
+#define SCEPIN PC0
    
 #define RSTDIR DDRC
 #define RSTPORT PORTC
-#define RSTPIN PC0
+#define RSTPIN PC1
 #include "display/pcd8544.h"
 
 /* EXAMPLE 5
