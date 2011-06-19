@@ -87,19 +87,28 @@ TODO
     #include "builtins/speed.h"
 #endif
 
+#ifdef DEBUG
+    #include "modules/debug.h"
+#endif
+
 /* DATA DECLARATIONS */
 // modules
 
 // currently displayed module
-uint8_t current_module = 0;
-// table of module records, ends with a sentinel TODO: investigate if it's
-// possible to replace sentinel with a constant size
+volatile uint8_t current_module = 0;
 
-module_record_t modules[] = {
+// table of module records
+const module_record_t modules[] = {
     #ifdef DISTANCE
         {&distance_redraw},
     #endif
-    NULL};
+    #ifdef DEBUG
+        {&debug_redraw}
+    #endif
+    };
+
+#define MODULES_NUMBER sizeof(modules)/sizeof(module_record_t)
+
 
 /* FUNCTIONS */
 
@@ -119,7 +128,11 @@ void on_select_button(uint8_t state) {
 }
 
 void on_right_button(uint8_t state) {
-   return;
+   if (current_module < MODULES_NUMBER - 1) {
+       current_module++;
+   } else {
+       current_module = 0;
+   }
 }
 
 void on_left_button(uint8_t state) {
@@ -139,17 +152,16 @@ void main(void) {
   MCUCR |= 1 << SE;
   // sleep mode
   MCUCR &= ~((1 << SM1) | (1 << SM0));
-     upoint_t position = {0, 2};
-     upoint_t glyph_size = {8, 8};
-     print_number(sizeof(modules), position, glyph_size, 1, 2<<4);
+
   sei();
   for (; ; ) {
-    #ifdef DISTANCE
-        distance_redraw();
-    #endif
     #ifdef CURRENT_SPEED
        speed_redraw();
     #endif
+/*     upoint_t position = {0, 2};
+     upoint_t glyph_size = {8, 8};
+     print_number((uint32_t)modules[current_module].redraw, position, glyph_size, 1, 5<<4);*/
+    (*modules[current_module].redraw)();
     sleep_mode();
   }
 }
