@@ -169,10 +169,6 @@ void speed_redraw() {
      uint16_t pulse_time = newest_pulse - table[oldest_pulse_index];
     
      speed = get_int_average(pulse_time, (oldest_pulse_index - 1));
-
-     glyph_size.y = 8;
-     position.y = 2;
-     print_number(SIZEOF(modules), position, glyph_size, 1, 2<<4);
    } else {
        speed = 0;
    }

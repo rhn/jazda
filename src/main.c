@@ -139,7 +139,9 @@ void main(void) {
   MCUCR |= 1 << SE;
   // sleep mode
   MCUCR &= ~((1 << SM1) | (1 << SM0));
-  
+     upoint_t position = {0, 2};
+     upoint_t glyph_size = {8, 8};
+     print_number(sizeof(modules), position, glyph_size, 1, 2<<4);
   sei();
   for (; ; ) {
     #ifdef DISTANCE
