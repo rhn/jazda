@@ -6,6 +6,10 @@
 #define PULSEDIR DDRD
 #define PULSEPORT PORTD
 #define PULSEPIN PD2
+
+#define BUTTONDIR DDRD
+#define BUTTONPORT PORTD
+#define BUTTONPIN PD3
   
 #define CLKDIR DDRC
 #define CLKPORT PORTC

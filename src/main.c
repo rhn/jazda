@@ -57,9 +57,8 @@ TODO
 - fix low-precision speed calculation
 */
 
-/* DATA DECLARATIONS */
 #ifdef DISTANCE
-    volatile uint32_t distance = 0;
+    #include "modules/distance.h"
 #endif
 
 #ifdef CURRENT_SPEED
@@ -88,37 +87,49 @@ TODO
     #include "builtins/speed.h"
 #endif
 
+/* DATA DECLARATIONS */
+// modules
+
+// currently displayed module
+uint8_t current_module = 0;
+// table of module records, ends with a sentinel TODO: investigate if it's
+// possible to replace sentinel with a constant size
+
+module_record_t modules[] = {
+    #ifdef DISTANCE
+        {&distance_redraw},
+    #endif
+    NULL};
+
 /* FUNCTIONS */
 
 inline void on_pulse(void) {
 // speed interrupt
    uint16_t now = get_time();
 #ifdef DISTANCE
-  distance += PULSE_DIST;
-  // TODO: asm this to use 1 tmp reg?
+    distance_on_pulse(now);
 #endif
 #ifdef CURRENT_SPEED
     speed_on_pulse(now);
 #endif
 }
 
+void on_select_button(uint8_t state) {
+   return;
+}
+
+void on_right_button(uint8_t state) {
+   return;
+}
+
+void on_left_button(uint8_t state) {
+   return;
+}
+
 void main() __attribute__ ((noreturn));
 void main(void) {
   setup_pulse();
-  #ifdef DEBUG
-   uint8_t loops;
-   PORTB &= ~(1 << PB3);
-   while (!(PINB & 1<<PB3)) {
-       lcd_setup();
-       lcd_init();
-       for (uint8_t i = 0; i < 4; i++) {
-           for (loops = 1; loops != 0; loops++) {
-               send_raw_byte(loops, true);
-           }
-       }
-   }
-   loops = 0;
-  #endif
+  setup_buttons();
   setup_cpu();
   lcd_setup();
   lcd_init();
@@ -129,22 +140,13 @@ void main(void) {
   // sleep mode
   MCUCR &= ~((1 << SM1) | (1 << SM0));
   
-  upoint_t position;
-  upoint_t glyph_size;
   sei();
   for (; ; ) {
-    glyph_size.x = glyph_size.y = 8;
     #ifdef DISTANCE
-       position.x = 0; position.y = 5;
-       print_number(distance >> FRAC_BITS, position, glyph_size, 1, DIST_DIGITS);
+        distance_redraw();
     #endif
     #ifdef CURRENT_SPEED
        speed_redraw();
-    #endif
-    #ifdef DEBUG
-     position.x = 40; position.y = 0;
-     glyph_size.y = 8;
-     print_number(loops++, position, glyph_size, 1, NIBBLEPAIR(3, 0));
     #endif
     sleep_mode();
   }

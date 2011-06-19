@@ -16,5 +16,9 @@ typedef struct signed_point {
     int8_t y;
 } point_t;
 
+typedef struct module_record {
+    void (*redraw)(void);
+} module_record_t;
+
 #define nibblepair_t uint8_t
 #define NIBBLEPAIR(num1, num2) (nibblepair_t)((num1 << 4) | (num2 & 0x0F))

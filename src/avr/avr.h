@@ -4,6 +4,8 @@
 
 /* REQUIRES:
 AVR #defines regarding interrupts
+
+TODO: chip-specific functions to chip-specific files
 */
 
 void setup_pulse(void) {
@@ -24,6 +26,27 @@ inline void on_pulse(void);
 
 ISR(INT0_vect) {
     on_pulse();
+}
+
+
+void setup_buttons(void) {
+  /* -----  hwint button */  
+  BUTTONDIR &= ~(1<<BUTTONPIN); /* set PD3 to input */
+  BUTTONPORT |= 1<<BUTTONPIN; // enable pullup resistor
+    
+  // interrupt on INT1 pin falling edge (button pressed)
+  MCUCR |= (1<<ISC11);
+  MCUCR &= ~(1<<ISC10);
+  /* ------ end */
+
+  // turn on interrupts!
+  GIMSK |= (1<<INT1);
+}
+
+void on_right_button(const uint8_t state);
+
+ISR(INT1_vect) {
+  on_right_button(0);
 }
 
 
