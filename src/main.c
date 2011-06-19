@@ -17,7 +17,7 @@
 
 /* advanced options */
 #define MAXBUFFERX 10 // used for drawing, defines maximum width of a character // TODO: move somewhere else
-#define FRAC_BITS 14
+#define FRAC_BITS 10 // WARNING! increasing may lead to overflow errors and better precision. TODO
 
 /* imports depending on constants */
 #include "display/pcd8544.h"
@@ -143,7 +143,7 @@ void main(void) {
     #endif
     #ifdef DEBUG
      position.x = 40; position.y = 0;
-     glyph_size.y /= 2;
+     glyph_size.y = 8;
      print_number(loops++, position, glyph_size, 1, NIBBLEPAIR(3, 0));
     #endif
     sleep_mode();

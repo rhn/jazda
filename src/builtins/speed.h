@@ -1,21 +1,51 @@
-// time containing pulse times [1:]
-// 1 is the newest pulse
-// 0 contains newest time to be used for display purposes, thus +1
+/* Builtin calculating and displaying current speed.
+
+HIGH_PRECISION_SPEED governs whether speed counter is 16 or 32-bit
+
+pulse_table - a queue of pulse times (indices: 1..PULSE_TABLE_SIZE)
+              index 1: the newest pulse
+              index 0: last event (may be pulse or timer event)
+              
+oldest_pulse_index - current size of the queue
+
+At each pulse, the new pulse is put on the queue and last element discarded if
+queue full.
+Speed is calculated between first and last pulse in queue on redraw. A timer
+event is set some time after the predicted next pulse. If the pulse comes, timer
+is set again. If the pulse doesn't come, current speed is lower than displayed.
+Difference between event time and oldest pulse is base for updating speed.
+Another trigger is set with same timeout until STOPPED_TIMEOUT from newest pulse
+is exceeded.
+*/
+
 // TODO: optimize: move 0 to variable on ts own and see if size decreases
 // TODO: check if volatile is necessary with tables
 volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
 // index of the oldest pulse in the table
 volatile uint8_t oldest_pulse_index = 0;
 
-uint16_t get_int_average(const uint16_t time_amount, const uint8_t pulse_count) {
-   uint16_t speed;
-   // SPEED_FACTOR is fixed point with FRAC_BITS fractional bits
-   // pulse_time is integer
-   speed = ((uint32_t)SPEED_FACTOR * pulse_count) / time_amount;
-   // speed is fixed point with FRAC_BITS fractional bits
-   speed >>= FRAC_BITS;
-   return speed;
-}
+#ifdef HIGH_PRECISION_SPEED
+    uint16_t get_int_average(const uint16_t time_amount, const uint8_t pulse_count) {
+       uint32_t speed;
+       // SPEED_FACTOR is fixed point with FRAC_BITS fractional bits
+       // pulse_count is integer
+       // bits = small32b: ((32+b: big32b * small8b) / 16b)
+       speed = ((uint32_t)(SPEED_FACTOR * pulse_count)) / time_amount;
+
+       // speed is fixed point with FRAC_BITS fractional bits
+       // bits = 16b: small32b >> ~10
+       speed >>= FRAC_BITS;
+       return speed;
+    }
+#else
+    uint16_t get_int_average(const uint16_t time_amount, const uint8_t pulse_count) {
+       // SPEED_FACTOR is fixed point with TIMER_BITS fractional bits truncated by SPEED_TRUNCATION_BITS bits
+       // pulse_time is fixed point with TIMER_BITS fractional bits
+       // to get correct division, pulse_time needs to be truncated by SPEED_TRUNCATION_BITS
+       return ((uint16_t)(SPEED_FACTOR * (oldest_pulse_index - 1))) / (pulse_time >> SPEED_TRUNCATION_BITS);
+       // calculation error: 1% at 30 km/h and proportional to square of speed
+    }
+#endif
 
 inline void speed_on_trigger(void) {
   uint16_t now = get_time();
@@ -78,7 +108,10 @@ void speed_redraw() {
    uint16_t speed;
    upoint_t position;
    upoint_t glyph_size;
-   
+
+   position.x = 0;
+   glyph_size.x = 10;
+
    if (oldest_pulse_index > 1) {
      // speed going down when no pulses present
      uint16_t newest_pulse = pulse_table[0];
@@ -87,24 +120,19 @@ void speed_redraw() {
        table -= 1; // pretend it is a real pulse by moving it to place 1
      }
      uint16_t pulse_time = newest_pulse - table[oldest_pulse_index];
-     
-     #ifdef HIGH_PRECISION_SPEED
-       speed = get_int_average(pulse_time, (oldest_pulse_index - 1));
-     #else
-       // SPEED_FACTOR is fixed point with TIMER_BITS fractional bits truncated by SPEED_TRUNCATION_BITS bits
-       // pulse_time is fixed point with TIMER_BITS fractional bits
-       // to get correct division, pulse_time needs to be truncated by SPEED_TRUNCATION_BITS
-       speed = ((uint16_t)(SPEED_FACTOR * (oldest_pulse_index - 1))) / (pulse_time >> SPEED_TRUNCATION_BITS);
-       // calculation error: 1% at 30 km/h and proportional to square of speed
-     #endif
+    
+     speed = get_int_average(pulse_time, (oldest_pulse_index - 1));
+
+/*     glyph_size.y = 8;
+     position.y = 2;
+     print_number(SPEED_FACTOR, position, glyph_size, 1, 4<<4);*/
    } else {
        speed = 0;
    }
-   position.x = 0; position.y = 0;
-   glyph_size.x = 10;
-   glyph_size.y *= 2;
+   position.y = 0;
+   glyph_size.y = 16;
    print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
-   
+      
    #ifdef SPEED_VS_DISTANCE_PLOT
      if (svd_pulse_number == 0) { // there's been a change, redraw
        for (uint8_t line = 0; line < 2; line++) { // XXX: lines
