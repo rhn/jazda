@@ -17,7 +17,7 @@
 
 /* advanced options */
 #define MAXBUFFERX 10 // used for drawing, defines maximum width of a character // TODO: move somewhere else
-#define FRAC_BITS 10 // WARNING! increasing may lead to overflow errors and better precision. TODO
+#define FRAC_BITS 14 // WARNING! increasing may lead to overflow errors and better precision. TODO
 
 /* imports depending on constants */
 #include "display/pcd8544.h"
