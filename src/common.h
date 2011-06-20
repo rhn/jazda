@@ -16,6 +16,13 @@ typedef struct signed_point {
     int8_t y;
 } point_t;
 
+typedef struct module_actions {
+    void (*redraw)(void);
+    void (*button_left)(uint8_t state);
+    void (*button_right)(uint8_t state);
+    struct module_actions * (*button_select)(uint8_t state);
+} module_actions_t;
+
 typedef struct module_record {
     void (*redraw)(void);
 } module_record_t;

@@ -48,7 +48,8 @@ LOG
     moved files from examples to main part
     
 TODO
-- graphical glitches
+- move all const to programspace
+- graphical glitches (vert lines after numbers)
 - separate configuration, code and defaults
 - clean up code
 - implement module interface
@@ -94,21 +95,22 @@ TODO
 /* DATA DECLARATIONS */
 // modules
 
-// currently displayed module
-volatile uint8_t current_module = 0;
+#include "modules/base.h"
 
-// table of module records
-const module_record_t modules[] = {
-    #ifdef DISTANCE
-        {&distance_redraw},
-    #endif
-    #ifdef DEBUG
-        {&debug_redraw}
-    #endif
-    };
+volatile module_actions_t *current_actions = &default_actions;
 
-#define MODULES_NUMBER sizeof(modules)/sizeof(module_record_t)
+// TODO: merge the 3 functions into 1 with 3 calls to it, using macro offsetof(struct, elem);
+void on_select_button(uint8_t state) {
+   (*(current_actions->button_select))(state);
+}
 
+void on_right_button(uint8_t state) {
+   (*(current_actions->button_right))(state);
+}
+
+void on_left_button(uint8_t state) {
+   (*(current_actions->button_left))(state);
+}
 
 /* FUNCTIONS */
 
@@ -121,22 +123,6 @@ inline void on_pulse(void) {
 #ifdef CURRENT_SPEED
     speed_on_pulse(now);
 #endif
-}
-
-void on_select_button(uint8_t state) {
-   return;
-}
-
-void on_right_button(uint8_t state) {
-   if (current_module < MODULES_NUMBER - 1) {
-       current_module++;
-   } else {
-       current_module = 0;
-   }
-}
-
-void on_left_button(uint8_t state) {
-   return;
 }
 
 void main() __attribute__ ((noreturn));
@@ -161,7 +147,7 @@ void main(void) {
 /*     upoint_t position = {0, 2};
      upoint_t glyph_size = {8, 8};
      print_number((uint32_t)modules[current_module].redraw, position, glyph_size, 1, 5<<4);*/
-    (*modules[current_module].redraw)();
+    (*(current_actions->redraw))();
     sleep_mode();
   }
 }
