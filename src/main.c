@@ -99,17 +99,26 @@ TODO
 
 volatile module_actions_t *current_actions = &default_actions;
 
-// TODO: merge the 3 functions into 1 with 3 calls to it, using macro offsetof(struct, elem);
+// TODO: if no function defined, do nothing. see if space is saved
 void on_select_button(uint8_t state) {
-   (*(current_actions->button_select))(state);
+   module_actions_t *actions = (*(modules[current_module].select_button))(state);
+   if (actions == NULL) {
+      current_actions = &default_actions;
+   } else {
+      current_actions = actions;
+   }
 }
-
+// TODO: merge the 2 functions into 1 with 2 calls to it, using macro offsetof(struct, elem);
 void on_right_button(uint8_t state) {
    (*(current_actions->button_right))(state);
 }
 
 void on_left_button(uint8_t state) {
    (*(current_actions->button_left))(state);
+}
+
+void module_redraw() {
+   (*(modules[current_module].redraw))();
 }
 
 /* FUNCTIONS */
@@ -144,10 +153,8 @@ void main(void) {
     #ifdef CURRENT_SPEED
        speed_redraw();
     #endif
-/*     upoint_t position = {0, 2};
-     upoint_t glyph_size = {8, 8};
-     print_number((uint32_t)modules[current_module].redraw, position, glyph_size, 1, 5<<4);*/
-    (*(current_actions->redraw))();
+    
+    module_redraw();
     sleep_mode();
   }
 }

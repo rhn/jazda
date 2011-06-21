@@ -17,3 +17,9 @@ void distance_redraw(void) {
    glyph_size.y = 8;
    print_number(distance >> FRAC_BITS, position, glyph_size, 1, NIBBLEPAIR(DIST_SIGNIFICANT_DIGITS, DIST_FRACTION_DIGITS));
 }
+
+module_actions_t *distance_select(const uint8_t state) {
+   return NULL;
+}
+
+#define distance_record {&distance_redraw, &distance_select}

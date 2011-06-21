@@ -24,3 +24,11 @@ void enable_backlight(void) {
     HIGH(BACKLIGHTPORT, BACKLIGHTPIN);
   }
 }
+
+
+module_actions_t *debug_select(const uint8_t state) {
+   enable_backlight();
+   return NULL;
+}
+
+#define debug_record {&debug_redraw, &debug_select}

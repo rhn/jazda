@@ -4,24 +4,21 @@ volatile uint8_t current_module = 0;
 // table of module records
 const module_record_t modules[] = {
     #ifdef DISTANCE
-        {&distance_redraw},
+        distance_record,
     #endif
     #ifdef DEBUG
-        {&debug_redraw}
+        debug_record,
     #endif
     };
 
 #define MODULES_NUMBER sizeof(modules)/sizeof(module_record_t)
 
-void module_redraw(void) {
-    (*modules[current_module].redraw)();
-}
 
-module_actions_t *module_on_select_button(uint8_t state) {
-   return NULL;
-}
-
-void module_on_right_button(uint8_t state) {
+/* ------ ACTIONS ----- */
+void module_switch_right(uint8_t state) {
+   if (!state) {
+       return;
+   }
    if (current_module < MODULES_NUMBER - 1) {
        current_module++;
    } else {
@@ -29,12 +26,17 @@ void module_on_right_button(uint8_t state) {
    }
 }
 
-void module_on_left_button(uint8_t state) {
-   return;
+void module_switch_left(uint8_t state) {
+   if (!state) {
+       return;
+   }
+   if (current_module == 0) {
+       current_module = MODULES_NUMBER - 1;
+   } else {
+       current_module--;
+   }
 }
 
-const module_actions_t default_actions = {&module_redraw,
-                                          &module_on_left_button,
-                                          &module_on_right_button,
-                                          &module_on_select_button};
+const module_actions_t default_actions = {&module_switch_left,
+                                          &module_switch_right};
 
