@@ -27,7 +27,9 @@ void enable_backlight(void) {
 
 
 module_actions_t *debug_select(const uint8_t state) {
-   enable_backlight();
+   if (state) {
+       enable_backlight();
+   }
    return NULL;
 }
 

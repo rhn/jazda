@@ -33,20 +33,32 @@ void setup_buttons(void) {
   /* -----  hwint button */  
   BUTTONDIR &= ~(1<<BUTTONPIN); /* set PD3 to input */
   BUTTONPORT |= 1<<BUTTONPIN; // enable pullup resistor
-    
-  // interrupt on INT1 pin falling edge (button pressed)
-  MCUCR |= (1<<ISC11);
-  MCUCR &= ~(1<<ISC10);
+  
+  // emuint buttons
+  LEFTDIR &= ~(1<<LEFTPIN);
+  LEFTPORT |= 1<<LEFTPIN;
+
+  RIGHTDIR &= ~(1<<RIGHTPIN);
+  RIGHTPORT |= 1<<RIGHTPIN;
+  
+  SELECTDIR &= ~(1<<SELECTPIN);
+  SELECTPORT |= 1<<SELECTPIN;
+  
+  // interrupt on INT1 pin both edges (emuint state change)
+  MCUCR |= (1<<ISC10);
+  MCUCR &= ~(1<<ISC11);
   /* ------ end */
 
   // turn on interrupts!
   GIMSK |= (1<<INT1);
 }
 
-void on_right_button(const uint8_t state);
+void emuint_dispatch(void);
+
+volatile uint8_t pulses = 0;
 
 ISR(INT1_vect) {
-  on_right_button(1);
+  emuint_dispatch();
 }
 
 

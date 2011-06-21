@@ -48,8 +48,9 @@ LOG
     moved files from examples to main part
     
 TODO
-- move all const to programspace
-- graphical glitches (vert lines after numbers)
+- power usage
+- move all function const to programspace
+- graphical glitches (vert line after all drawing)
 - separate configuration, code and defaults
 - clean up code
 - implement module interface
@@ -125,6 +126,8 @@ void module_redraw() {
    (*(modules[current_module].redraw))();
 }
 
+#include "emuint.h"
+
 /* FUNCTIONS */
 
 inline void on_pulse(void) {
@@ -161,6 +164,11 @@ void main(void) {
        events_redraw();
     #endif
     module_redraw();
+    /*
+    send_raw_byte(emuintpinstate, true);
+        send_raw_byte(emuintpinstate, true);
+            send_raw_byte(emuintpinstate, true);
+                send_raw_byte(emuintpinstate, true);*/
     sleep_mode();
   }
 }
