@@ -89,6 +89,10 @@ TODO
 #endif
 
 #ifdef DEBUG
+    #include "builtins/events.h"
+#endif
+
+#ifdef DEBUG
     #include "modules/debug.h"
 #endif
 
@@ -153,7 +157,9 @@ void main(void) {
     #ifdef CURRENT_SPEED
        speed_redraw();
     #endif
-    
+    #ifdef DEBUG
+       events_redraw();
+    #endif
     module_redraw();
     sleep_mode();
   }
