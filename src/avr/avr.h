@@ -46,7 +46,7 @@ void setup_buttons(void) {
 void on_right_button(const uint8_t state);
 
 ISR(INT1_vect) {
-  on_right_button(0);
+  on_right_button(1);
 }
 
 
