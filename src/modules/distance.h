@@ -22,4 +22,6 @@ module_actions_t *distance_select(const uint8_t state) {
    return NULL;
 }
 
-#define distance_record {&distance_redraw, &distance_select}
+#define distance_signature {0b01111110, 0b01000010, 0b00111100, 0, 0b01111110, 0, 0b01001100, 0b00110010}
+
+#define distance_record {&distance_redraw, &distance_select, distance_signature}

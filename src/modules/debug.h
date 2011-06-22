@@ -33,4 +33,6 @@ module_actions_t *debug_select(const uint8_t state) {
    return NULL;
 }
 
-#define debug_record {&debug_redraw, &debug_select}
+#define debug_signature {0b10011001, 0b01011010, 0b00100100, 0b00011000, 0b00100100, 0b01011010, 0b10011001}
+
+#define debug_record {&debug_redraw, &debug_select, debug_signature}

@@ -119,33 +119,6 @@ void speed_on_pulse(uint16_t now) {
     set_trigger_time(now + ahead + (ahead / 4));
   }
 
-  #ifdef SPEED_VS_DISTANCE_PLOT
-    if (oldest_pulse_index == 0) { // if first pulse after a stop
-        previous_frame_time = now; // set a new start time
-        svd_pulse_number = 0; // clear counter
-        svd_insert_average(0); // insert a space
-    } else if (svd_pulse_number == SVDPLOT_FRAME_PULSES - 1) { // if last pulse of a count
-        uint16_t avg = get_int_average(now - previous_frame_time, SVDPLOT_FRAME_PULSES); // TODO: move away to main loop
-        previous_frame_time = now;
-        svd_pulse_number = 0; // clear counter
-        
-        
-        // TRUNCATING AVERAGE
-        avg >>= SVDPLOT_SPEED_TRUNC;
-        
-        // ROUNDING AVERAGE
-        /*avg >>= SVDPLOT_SPEED_TRUNC - 1;
-        if (avg & 1) {
-          avg |= 0x00000010; // avg++; works better for longer types
-        }
-        avg >>= 1;*/
-        
-        svd_insert_average(avg);
-    } else {
-        svd_pulse_number++;
-    }
-  #endif
-
   if (oldest_pulse_index < PULSE_TABLE_SIZE) {
     oldest_pulse_index++;
   }
@@ -175,33 +148,4 @@ void speed_redraw() {
    position.y = 0;
    glyph_size.y = 16;
    print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
-      
-   #ifdef SPEED_VS_DISTANCE_PLOT
-     if (svd_pulse_number == 0) { // there's been a change, redraw
-       for (uint8_t line = 0; line < 2; line++) { // XXX: lines
-         uint8_t maxheight = (2 - line) * 8; // XXX: lines
-         set_column(84 - svd_average_frames);
-         set_row(line + 2);
-         int8_t current_frame = svd_next_average - svd_average_frames;
-         if (current_frame < 0) {
-             current_frame = SVDPLOT_SIZE + current_frame;
-         }
-         
-         for (uint8_t i = 0; i < svd_average_frames; i++)
-         {
-           uint8_t height = svd_averages[current_frame];
-           current_frame++;
-           if (current_frame == SVDPLOT_SIZE) {
-               current_frame = 0;
-           }
-
-           uint8_t bar = 0xFF;
-           if (height < maxheight) {
-             bar <<= maxheight - height;
-           }
-           send_raw_byte(bar, true);
-         }
-       }
-     }
-   #endif
 }

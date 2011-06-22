@@ -4,7 +4,7 @@
 #define NUMSTR(num) STRVALUE(num)
 #define HIGH(PORT, PIN) PORT |= _BV(PIN)
 #define LOW(PORT, PIN) PORT &= ~_BV(PIN)
-
+#define MODULE_SIGNATURE_SIZE 8
 
 typedef struct unsigned_point {
     uint8_t x;
@@ -19,6 +19,7 @@ typedef struct signed_point {
 typedef struct module_record {
     void (*redraw)(void);
     struct module_actions * (*select_button)(uint8_t state);
+    char signature[MODULE_SIGNATURE_SIZE]; // module logo for display
 } module_record_t;
 
 typedef struct module_actions {

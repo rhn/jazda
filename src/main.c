@@ -64,29 +64,10 @@ TODO
 #endif
 
 #ifdef CURRENT_SPEED
-    #ifdef SPEED_VS_DISTANCE_PLOT
-        volatile uint8_t svd_averages[SVDPLOT_SIZE]; // newer frames have higher number
-        // speeds are truncated, 1 bit shift
-        // circular buffer
-        volatile uint8_t svd_next_average = 0; // index of the next average to be recorded
-        volatile uint8_t svd_average_frames = 0; // number of recorded frames
-
-        volatile uint8_t svd_pulse_number; // validity of the last pulse is checked by other means
-        volatile uint16_t previous_frame_time; // the last recorded pulse time
-
-
-        void svd_insert_average(const uint8_t speed) {
-            svd_averages[svd_next_average] = speed;
-            svd_next_average++;
-            if (svd_average_frames < SVDPLOT_SIZE) {
-              svd_average_frames++;
-            }
-            if (svd_next_average == SVDPLOT_SIZE) {
-              svd_next_average = 0;
-            }
-        }
-    #endif
     #include "builtins/speed.h"
+    #ifdef SPEED_VS_DISTANCE_PLOT
+        #include "modules/svdplot.h"
+    #endif
 #endif
 
 #ifdef DEBUG
@@ -123,6 +104,7 @@ void on_left_button(uint8_t state) {
 }
 
 void module_redraw() {
+   module_redraw_menu();
    (*(modules[current_module].redraw))();
 }
 
