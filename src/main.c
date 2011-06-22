@@ -121,6 +121,9 @@ inline void on_pulse(void) {
 #ifdef CURRENT_SPEED
     speed_on_pulse(now);
 #endif
+#ifdef SPEED_VS_DISTANCE_PLOT
+    svd_on_pulse(now);
+#endif
 }
 
 void main() __attribute__ ((noreturn));

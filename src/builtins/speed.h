@@ -59,12 +59,6 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
     #define SPEED_FACTOR (uint16_t)((PULSE_DIST * 36 * 10) >> (FRAC_BITS - TIMER_BITS + SPEED_TRUNCATION_BITS)) // T and N excluded as variable
 #endif
 
-#ifdef SPEED_VS_DISTANCE_PLOT
-    #define SVDPLOT_SPEED_TRUNC 5
-    #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
-#endif
-
-
 // TODO: optimize: move 0 to variable on ts own and see if size decreases
 // TODO: check if volatile is necessary with tables
 volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
