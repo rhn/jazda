@@ -2,9 +2,9 @@
 Inserts blanks at each stop (determined by speed module with STOPPED_TIMEOUT)
 REQUIRES: speed module
 
-svd_on_pulse() must be called:
-- BEFORE speed_on_pulse to insert blanks at the moment of starting after a stop
-- AFTER speed_on_pulse to insert blanks at the moment of coming to a stop
+svd_on_pulse() MUST be called BEFORE speed_on_pulse, since speed module signals
+a stop in a timer interrupt and svd detects a stop in pulse interrupt. At first
+pulse after stop, the stopped flag is cleared by speed_on_pulse
 
 CONSTANTS:
 SVDPLOT_SIZE - number of bars (frames) to record speed
@@ -80,8 +80,8 @@ svd_averages will become the height of a bar in pixels.
 
 void svd_redraw(void) {
     if (svd_pulse_number == 0) { // there's been a change, redraw
-       for (uint8_t line = 0; line < 2; line++) { // XXX: lines
-         uint8_t maxheight = (2 - line) * 8; // XXX: lines
+       for (uint8_t line = 0; line < 2; line++) {
+         uint8_t maxheight = (2 - line) * 8;
          set_column(84 - svd_average_frames);
          set_row(line + SVDPLOT_BASE_LINE);
          

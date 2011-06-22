@@ -118,11 +118,11 @@ inline void on_pulse(void) {
 #ifdef DISTANCE
     distance_on_pulse(now);
 #endif
-#ifdef CURRENT_SPEED
-    speed_on_pulse(now);
-#endif
 #ifdef SPEED_VS_DISTANCE_PLOT
     svd_on_pulse(now);
+#endif
+#ifdef CURRENT_SPEED
+    speed_on_pulse(now);
 #endif
 }
 
@@ -149,6 +149,9 @@ void main(void) {
        events_redraw();
     #endif
     module_redraw();
+    #ifdef DEBUG
+        send_raw_byte(0, true);
+    #endif
     /*
     send_raw_byte(emuintpinstate, true);
         send_raw_byte(emuintpinstate, true);
