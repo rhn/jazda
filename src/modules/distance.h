@@ -8,13 +8,14 @@ inline void distance_on_pulse(const uint16_t now) {
   // TODO: asm this to use 1 tmp reg?
 }
 
-void distance_redraw(void) {
-   upoint_t position;
-   upoint_t glyph_size;
-
-   position.x = 0; position.y = 5;
-   glyph_size.x = 8;
-   glyph_size.y = 8;
+void distance_redraw(uint8_t force) {
+   upoint_t position = {0, 5};
+   upoint_t glyph_size = {8, 8};
+   if (force) {
+      set_row(4);
+      set_column(0);
+      module_erase_screen(84*2);
+   }
    print_number(distance >> FRAC_BITS, position, glyph_size, 1, NIBBLEPAIR(DIST_SIGNIFICANT_DIGITS, DIST_FRACTION_DIGITS));
 }
 

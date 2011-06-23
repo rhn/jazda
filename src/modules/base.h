@@ -1,5 +1,6 @@
 // currently displayed module
 volatile uint8_t current_module = 0;
+volatile uint8_t current_module_switched;
 
 // table of module records
 const module_record_t modules[] = {
@@ -19,7 +20,7 @@ const module_record_t modules[] = {
 
 /* ------ ACTIONS ----- */
 void module_switch_right(uint8_t state) {
-   if (!state) {
+   if (state) {
        return;
    }
    if (current_module < MODULES_NUMBER - 1) {
@@ -27,10 +28,11 @@ void module_switch_right(uint8_t state) {
    } else {
        current_module = 0;
    }
+   current_module_switched = true;
 }
 
 void module_switch_left(uint8_t state) {
-   if (!state) {
+   if (state) {
        return;
    }
    if (current_module == 0) {
@@ -38,6 +40,7 @@ void module_switch_left(uint8_t state) {
    } else {
        current_module--;
    }
+   current_module_switched = true;
 }
 
 // TODO: crop & scroll if too many modules

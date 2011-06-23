@@ -59,6 +59,8 @@ TODO
 - fix low-precision speed calculation
 */
 
+#include "modules/common.h"
+
 #ifdef DISTANCE
     #include "modules/distance.h"
 #endif
@@ -78,7 +80,6 @@ TODO
     #include "modules/debug.h"
 #endif
 
-/* DATA DECLARATIONS */
 // modules
 
 #include "modules/base.h"
@@ -104,8 +105,11 @@ void on_left_button(uint8_t state) {
 }
 
 void module_redraw() {
-   module_redraw_menu();
-   (*(modules[current_module].redraw))();
+   (*(modules[current_module].redraw))(current_module_switched);
+   if (current_module_switched) {
+      module_redraw_menu();
+      current_module_switched = false;
+   }
 }
 
 #include "emuint.h"

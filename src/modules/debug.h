@@ -6,12 +6,11 @@ Tuned for pcd8544 display width */
 #define BACKLIGHTPORT PORTC
 #define BACKLIGHTPIN PC5
 
-void debug_redraw(void) {
-   uint8_t i;
-   set_row(4);
-   set_column(0);
-   for (i = 0; i < 84*2; i++) {
-      send_raw_byte(0, true);
+void debug_redraw(uint8_t force) {
+   if (force) {
+       set_row(4);
+       set_column(0);
+       module_erase_screen(84*2);
    }
 }
 

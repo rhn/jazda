@@ -78,8 +78,8 @@ Draws the plot over 2 lines. Performs no scaling of values - value of speed in
 svd_averages will become the height of a bar in pixels.
 */
 
-void svd_redraw(void) {
-    if (svd_pulse_number == 0) { // there's been a change, redraw
+void svd_redraw(uint8_t force) {
+    if ((svd_pulse_number == 0) || force) { // there's been a change, redraw
        for (uint8_t line = 0; line < 2; line++) {
          uint8_t maxheight = (2 - line) * 8;
          set_column(84 - svd_average_frames);

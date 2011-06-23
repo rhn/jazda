@@ -17,7 +17,7 @@ typedef struct signed_point {
 } point_t;
 
 typedef struct module_record {
-    void (*redraw)(void);
+    void (*redraw)(uint8_t force);
     struct module_actions * (*select_button)(uint8_t state);
     char signature[MODULE_SIGNATURE_SIZE]; // module logo for display
 } module_record_t;
