@@ -8,6 +8,8 @@ AVR #defines regarding interrupts
 TODO: chip-specific functions to chip-specific files
 */
 
+volatile uint16_t extended_time = 0;
+
 void setup_pulse(void) {
   /* -----  hwint button */  
   PULSEDIR &= ~(1<<PULSEPIN); /* set PD2 to input */
@@ -71,10 +73,15 @@ void setup_timer(void) {
   clksrc |= 1<<CS12 | 1<<CS10;
   clksrc &= ~(1<<CS11);
   TCCR1B = clksrc;
+  TIMSK |= 1 << TOIE1; // enable overflow interrupt
 }
 
-inline uint16_t get_time() { // XXX: use it!!!
+inline uint16_t get_time() {
   return TCNT1;
+}
+
+uint32_t get_extended_time() {
+  return (((uint32_t)extended_time) << 16) | TCNT1; // TODO: may be possible to optimize in asm
 }
 
 void set_trigger_time(const uint16_t time) { // XXX: optimize: inline
@@ -86,4 +93,8 @@ inline void speed_on_trigger(void);
 
 ISR(TIMER1_COMPA_vect) {
     speed_on_trigger();
+}
+
+ISR(TIMER1_OVF_vect) {
+    extended_time++;
 }
