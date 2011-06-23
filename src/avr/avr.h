@@ -73,7 +73,12 @@ void setup_timer(void) {
   clksrc |= 1<<CS12 | 1<<CS10;
   clksrc &= ~(1<<CS11);
   TCCR1B = clksrc;
+
   TIMSK |= 1 << TOIE1; // enable overflow interrupt
+  
+  // set up each second timer
+  OCR1B = TCNT1 + ONE_SECOND;
+  TIMSK |= 1 << OCIE1B;
 }
 
 inline uint16_t get_time() {
@@ -97,4 +102,11 @@ ISR(TIMER1_COMPA_vect) {
 
 ISR(TIMER1_OVF_vect) {
     extended_time++;
+}
+
+inline void on_each_second();
+
+ISR(TIMER1_COMPB_vect) {
+    on_each_second();
+    OCR1B += ONE_SECOND;
 }

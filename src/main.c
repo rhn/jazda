@@ -72,6 +72,10 @@ TODO
     #endif
 #endif
 
+#ifdef STOPWATCH
+    #include "modules/stopwatch.h"
+#endif
+
 #ifdef DEBUG
     #include "builtins/events.h"
 #endif
@@ -118,16 +122,22 @@ void module_redraw() {
 
 inline void on_pulse(void) {
 // speed interrupt
-   uint16_t now = get_time();
-#ifdef DISTANCE
+  uint16_t now = get_time();
+  #ifdef DISTANCE
     distance_on_pulse(now);
-#endif
-#ifdef SPEED_VS_DISTANCE_PLOT
+  #endif
+  #ifdef SPEED_VS_DISTANCE_PLOT
     svd_on_pulse(now);
-#endif
-#ifdef CURRENT_SPEED
+  #endif
+  #ifdef CURRENT_SPEED
     speed_on_pulse(now);
-#endif
+  #endif
+}
+
+inline void on_each_second(void) {
+   #ifdef STOPWATCH
+      stopwatch_on_each_second();
+   #endif
 }
 
 void main() __attribute__ ((noreturn));

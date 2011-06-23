@@ -27,5 +27,11 @@ typedef struct module_actions {
     void (*button_right)(uint8_t state);
 } module_actions_t;
 
+typedef struct time_storage {
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+} time_storage_t;
+
 #define nibblepair_t uint8_t
 #define NIBBLEPAIR(num1, num2) (nibblepair_t)((num1 << 4) | (num2 & 0x0F))

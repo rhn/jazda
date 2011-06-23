@@ -10,6 +10,9 @@ const module_record_t modules[] = {
     #ifdef SPEED_VS_DISTANCE_PLOT
         svd_record,
     #endif
+    #ifdef STOPWATCH
+        stopwatch_record,
+    #endif
     #ifdef DEBUG
         debug_record,
     #endif
