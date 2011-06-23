@@ -53,4 +53,5 @@
 #define CURRENT_SPEED
 #define SPEED_VS_DISTANCE_PLOT
 #define STOPWATCH
+#define MAXSPEED
 #define METRIC_PULSE_DIST 2133L // millimeters

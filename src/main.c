@@ -70,6 +70,9 @@ TODO
     #ifdef SPEED_VS_DISTANCE_PLOT
         #include "modules/svdplot.h"
     #endif
+    #ifdef MAXSPEED
+        #include "modules/maxspeed.h"
+    #endif
 #endif
 
 #ifdef STOPWATCH
@@ -124,10 +127,7 @@ inline void on_pulse(void) {
 // speed interrupt
   uint16_t now = get_time();
   #ifdef DISTANCE
-    distance_on_pulse(now);
-  #endif
-  #ifdef SPEED_VS_DISTANCE_PLOT
-    svd_on_pulse(now);
+    distance_on_pulse();
   #endif
   #ifdef CURRENT_SPEED
     speed_on_pulse(now);

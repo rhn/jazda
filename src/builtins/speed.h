@@ -65,6 +65,14 @@ volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
 // index of the oldest pulse in the table
 volatile uint8_t oldest_pulse_index = 0;
 
+#ifdef SPEED_VS_DISTANCE_PLOT
+    void svd_on_pulse(uint16_t now);
+#endif
+
+#ifdef MAXSPEED
+    void maxspeed_on_pulse(void);
+#endif
+
 #ifdef HIGH_PRECISION_SPEED
     uint16_t get_int_average(const uint16_t time_amount, const uint8_t pulse_count) {
        uint32_t speed;
@@ -112,19 +120,21 @@ void speed_on_pulse(uint16_t now) {
     // NOTE: remove ahead / 4 to save 10 bytes
     set_trigger_time(now + ahead + (ahead / 4));
   }
-
+  #ifdef SPEED_VS_DISTANCE_PLOT
+    svd_on_pulse(now);
+  #endif
   if (oldest_pulse_index < PULSE_TABLE_SIZE) {
     oldest_pulse_index++;
   }
+  #ifdef MAXSPEED
+    maxspeed_on_pulse();
+  #endif
 }
 
 void speed_redraw() {
    uint16_t speed;
-   upoint_t position;
-   upoint_t glyph_size;
-
-   position.x = 0;
-   glyph_size.x = 10;
+   upoint_t position = {0, 0};
+   upoint_t glyph_size = {10, 16};
 
    if (oldest_pulse_index > 1) {
      // speed going down when no pulses present
@@ -139,7 +149,6 @@ void speed_redraw() {
    } else {
        speed = 0;
    }
-   position.y = 0;
-   glyph_size.y = 16;
+
    print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
 }
