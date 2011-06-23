@@ -2,27 +2,25 @@
 REQUIRES: current speed module
 
 Finds average speed based on the rolling average of PULSE_TABLE_SIZE last pulses
-(same algorithm as speed, but diferent code).
+(similar algorithm as speed).
 
-TODO: integrate maxspeed_on_pulse, pulse_difference and pulses into normal speed
-calculation & display (reducing main loop)?
+Same algorithm as speed isn't used due to size/speed overhead when comparing
+time differences of different pulse counts.
 */
 
 
 // TODO: -1 and no special code or 0 and special case? size optimization
 volatile uint16_t maxspeed_min_difference = -1;
-volatile uint8_t maxspeed_pulses = -1;
 volatile uint8_t maxspeed_modified = false;
 
 void maxspeed_on_pulse(void) {
-    if (oldest_pulse_index < 2) { // rolling average of at least 2 pulses
+    if (oldest_pulse_index < PULSE_TABLE_SIZE) { // rolling average of PULSE_TABLE_SIZE pulses
         return;
     }
-    uint16_t pulse_difference = pulse_table[1] - pulse_table[oldest_pulse_index];
+    uint16_t pulse_difference = pulse_table[1] - pulse_table[PULSE_TABLE_SIZE];
     
     if (maxspeed_min_difference > pulse_difference) {
         maxspeed_min_difference = pulse_difference;
-        maxspeed_pulses = oldest_pulse_index - 1;
         maxspeed_modified = true;
     }
 }
@@ -30,7 +28,6 @@ void maxspeed_on_pulse(void) {
 module_actions_t *maxspeed_select(const uint8_t state) {
     if (state) {
         maxspeed_min_difference = -1;
-        maxspeed_pulses = -1;
         maxspeed_modified = true;
     }
     return NULL;
@@ -43,8 +40,12 @@ void maxspeed_redraw(const uint8_t force) {
           set_column(0);
           module_erase_screen(84*2);
         }
-
-        uint16_t speed = get_int_average(maxspeed_min_difference, maxspeed_pulses);
+        uint16_t speed;
+        if (maxspeed_min_difference == (uint16_t)-1) {
+            speed = 0;
+        } else {
+            speed = get_int_average(maxspeed_min_difference, PULSE_TABLE_SIZE - 1);
+        }
         upoint_t position = {0, 5};
         upoint_t glyph_size = {8, 8};
         print_number(speed, position, glyph_size, 1, SPEED_DIGITS);
