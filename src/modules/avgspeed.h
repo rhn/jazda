@@ -1,13 +1,19 @@
 /* Average speed module
 REQUIRES: speed, LONG_SPEED
+Doesn't add to average when bicycle is stopped. Average counted from first pulse
+in streak to stopped time.
+TODO: measure from first pulse to last pulse and ignore stray pulses?
 */
 
-volatile uint32_t avgspeed_start_time;
+volatile uint32_t avgspeed_total_time = 0;
 volatile uint16_t avgspeed_pulses = 0;
 
-void avgspeed_on_pulse(const uint16_t now) {
+void avgspeed_on_pulse(void) {
     if (avgspeed_pulses == 0) {
-        avgspeed_start_time = ((uint32_t)extended_time << 16) | now;
+        avgspeed_total_time = 0;
+    } else if (oldest_pulse_index) {
+        // pulse index not incremented yet, but data already in the table!
+        avgspeed_total_time += pulse_table[0] - pulse_table[2];
     }
     avgspeed_pulses++;
 }
@@ -15,6 +21,7 @@ void avgspeed_on_pulse(const uint16_t now) {
 module_actions_t *avgspeed_select(const uint8_t state) {
     if (state) {
         avgspeed_pulses = 0;
+        avgspeed_total_time = 0;
     }
     return NULL;
 }
@@ -27,7 +34,7 @@ void avgspeed_redraw(const uint8_t force) {
     upoint_t position = {0, 5};
     upoint_t glyph_size = {8, 8};
     if (avgspeed_pulses > 1) {
-        uint32_t time_difference = get_extended_time() - avgspeed_start_time;
+        uint32_t time_difference = avgspeed_total_time;
 //        speed = ((uint32_t)(((uint64_t)SPEED_FACTOR * ((avgspeed_pulses - 1))) >> FRAC_BITS)) / time_difference;
         speed = get_int_average_long(time_difference, avgspeed_pulses);
         print_number(avgspeed_pulses, position, glyph_size, 1, 4<<4);

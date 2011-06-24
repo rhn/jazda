@@ -75,6 +75,10 @@ void on_stop(uint16_t now);
     void maxspeed_on_pulse(void);
 #endif
 
+#ifdef AVGSPEED
+    void avgspeed_on_pulse(void);
+#endif
+
 #ifdef LONG_SPEED
     /* use this to calculate averages over long periods of time/distances
     All this exists to avoid 64b / *b division which costs a whooping 3KB.
@@ -179,8 +183,12 @@ void speed_on_pulse(uint16_t now) {
   // NOTE: remove ahead / 4 to save 10 bytes
   set_trigger_time(now + ahead);
 
+  // Modules that need start pulse notification
   #ifdef SPEED_VS_DISTANCE_PLOT
     svd_on_pulse(now);
+  #endif
+  #ifdef AVGSPEED
+    avgspeed_on_pulse();
   #endif
   if (oldest_pulse_index < PULSE_TABLE_SIZE) {
     oldest_pulse_index++;

@@ -136,9 +136,6 @@ inline void on_pulse(void) {
   #ifdef CURRENT_SPEED
     speed_on_pulse(now);
   #endif
-  #ifdef AVGSPEED
-    avgspeed_on_pulse(now);
-  #endif
 }
 
 inline void on_each_second(void) {
