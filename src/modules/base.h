@@ -19,6 +19,9 @@ const module_record_t modules[] = {
     #ifdef MAXSPEED
         maxspeed_record,
     #endif
+    #ifdef AVGSPEED
+        avgspeed_record,
+    #endif
     };
 
 #define MODULES_NUMBER sizeof(modules)/sizeof(module_record_t)

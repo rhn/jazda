@@ -43,7 +43,7 @@
 #define RSTPORT PORTC
 #define RSTPIN PC1
 
-/* AVR options */
+/* special options */
 #define HIGH_PRECISION_SPEED // makes speed calculation 32-bit instead of truncating to 16
 
 /* PREFERENCES */
@@ -54,4 +54,6 @@
 #define SPEED_VS_DISTANCE_PLOT
 #define STOPWATCH
 #define MAXSPEED
+#define AVGSPEED
+#define LONG_SPEED
 #define METRIC_PULSE_DIST 2133L // millimeters

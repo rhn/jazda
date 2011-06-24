@@ -17,7 +17,7 @@
 
 /* advanced options */
 #define MAXBUFFERX 10 // used for drawing, defines maximum width of a character // TODO: move somewhere else
-#define FRAC_BITS 14 // WARNING! increasing may lead to overflow errors and better precision. TODO
+#define FRAC_BITS 10 // Fixed-point mantissa for PULSE_DIST and SPEED_FACTOR. WARNING! modifying may lead to overflow errors and better precision (most likely just the former). Less then 8 is not recommended if LONG_SPEED is used
 
 /* imports depending on constants */
 #include "display/pcd8544.h"
@@ -79,6 +79,10 @@ TODO
     #include "modules/stopwatch.h"
 #endif
 
+#ifdef AVGSPEED
+    #include "modules/avgspeed.h"
+#endif
+
 #ifdef DEBUG
     #include "builtins/events.h"
 #endif
@@ -131,6 +135,9 @@ inline void on_pulse(void) {
   #endif
   #ifdef CURRENT_SPEED
     speed_on_pulse(now);
+  #endif
+  #ifdef AVGSPEED
+    avgspeed_on_pulse(now);
   #endif
 }
 
