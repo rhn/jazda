@@ -65,6 +65,8 @@ volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
 // index of the oldest pulse in the table
 volatile uint8_t oldest_pulse_index = 0;
 
+void on_stop(uint16_t now);
+
 #ifdef SPEED_VS_DISTANCE_PLOT
     void svd_on_pulse(uint16_t now);
 #endif
@@ -146,12 +148,16 @@ volatile uint8_t oldest_pulse_index = 0;
 inline void speed_on_trigger(void) {
   uint16_t now = get_time();
   pulse_table[0] = now;
-  // will never be triggered with 1 pulse in table
+  // will sometimes be triggered with 1 pulse in table, but only after
+  // STOPPED_TIMEOUT * ONE_SECOND have passed, never getting into the condition.
+  // if you break it, BURN.
   // delay can be actually anything. No possibility of prediction. The following just looks good.
   if (now - pulse_table[1] < STOPPED_TIMEOUT * ONE_SECOND) {
-    set_trigger_time(now +  pulse_table[1] - pulse_table[2]);
+    set_trigger_time(now + pulse_table[1] - pulse_table[2]);
   } else {
+    clear_trigger();
     oldest_pulse_index = 0;
+    on_stop(now);
   }
 }
 
@@ -162,11 +168,17 @@ void speed_on_pulse(uint16_t now) {
     pulse_table[i] = pulse_table[i - 1];
   }
 
-  if (oldest_pulse_index > 1) {
-    uint16_t ahead = now - pulse_table[2];
-    // NOTE: remove ahead / 4 to save 10 bytes
-    set_trigger_time(now + ahead + (ahead / 4));
+  uint16_t ahead;
+  if (oldest_pulse_index == 0) {
+    // 100 is added to make sure that on_trigger will detect this as a stop
+    ahead = STOPPED_TIMEOUT * ONE_SECOND + 100;
+  } else {
+    uint16_t predicted = now - pulse_table[2];
+    ahead = predicted + (predicted / 4);
   }
+  // NOTE: remove ahead / 4 to save 10 bytes
+  set_trigger_time(now + ahead);
+
   #ifdef SPEED_VS_DISTANCE_PLOT
     svd_on_pulse(now);
   #endif

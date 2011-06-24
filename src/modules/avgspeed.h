@@ -21,9 +21,7 @@ module_actions_t *avgspeed_select(const uint8_t state) {
 
 void avgspeed_redraw(const uint8_t force) {
     if (force) {
-      set_row(4);
-      set_column(0);
-      module_erase_screen(84*2);
+       erase_module_screen();
     }
     uint32_t speed;
     upoint_t position = {0, 5};

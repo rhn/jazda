@@ -94,6 +94,10 @@ void set_trigger_time(const uint16_t time) { // XXX: optimize: inline
   TIMSK |= 1 << OCIE1A;
 }
 
+void clear_trigger() {
+  TIMSK &= ~(1 << OCIE1A);
+}
+
 inline void speed_on_trigger(void);
 
 ISR(TIMER1_COMPA_vect) {

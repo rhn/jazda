@@ -11,9 +11,7 @@ void stopwatch_redraw(uint8_t force) {
    upoint_t glyph_size = {8, 8};
    
    if (force) {
-       set_row(4);
-       set_column(0);
-       module_erase_screen(84*2);
+       erase_module_screen();
    }
 
    print_number(stopwatch_time.hours, position, glyph_size, 1, NIBBLEPAIR(4, 0));
@@ -33,19 +31,21 @@ module_actions_t *stopwatch_select(uint8_t state) {
 }
 
 void stopwatch_on_each_second(void) {
-   time_storage_t new_time = stopwatch_time;
-   if (new_time.seconds == 59) {
-       new_time.seconds = 0;
-       if (new_time.minutes == 59) {
-           new_time.minutes = 0;
-           new_time.hours++;
+   if (oldest_pulse_index != 0) {
+       time_storage_t new_time = stopwatch_time;
+       if (new_time.seconds == 59) {
+           new_time.seconds = 0;
+           if (new_time.minutes == 59) {
+               new_time.minutes = 0;
+               new_time.hours++;
+           } else {
+               new_time.minutes++;
+           }
        } else {
-           new_time.minutes++;
+           new_time.seconds++;
        }
-   } else {
-       new_time.seconds++;
+       stopwatch_time = new_time;
    }
-   stopwatch_time = new_time;
 }
 
 #define stopwatch_signature {0b00111000, 0b01000100, 0b10000011, 0b10011111, 0b10001011, 0b01000100, 0b00111000, 0}

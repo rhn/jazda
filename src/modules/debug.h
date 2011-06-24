@@ -8,9 +8,7 @@ Tuned for pcd8544 display width */
 
 void debug_redraw(uint8_t force) {
    if (force) {
-       set_row(4);
-       set_column(0);
-       module_erase_screen(84*2);
+       erase_module_screen();
    }
 }
 

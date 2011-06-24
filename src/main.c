@@ -147,6 +147,10 @@ inline void on_each_second(void) {
    #endif
 }
 
+inline void on_stop(uint16_t now) {
+    
+}
+
 void main() __attribute__ ((noreturn));
 void main(void) {
   setup_pulse();

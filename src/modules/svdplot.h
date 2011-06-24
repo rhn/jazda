@@ -79,6 +79,9 @@ svd_averages will become the height of a bar in pixels.
 */
 
 void svd_redraw(uint8_t force) {
+    if (force) {
+        erase_module_screen();
+    }
     if ((svd_pulse_number == 0) || force) { // there's been a change, redraw
        for (uint8_t line = 0; line < 2; line++) {
          uint8_t maxheight = (2 - line) * 8;
