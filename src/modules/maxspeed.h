@@ -25,10 +25,14 @@ void maxspeed_on_pulse(void) {
     }
 }
 
+void maxspeed_reset(void) {
+    maxspeed_min_difference = -1;
+    maxspeed_modified = true;
+}
+
 module_actions_t *maxspeed_select(const uint8_t state) {
     if (state) {
-        maxspeed_min_difference = -1;
-        maxspeed_modified = true;
+        maxspeed_reset();
     }
     return NULL;
 }
@@ -52,5 +56,8 @@ void maxspeed_redraw(const uint8_t force) {
 }
 
 #define maxspeed_signature {0b10000000, 0b01100000, 0b00011000, 0b00000110, 0b00000001, 0b00000110, 0b00011000, 0b11100000}
-
-#define maxspeed_record {&maxspeed_redraw, &maxspeed_select, maxspeed_signature}
+#ifdef COMBINED_RESET
+    #define maxspeed_record {&maxspeed_redraw, &combined_reset_on_select, maxspeed_signature}
+#else
+    #define maxspeed_record {&maxspeed_redraw, &maxspeed_select, maxspeed_signature}
+#endif

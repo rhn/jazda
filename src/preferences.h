@@ -56,4 +56,5 @@
 #define MAXSPEED
 #define AVGSPEED
 #define LONG_SPEED
+#define COMBINED_RESET
 #define METRIC_PULSE_DIST 2133L // millimeters

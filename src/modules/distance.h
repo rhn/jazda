@@ -17,6 +17,10 @@ void distance_redraw(const uint8_t force) {
    print_number(distance >> FRAC_BITS, position, glyph_size, 1, NIBBLEPAIR(DIST_SIGNIFICANT_DIGITS, DIST_FRACTION_DIGITS));
 }
 
+void distance_reset(void) {
+   distance = 0;
+}
+
 module_actions_t *distance_select(const uint8_t state) {
    distance = 0;
    return NULL;
@@ -24,4 +28,8 @@ module_actions_t *distance_select(const uint8_t state) {
 
 #define distance_signature {0b01111110, 0b01000010, 0b00111100, 0, 0b01111110, 0, 0b01001100, 0b00110010}
 
-#define distance_record {&distance_redraw, &distance_select, distance_signature}
+#ifdef COMBINED_RESET
+    #define distance_record {&distance_redraw, &combined_reset_on_select, distance_signature}
+#else
+    #define distance_record {&distance_redraw, &distance_select, distance_signature}
+#endif

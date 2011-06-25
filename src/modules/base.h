@@ -1,5 +1,9 @@
 #include "common.h"
 
+#ifdef COMBINED_RESET
+    #include "combined_reset.h"
+#endif
+
 #ifdef DISTANCE
     #include "distance.h"
 #endif

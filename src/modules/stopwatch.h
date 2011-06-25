@@ -21,11 +21,15 @@ void stopwatch_redraw(uint8_t force) {
    print_number(stopwatch_time.seconds, position, glyph_size, 1, NIBBLEPAIR(1, 1)); // 1 fractional digit to preserve the "0" in front
 }
 
+void stopwatch_reset(void) {
+   stopwatch_time.hours = 0;
+   stopwatch_time.minutes = 0;
+   stopwatch_time.seconds = 0;
+}
+
 module_actions_t *stopwatch_select(uint8_t state) {
    if (state) {
-      stopwatch_time.hours = 0;
-      stopwatch_time.minutes = 0;
-      stopwatch_time.seconds = 0;
+      stopwatch_reset();
    }
    return NULL;
 }
@@ -50,4 +54,8 @@ void stopwatch_on_each_second(void) {
 
 #define stopwatch_signature {0b00111000, 0b01000100, 0b10000011, 0b10011111, 0b10001011, 0b01000100, 0b00111000, 0}
 
-#define stopwatch_record {&stopwatch_redraw, &stopwatch_select, stopwatch_signature}
+#ifdef COMBINED_RESET
+    #define stopwatch_record {&stopwatch_redraw, &combined_reset_on_select, stopwatch_signature}    
+#else
+    #define stopwatch_record {&stopwatch_redraw, &stopwatch_select, stopwatch_signature}
+#endif

@@ -15,10 +15,14 @@ void avgspeed_on_pulse(void) {
     }
 }
 
+void avgspeed_reset(void) {
+    avgspeed_pulses = 0;
+    avgspeed_total_time = 0;    
+}
+
 module_actions_t *avgspeed_select(const uint8_t state) {
     if (state) {
-        avgspeed_pulses = 0;
-        avgspeed_total_time = 0;
+        avgspeed_reset();
     }
     return NULL;
 }
@@ -43,5 +47,8 @@ void avgspeed_redraw(const uint8_t force) {
 }
 
 #define avgspeed_signature {0b10000000, 0b01100000, 0b00011000, 0b00000110, 0b00000001, 0b00000110, 0b00011000, 0b11100000}
-
-#define avgspeed_record {&avgspeed_redraw, &avgspeed_select, avgspeed_signature}
+#ifdef COMBINED_RESET
+    #define avgspeed_record {&avgspeed_redraw, &combined_reset_on_select, avgspeed_signature}
+#else
+    #define avgspeed_record {&avgspeed_redraw, &avgspeed_select, avgspeed_signature}
+#endif
