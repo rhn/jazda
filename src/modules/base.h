@@ -25,11 +25,6 @@
     #include "debug.h"
 #endif
 
-
-// currently displayed module
-volatile uint8_t current_module = 0;
-volatile uint8_t current_module_switched = 1;
-
 // table of module records
 const module_record_t modules[] = {
     #ifdef DISTANCE
@@ -54,6 +49,9 @@ const module_record_t modules[] = {
 
 #define MODULES_NUMBER sizeof(modules)/sizeof(module_record_t)
 
+// currently displayed module
+volatile uint8_t current_module = 0;
+volatile uint8_t current_module_switched = 1;
 
 /* ------ ACTIONS ----- */
 void module_switch_right(uint8_t state) {
