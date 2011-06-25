@@ -63,6 +63,8 @@ TODO
     #include "builtins/speed.h"
 #endif
 
+#include "builtins/plots.h"
+
 // modules
 
 #include "modules/base.h"

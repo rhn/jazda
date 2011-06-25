@@ -15,35 +15,18 @@ SVDPLOT_LENGTH_KM - length of the visible area of the plot. It is the base for
 SVDPLOT_SPEED_TRUNC - decreasing factor to fit speed into uint8_t TODO: eliminate
 */
 
-// TODO: vertical size. Currently hard-coded to 2 * 8
-// TODO: speed axis adjusting to maximum value
-#define SVDPLOT_SIZE 84 // size in pixels (distance axis)
 #define SVDPLOT_LENGTH_KM 1 // distance axis length
 #define SVDPLOT_SPEED_TRUNC 4
 //#define SVDPLOT_FRAME_PULSES 4
-#define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
-#define SVDPLOT_BASE_LINE 4
+#define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (PLOT_SIZE * METRIC_PULSE_DIST)
 
-
-volatile uint8_t svd_averages[SVDPLOT_SIZE]; // newer frames have higher number
-// speeds are truncated, 1 bit shift
-// circular buffer
-volatile uint8_t svd_next_average = 0; // index of the next average to be recorded
-volatile uint8_t svd_average_frames = 0; // number of recorded frames
+volatile circular_buffer_t svd_averages;
 
 volatile uint8_t svd_pulse_number; // in-frame number of current pulse
 volatile uint16_t svd_previous_frame_time; // the last recorded pulse time
 
-
-void svd_insert_average(const uint8_t speed) {
-    svd_averages[svd_next_average] = speed;
-    svd_next_average++;
-    if (svd_average_frames < SVDPLOT_SIZE) {
-      svd_average_frames++;
-    }
-    if (svd_next_average == SVDPLOT_SIZE) {
-      svd_next_average = 0;
-    }
+void svd_insert_average(uint8_t value) {
+    circular_buffer_insert_value(&svd_averages, value);
 }
 
 void svd_on_pulse(const uint16_t now) {
@@ -83,33 +66,7 @@ void svd_redraw(uint8_t force) {
         erase_module_screen();
     }
     if ((svd_pulse_number == 0) || force) { // there's been a change, redraw
-       for (uint8_t line = 0; line < 2; line++) {
-         uint8_t maxheight = (2 - line) * 8;
-         set_column(84 - svd_average_frames);
-         set_row(line + SVDPLOT_BASE_LINE);
-         
-         // finds first valid frame number in the circular buffer
-         int8_t current_frame = svd_next_average - svd_average_frames;
-         if (current_frame < 0) {
-             current_frame = SVDPLOT_SIZE + current_frame;
-         }
-         
-         // prints the desired part of the plot (horizontally)
-         for (uint8_t i = 0; i < svd_average_frames; i++)
-         {
-           uint8_t height = svd_averages[current_frame];
-           current_frame++;
-           if (current_frame == SVDPLOT_SIZE) {
-               current_frame = 0;
-           }
-
-           uint8_t bar = 0xFF;
-           if (height < maxheight) {
-             bar <<= maxheight - height;
-           }
-           send_raw_byte(bar, true);
-         }
-       }
+       draw_circular_buffer_plot(svd_averages);
     }
 }
 
