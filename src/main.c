@@ -53,47 +53,24 @@ TODO
 - graphical glitches (vert line after all drawing)
 - separate configuration, code and defaults
 - clean up code
-- implement module interface
 - hide ugly timers, interrupts and bit assumptions/optimizations etc to ./avr
 - near-vertical lines
 - fix low-precision speed calculation
 */
 
-#include "modules/common.h"
-
-#ifdef DISTANCE
-    #include "modules/distance.h"
-#endif
-
+// basic builtins
 #ifdef CURRENT_SPEED
     #include "builtins/speed.h"
-    #ifdef SPEED_VS_DISTANCE_PLOT
-        #include "modules/svdplot.h"
-    #endif
-    #ifdef MAXSPEED
-        #include "modules/maxspeed.h"
-    #endif
-#endif
-
-#ifdef STOPWATCH
-    #include "modules/stopwatch.h"
-#endif
-
-#ifdef AVGSPEED
-    #include "modules/avgspeed.h"
-#endif
-
-#ifdef DEBUG
-    #include "builtins/events.h"
-#endif
-
-#ifdef DEBUG
-    #include "modules/debug.h"
 #endif
 
 // modules
 
 #include "modules/base.h"
+
+// debug builtin placed last to have access to all variables
+#ifdef DEBUG
+    #include "builtins/events.h"
+#endif
 
 volatile module_actions_t *current_actions = &default_actions;
 

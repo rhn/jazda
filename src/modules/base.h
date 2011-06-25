@@ -1,6 +1,34 @@
+#include "common.h"
+
+#ifdef DISTANCE
+    #include "distance.h"
+#endif
+
+#ifdef CURRENT_SPEED
+    #ifdef SPEED_VS_DISTANCE_PLOT
+        #include "svdplot.h"
+    #endif
+    #ifdef MAXSPEED
+        #include "maxspeed.h"
+    #endif
+#endif
+
+#ifdef STOPWATCH
+    #include "stopwatch.h"
+#endif
+
+#ifdef AVGSPEED
+    #include "avgspeed.h"
+#endif
+
+#ifdef DEBUG
+    #include "debug.h"
+#endif
+
+
 // currently displayed module
 volatile uint8_t current_module = 0;
-volatile uint8_t current_module_switched;
+volatile uint8_t current_module_switched = 1;
 
 // table of module records
 const module_record_t modules[] = {
