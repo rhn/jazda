@@ -1,6 +1,6 @@
 /* Speed versus distance plot module.
 Inserts blanks at each stop (determined by speed module with STOPPED_TIMEOUT)
-REQUIRES: speed module
+REQUIRES: speed builtin
 
 svd_on_pulse() MUST be called BEFORE speed_on_pulse, since speed module signals
 a stop in a timer interrupt and svd detects a stop in pulse interrupt. At first
@@ -19,7 +19,7 @@ SVDPLOT_SPEED_TRUNC - decreasing factor to fit speed into uint8_t TODO: eliminat
 // TODO: speed axis adjusting to maximum value
 #define SVDPLOT_SIZE 84 // size in pixels (distance axis)
 #define SVDPLOT_LENGTH_KM 1 // distance axis length
-#define SVDPLOT_SPEED_TRUNC 3
+#define SVDPLOT_SPEED_TRUNC 4
 //#define SVDPLOT_FRAME_PULSES 4
 #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (SVDPLOT_SIZE * METRIC_PULSE_DIST)
 #define SVDPLOT_BASE_LINE 4

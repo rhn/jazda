@@ -20,17 +20,19 @@ depending on future API).
 #endif
 
 module_actions_t *combined_reset_on_select(uint8_t state) {
-    #ifdef MAXSPEED
-        maxspeed_reset();
-    #endif
-    #ifdef AVGSPEED
-        avgspeed_reset();
-    #endif
-    #ifdef DISTANCE
-        distance_reset();
-    #endif
-    #ifdef STOPWATCH
-        stopwatch_reset();
-    #endif
+    if (!state) {
+        #ifdef MAXSPEED
+            maxspeed_reset();
+        #endif
+        #ifdef AVGSPEED
+            avgspeed_reset();
+        #endif
+        #ifdef DISTANCE
+            distance_reset();
+        #endif
+        #ifdef STOPWATCH
+            stopwatch_reset();
+        #endif
+    }
     return NULL;
 }
