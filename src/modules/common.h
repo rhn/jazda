@@ -10,6 +10,8 @@ void erase_module_screen(void) {
     erase_screen(2*84);
 }
 
+#define MODULE_BASE_LINE 4
+
 void draw_circular_buffer_plot(const circular_buffer_t buffer) {
     for (uint8_t line = 0; line < PLOT_LINE_HEIGHT; line++) {
         set_column(84 - buffer.num_values);

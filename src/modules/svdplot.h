@@ -20,12 +20,12 @@ SVDPLOT_SPEED_TRUNC - decreasing factor to fit speed into uint8_t TODO: eliminat
 //#define SVDPLOT_FRAME_PULSES 4
 #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (PLOT_SIZE * METRIC_PULSE_DIST)
 
-volatile circular_buffer_t svd_averages;
+volatile circular_buffer_t svd_averages = { .next_index = 0, .num_values = 0 };
 
 volatile uint8_t svd_pulse_number; // in-frame number of current pulse
 volatile uint16_t svd_previous_frame_time; // the last recorded pulse time
 
-void svd_insert_average(uint8_t value) {
+void svd_insert_average(const uint8_t value) {
     circular_buffer_insert_value(&svd_averages, value);
 }
 
@@ -56,12 +56,7 @@ void svd_on_pulse(const uint16_t now) {
     }
 }
 
-/**
-Draws the plot over 2 lines. Performs no scaling of values - value of speed in
-svd_averages will become the height of a bar in pixels.
-*/
-
-void svd_redraw(uint8_t force) {
+void svd_redraw(const uint8_t force) {
     if (force) {
         erase_module_screen();
     }

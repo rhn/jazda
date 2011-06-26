@@ -10,9 +10,13 @@
 
 typedef struct circular_buffer {
     uint8_t values[PLOT_SIZE];
-    uint8_t next_index = 0; // index of the next value to be recorded
-    uint8_t num_values = 0; // number of currently stored value
+    uint8_t next_index; // index of the next value to be recorded, init to 0
+    uint8_t num_values; // number of currently stored value, initialize to 0
 } circular_buffer_t;
+
+// example initialization
+// volatile circular_buffer_t svt_averages = { .next_index = 0, .num_values = 0 };
+
 
 void circular_buffer_insert_value(circular_buffer_t *buffer, const uint8_t value) {
     (*buffer).values[(*buffer).next_index] = value;
@@ -27,7 +31,7 @@ void circular_buffer_insert_value(circular_buffer_t *buffer, const uint8_t value
 
 /**
 Draws the plot over 2 lines. Performs no scaling of values - value of speed in
-svd_averages will become the height of a bar in pixels.
+values will become the height of a bar in pixels.
 */
 void draw_circular_buffer_plot_line(const circular_buffer_t buffer, const uint8_t line) {
   uint8_t maxheight = (PLOT_LINE_HEIGHT + 1 - line) * 8;

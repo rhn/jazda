@@ -6,6 +6,8 @@
 AVR #defines regarding interrupts
 
 TODO: chip-specific functions to chip-specific files
+FIXME: race condition in reading extended_time while overflow should be
+happening.
 */
 
 volatile uint16_t extended_time = 0;
