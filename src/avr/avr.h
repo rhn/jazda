@@ -69,7 +69,7 @@ ISR(INT1_vect) {
 void setup_timer(void) {
 // sets up millisecond precision 16-bit timer
 /* TODO: consider using 8-bit timer overflowing every (half) second + 4-bit USI*/
-// set up prescaler to /64 XXX CPU must be 8 MHz...
+// set up prescaler to /64
 
 /* PRESCALER SETTINGS:
 CS12 CS11 CS10 Description
