@@ -149,7 +149,8 @@ void on_stop(uint16_t now);
     #endif
 #endif
 
-inline void speed_on_trigger(void) {
+void speed_on_timeout(void);
+void speed_on_timeout(void) {
   uint16_t now = get_time();
   pulse_table[0] = now;
   // will sometimes be triggered with 1 pulse in table, but only after
@@ -157,9 +158,8 @@ inline void speed_on_trigger(void) {
   // if you break it, BURN.
   // delay can be actually anything. No possibility of prediction. The following just looks good.
   if (now - pulse_table[1] < STOPPED_TIMEOUT * ONE_SECOND) {
-    set_trigger_time(now + pulse_table[1] - pulse_table[2]);
+    set_timer_callback(now + pulse_table[1] - pulse_table[2], &speed_on_timeout);
   } else {
-    clear_trigger();
     on_stop(now);
   }
 }
@@ -184,7 +184,7 @@ void speed_on_pulse(uint16_t now) {
     ahead = predicted + (predicted / 4);
   }
   // NOTE: remove ahead / 4 to save 10 bytes
-  set_trigger_time(now + ahead);
+  set_timer_callback(now + ahead, &speed_on_timeout);
 
   // Modules that need start pulse notification
   #ifdef SPEED_VS_DISTANCE_PLOT

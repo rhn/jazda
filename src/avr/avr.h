@@ -120,10 +120,10 @@ void clear_trigger() {
   TIMSK &= ~(1 << OCIE1A);
 }
 
-inline void speed_on_trigger(void);
+inline void on_trigger(void);
 
 ISR(TIMER1_COMPA_vect) {
-    speed_on_trigger();
+    on_trigger();
 }
 
 ISR(TIMER1_OVF_vect) {

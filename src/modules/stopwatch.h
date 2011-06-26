@@ -1,7 +1,7 @@
 /* STOPWATCH MODULE
 resettable stopwatch.
 Time is updated on each second interrupt, thanks to that it's displayed
-instantly with little jitter.
+instantly with little jitter, but offset in relation to reset time.
 */
 
 volatile time_storage_t stopwatch_time = {0, 0, 0};

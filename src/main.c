@@ -24,6 +24,8 @@
 #include "display/drawing.h"
 
 // basic builtins
+
+#include "builtins/timer.h"
 #ifdef CURRENT_SPEED
     #include "builtins/speed.h"
 #endif
