@@ -33,6 +33,8 @@
     #include "debug.h"
 #endif
 
+#include "signals.h"
+
 // table of module records
 const module_record_t modules[] = {
     #ifdef DISTANCE
@@ -107,7 +109,4 @@ void module_redraw_menu(void) {
       send_raw_byte(0, true);
    }
 }
-
-const module_actions_t default_actions = {&module_switch_left,
-                                          &module_switch_right};
 
