@@ -34,7 +34,7 @@ Draws the plot over 2 lines. Performs no scaling of values - value of speed in
 values will become the height of a bar in pixels.
 */
 void draw_circular_buffer_plot_line(const circular_buffer_t buffer, const uint8_t line) {
-  uint8_t maxheight = (PLOT_LINE_HEIGHT + 1 - line) * 8;
+  uint8_t maxheight = (PLOT_LINE_HEIGHT - line) * 8;
   
   // finds first valid frame number in the circular buffer
   int8_t current_frame = buffer.next_index - buffer.num_values;

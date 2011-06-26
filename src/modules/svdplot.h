@@ -16,7 +16,7 @@ SVDPLOT_SPEED_TRUNC - decreasing factor to fit speed into uint8_t TODO: eliminat
 */
 
 #define SVDPLOT_LENGTH_KM 1 // distance axis length
-#define SVDPLOT_SPEED_TRUNC 4
+#define SVDPLOT_SPEED_TRUNC 5
 //#define SVDPLOT_FRAME_PULSES 4
 #define SVDPLOT_FRAME_PULSES (SVDPLOT_LENGTH_KM * 1000000L) / (PLOT_SIZE * METRIC_PULSE_DIST)
 
@@ -38,7 +38,6 @@ void svd_on_pulse(const uint16_t now) {
         uint16_t avg = get_int_average(now - svd_previous_frame_time, SVDPLOT_FRAME_PULSES); // TODO: move away to main loop
         svd_previous_frame_time = now;
         svd_pulse_number = 0; // clear counter
-        
         
         // TRUNCATING AVERAGE
         avg >>= SVDPLOT_SPEED_TRUNC;

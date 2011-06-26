@@ -7,14 +7,14 @@ occurs OR until stopped, calculate speed during that time.
 Possible optimizations: pulse_count starts from -1 and becomes rotation_count
 */
 
-#define SVTPLOT_LENGTH_SEC 84*5 // time axis length. Recommended at least size * 5, the slower the more for accurate calculations
-#define SVTPLOT_SPEED_TRUNC 4
-//#define SVDPLOT_FRAME_TIME 4
+#define SVTPLOT_LENGTH_SEC 84*2 // time axis length.
+#define SVTPLOT_SPEED_TRUNC 5
+//#define SVTPLOT_FRAME_TIME 2000
 #define SVTPLOT_FRAME_TIME (SVTPLOT_LENGTH_SEC * ONE_SECOND) / PLOT_SIZE
 
 volatile circular_buffer_t svt_averages = { .next_index = 0, .num_values = 0 };
 
-volatile uint8_t svt_pulse_count = 0; // number of pulses caught in current frame
+volatile uint8_t svt_pulse_count = 0; // number of next pulse caught in current frame
 volatile uint16_t svt_previous_frame_start_time; // the first recorded pulse time from the last frame
 
 void svt_insert_average(const uint8_t value) {
@@ -22,11 +22,14 @@ void svt_insert_average(const uint8_t value) {
 }
 
 void svt_update(const uint16_t now) {
-    uint8_t rotations = svt_pulse_count - 1;
+    uint8_t rotations = svt_pulse_count;
+    // pulse_count will NOT always be > 0: the only possibility is that an
+    // on_stop event occurs when pulse_count == 0 (2 consecutive updates). This
+    // can happen when the timer just hits (last pulse is committed) and on_stop
+    // happens
     if (rotations > 0) {
         uint16_t avg = get_int_average(now - svt_previous_frame_start_time, rotations);
         svt_pulse_count = 0; // clear counter
-        
         // TRUNCATING AVERAGE
         avg >>= SVTPLOT_SPEED_TRUNC;
         
@@ -48,7 +51,7 @@ void svt_on_pulse(const uint16_t now) {
     }
     // if previous is true, this will never happen. ergo TODO: possible speed optimization
     if (now - svt_previous_frame_start_time > SVTPLOT_FRAME_TIME) {
-        svt_update(now);
+        svt_update(now); // pulse_count = 0
     } else {
         svt_pulse_count++;
     }
