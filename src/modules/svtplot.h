@@ -44,7 +44,6 @@ void svt_update(const uint16_t now) {
 }
 
 void svt_on_pulse(const uint16_t now) {
-    // This is a noop if svt_pulse_count != 0
     if (svt_pulse_count == 0) {
         // new frame just started, be if after a stop (update) or timer (update)
         svt_frame_start_time = now;
