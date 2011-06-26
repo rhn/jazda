@@ -19,3 +19,7 @@ void draw_circular_buffer_plot(const circular_buffer_t buffer) {
         draw_circular_buffer_plot_line(buffer, line);
     }
 }
+
+module_actions_t *module_select_null(const uint8_t state) {
+    return NULL;
+}

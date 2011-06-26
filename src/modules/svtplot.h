@@ -70,10 +70,7 @@ void svt_redraw(const uint8_t force) {
     }
 }
 
-module_actions_t *svt_select(const uint8_t state) {
-    return NULL;
-}
 
 #define svt_signature {0b10000010, 0b01010101, 0b00101000, 0b00010000, 0b00001000, 0b00010100, 0b11110010, 0b00010001}
 
-#define svt_record {&svt_redraw, &svt_select, svt_signature}
+#define svt_record {&svt_redraw, &module_select_null, svt_signature}

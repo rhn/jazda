@@ -64,10 +64,6 @@ void svd_redraw(const uint8_t force) {
     }
 }
 
-module_actions_t *svd_select(const uint8_t state) {
-    return NULL;
-}
-
 #define svd_signature {0b10000010, 0b01010101, 0b00101000, 0b00010000, 0b00001000, 0b11110100, 0b10010010, 0b01100001}
 
-#define svd_record {&svd_redraw, &svd_select, svd_signature}
+#define svd_record {&svd_redraw, &module_select_null, svd_signature}
