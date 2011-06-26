@@ -17,6 +17,10 @@
     #endif
 #endif
 
+#ifdef SPEED_VS_TIME_PLOT
+    #include "svtplot.h"
+#endif
+
 #ifdef STOPWATCH
     #include "stopwatch.h"
 #endif
@@ -48,6 +52,9 @@ const module_record_t modules[] = {
     #endif
     #ifdef AVGSPEED
         avgspeed_record,
+    #endif
+    #ifdef SPEED_VS_TIME_PLOT
+        svt_record,
     #endif
     };
 
