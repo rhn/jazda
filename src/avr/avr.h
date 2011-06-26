@@ -69,11 +69,31 @@ ISR(INT1_vect) {
 void setup_timer(void) {
 // sets up millisecond precision 16-bit timer
 /* TODO: consider using 8-bit timer overflowing every (half) second + 4-bit USI*/
-// set up prescaler to /1024 XXX CPU must be 8 MHz...
+// set up prescaler to /64 XXX CPU must be 8 MHz...
+
+/* PRESCALER SETTINGS:
+CS12 CS11 CS10 Description
+ 0    0    0   No clock source. (Timer/Counter stopped)
+ 0    0    1   clkIO/1 (No prescaling)
+ 0    1    0   clkIO/8 (From prescaler)
+ 0    1    1   clkIO/64 (From prescaler)
+ 1    0    0   clkIO/256 (From prescaler)
+ 1    0    1   clkIO/1024 (From prescaler)
+ 1    1    0   External clock source on T1 pin. Clock on falling edge.
+ 1    1    1   External clock source on T1 pin. Clock on rising edge.
+*/
   uint8_t clksrc;
   clksrc = TCCR1B;
-  clksrc |= 1<<CS12 | 1<<CS10;
-  clksrc &= ~(1<<CS11);
+// for /1024
+//  clksrc |= 1<<CS12 | 1<<CS10;
+//  clksrc &= ~(1<<CS11);
+// for /64
+//  clksrc |= 1<<CS11 | 1<<CS10;
+//  clksrc &= ~(1<<CS12);
+// for /256
+  clksrc |= 1<<CS12;
+  clksrc &= ~(1<<CS11) & ~(1<<CS10);
+
   TCCR1B = clksrc;
 
   TIMSK |= 1 << TOIE1; // enable overflow interrupt
