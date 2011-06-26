@@ -160,9 +160,12 @@ inline void speed_on_trigger(void) {
     set_trigger_time(now + pulse_table[1] - pulse_table[2]);
   } else {
     clear_trigger();
-    oldest_pulse_index = 0;
     on_stop(now);
   }
+}
+
+void speed_on_stop() {
+    oldest_pulse_index = 0;
 }
 
 void speed_on_pulse(uint16_t now) {

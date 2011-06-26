@@ -26,6 +26,9 @@ inline void on_each_second(void) {
 }
 
 inline void on_stop(uint16_t now) {
+    #ifdef CURRENT_SPEED
+        speed_on_stop();
+    #endif
     #ifdef SPEED_VS_TIME_PLOT
         svt_on_stop(now);
     #endif
