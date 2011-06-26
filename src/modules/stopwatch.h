@@ -10,10 +10,6 @@ void stopwatch_redraw(uint8_t force) {
    upoint_t position = {0, 5};
    upoint_t glyph_size = {8, 8};
    
-   if (force) {
-       erase_module_screen();
-   }
-
    print_number(stopwatch_time.hours, position, glyph_size, 1, NIBBLEPAIR(4, 0));
    position.x += 4 * 9 + 2; // 4 chars + 2 extra pixels space
    print_number(stopwatch_time.minutes, position, glyph_size, 1, NIBBLEPAIR(1, 1)); // 1 fractional digit to preserve the "0" in front

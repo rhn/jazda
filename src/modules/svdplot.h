@@ -56,9 +56,6 @@ void svd_on_pulse(const uint16_t now) {
 }
 
 void svd_redraw(const uint8_t force) {
-    if (force) {
-        erase_module_screen();
-    }
     if ((svd_pulse_number == 0) || force) { // there's been a change, redraw
        draw_circular_buffer_plot(svd_averages);
     }

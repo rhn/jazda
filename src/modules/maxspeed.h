@@ -39,9 +39,6 @@ module_actions_t *maxspeed_select(const uint8_t state) {
 
 void maxspeed_redraw(const uint8_t force) {
     if (force || maxspeed_modified) {
-        if (force) {
-           erase_module_screen();
-        }
         uint16_t speed;
         if (maxspeed_min_difference == (uint16_t)-1) {
             speed = 0;

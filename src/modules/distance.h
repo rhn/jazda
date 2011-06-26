@@ -11,9 +11,6 @@ inline void distance_on_pulse(void) {
 void distance_redraw(const uint8_t force) {
    upoint_t position = {0, 5};
    upoint_t glyph_size = {8, 8};
-   if (force) {
-      erase_module_screen();
-   }
    print_number(distance >> FRAC_BITS, position, glyph_size, 1, NIBBLEPAIR(DIST_SIGNIFICANT_DIGITS, DIST_FRACTION_DIGITS));
 }
 

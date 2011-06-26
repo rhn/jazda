@@ -62,9 +62,6 @@ void svt_on_stop(const uint16_t now) {
 }
 
 void svt_redraw(const uint8_t force) {
-    if (force) {
-        erase_module_screen();
-    }
     if ((svt_pulse_count == 0) || force) { // there's been a change, redraw
        draw_circular_buffer_plot(svt_averages);
     }

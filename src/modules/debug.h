@@ -6,10 +6,7 @@ Tuned for pcd8544 display width */
 #define BACKLIGHTPORT PORTC
 #define BACKLIGHTPIN PC5
 
-void debug_redraw(uint8_t force) {
-   if (force) {
-       erase_module_screen();
-   }
+void debug_redraw(const uint8_t force) {
 }
 
 void enable_backlight(void) {

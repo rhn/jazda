@@ -28,9 +28,6 @@ module_actions_t *avgspeed_select(const uint8_t state) {
 }
 
 void avgspeed_redraw(const uint8_t force) {
-    if (force) {
-       erase_module_screen();
-    }
     uint32_t speed;
     upoint_t position = {0, 5};
     upoint_t glyph_size = {8, 8};
