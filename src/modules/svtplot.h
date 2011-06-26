@@ -10,7 +10,7 @@ Possible optimizations: pulse_count starts from -1 and becomes rotation_count
 #define SVTPLOT_LENGTH_SEC 84*2 // time axis length.
 #define SVTPLOT_SPEED_TRUNC 5
 //#define SVTPLOT_FRAME_TIME 2000
-#define SVTPLOT_FRAME_TIME (SVTPLOT_LENGTH_SEC * ONE_SECOND) / PLOT_SIZE
+#define SVTPLOT_FRAME_TIME (uint16_t)(((uint32_t)SVTPLOT_LENGTH_SEC * ONE_SECOND) / PLOT_SIZE)
 
 volatile circular_buffer_t svt_averages = { .next_index = 0, .num_values = 0 };
 
