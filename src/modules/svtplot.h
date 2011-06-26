@@ -14,25 +14,24 @@ Possible optimizations: pulse_count starts from -1 and becomes rotation_count
 
 volatile circular_buffer_t svt_averages = { .next_index = 0, .num_values = 0 };
 
-volatile uint8_t svt_pulse_count = 0; // number of next pulse caught in current frame
-volatile uint16_t svt_previous_frame_start_time; // the first recorded pulse time from the last frame
+volatile uint8_t svt_pulse_count = 0;
+volatile uint16_t svt_frame_start_time; // the first recorded pulse time from the last frame
 
 void svt_insert_average(const uint8_t value) {
     circular_buffer_insert_value(&svt_averages, value);
 }
 
 void svt_update(const uint16_t now) {
-    uint8_t rotations = svt_pulse_count;
-    // pulse_count will NOT always be > 0: the only possibility is that an
-    // on_stop event occurs when pulse_count == 0 (2 consecutive updates). This
+    uint8_t rotations = svt_pulse_count - 1;
+    // rotations will NOT always be > 0: the only possibility is that an
+    // on_stop event occurs when rotations == 0 (2 consecutive updates). This
     // can happen when the timer just hits (last pulse is committed) and on_stop
-    // happens
+    // fires
     if (rotations > 0) {
-        uint16_t avg = get_int_average(now - svt_previous_frame_start_time, rotations);
-        svt_pulse_count = 0; // clear counter
+        uint16_t avg = get_int_average(now - svt_frame_start_time, rotations);
         // TRUNCATING AVERAGE
         avg >>= SVTPLOT_SPEED_TRUNC;
-        
+
         // ROUNDING AVERAGE
         /*avg >>= SVDPLOT_SPEED_TRUNC - 1;
         if (avg & 1) {
@@ -45,20 +44,23 @@ void svt_update(const uint16_t now) {
 }
 
 void svt_on_pulse(const uint16_t now) {
-    if (svt_pulse_count == 0) { // initialize new frame
-        svt_previous_frame_start_time = now;
-        // pulse_count already initialized to 0
+    // This is a noop if svt_pulse_count != 0
+    if (svt_pulse_count == 0) {
+        // new frame just started, be if after a stop (update) or timer (update)
+        svt_frame_start_time = now;
     }
-    // if previous is true, this will never happen. ergo TODO: possible speed optimization
-    if (now - svt_previous_frame_start_time > SVTPLOT_FRAME_TIME) {
-        svt_update(now); // pulse_count = 0
-    } else {
-        svt_pulse_count++;
+    svt_pulse_count++;
+    
+    if (now - svt_frame_start_time > SVTPLOT_FRAME_TIME) {
+        svt_update(now);
+        svt_pulse_count = 1;
+        svt_frame_start_time = now;
     }
 }
 
 void svt_on_stop(const uint16_t now) {
    svt_update(now);
+   svt_pulse_count = 0;
 }
 
 void svt_redraw(const uint8_t force) {
