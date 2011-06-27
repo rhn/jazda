@@ -29,12 +29,12 @@ void on_left_button(uint8_t state) {
 #include "emuint.h"
 
 void module_redraw() {
-   if (current_module_switched) {
+   uint8_t switched = current_module_switched;
+   if (switched) {
+      current_module_switched = false;
       module_redraw_menu();
       erase_module_screen();
    }
-   (*(modules[current_module].redraw))(current_module_switched);
-
-   current_module_switched = false;
+   (*(modules[current_module].redraw))(switched);
 }
 
