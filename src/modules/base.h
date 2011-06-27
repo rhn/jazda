@@ -1,11 +1,21 @@
 #include "common.h"
 
-struct module_flags_struct {
-    unsigned int distance_changed :1;
-    unsigned int maxspeed_changed :1;
-    unsigned int stopwatch_changed :1;
-    unsigned int avgspeed_changed :1;
-};
+#ifdef LITTLE_RAM
+    struct module_flags_struct {
+        unsigned int distance_changed :1;
+        unsigned int maxspeed_changed :1;
+        unsigned int stopwatch_changed :1;
+        unsigned int avgspeed_changed :1;
+    };
+#else
+    struct module_flags_struct {
+        uint8_t distance_changed;
+        uint8_t maxspeed_changed;
+        uint8_t stopwatch_changed;
+        uint8_t avgspeed_changed;
+    };
+#endif
+
 volatile struct module_flags_struct module_flags = {0, 0, 0, 0};
 
 #ifdef COMBINED_RESET
