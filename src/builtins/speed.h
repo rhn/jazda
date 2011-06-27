@@ -64,6 +64,8 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
 volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
 // index of the oldest pulse in the table
 volatile uint8_t oldest_pulse_index = 0;
+// flag for solving race conditions
+volatile uint8_t speed_pulse_occured = false;
 
 void on_stop(uint16_t now);
 
@@ -199,6 +201,7 @@ void speed_on_pulse(uint16_t now) {
   #ifdef MAXSPEED
     maxspeed_on_pulse();
   #endif
+  speed_pulse_occured = true;
 }
 
 void speed_redraw() {
@@ -208,14 +211,32 @@ void speed_redraw() {
 
    if (oldest_pulse_index > 1) {
      // speed going down when no pulses present
-     uint16_t newest_pulse = pulse_table[0];
      uint16_t *table = pulse_table;
-     if (newest_pulse != pulse_table[1]) { // if pulse 0 is artificial
+     uint8_t pulse_index;
+     uint16_t newest_pulse;
+     uint16_t next_pulse;
+     uint16_t oldest_pulse;
+     
+     do {
+         speed_pulse_occured = false;
+         newest_pulse = pulse_table[0];
+         next_pulse = pulse_table[1];
+         pulse_index = oldest_pulse_index;
+         oldest_pulse = table[pulse_index];
+     } while (speed_pulse_occured);
+     
+     if (newest_pulse != next_pulse) { // if newest pulse is artificial
        table -= 1; // pretend it is a real pulse by moving it to place 1
      }
-     uint16_t pulse_time = newest_pulse - table[oldest_pulse_index];
+     uint16_t pulse_time = newest_pulse - oldest_pulse;
     
-     speed = get_int_average(pulse_time, (oldest_pulse_index - 1));
+     speed = get_int_average(pulse_time, (pulse_index - 1));
+     
+     // FIXME: workaround
+     if (speed > 1000) {
+         speed = 0;
+         debug_variable = newest_pulse - pulse_table[1];
+     }
    } else {
        speed = 0;
    }
