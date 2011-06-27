@@ -64,8 +64,8 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
 volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
 // index of the oldest pulse in the table
 volatile uint8_t oldest_pulse_index = 0;
-// flag for solving race conditions
-volatile uint8_t speed_pulse_occured = false;
+// flag for notifying about pulse_table and oldest_pulse_index changes
+volatile uint8_t speed_pulse_occured = true;
 
 void on_stop(uint16_t now);
 
@@ -154,7 +154,6 @@ void on_stop(uint16_t now);
 void speed_on_timeout(void);
 void speed_on_timeout(void) {
   uint16_t now = get_time();
-  pulse_table[0] = now;
   // will sometimes be triggered with 1 pulse in table, but only after
   // STOPPED_TIMEOUT * ONE_SECOND have passed, never getting into the condition.
   // if you break it, BURN.
@@ -166,8 +165,10 @@ void speed_on_timeout(void) {
   }
 }
 
-void speed_on_stop() {
+void speed_on_stop(const uint16_t now) {
     oldest_pulse_index = 0;
+    pulse_table[0] = now;
+    speed_pulse_occured = true;
 }
 
 void speed_on_pulse(uint16_t now) {
@@ -205,36 +206,39 @@ void speed_on_pulse(uint16_t now) {
 }
 
 void speed_redraw() {
-   uint16_t speed;
-   upoint_t position = {0, 0};
-   upoint_t glyph_size = {10, 16};
+   if (speed_pulse_occured) {
+       speed_pulse_occured = false;
+       uint16_t speed;
+       upoint_t position = {0, 0};
+       upoint_t glyph_size = {10, 16};
+       
+       if (oldest_pulse_index > 1) {
+         // speed going down when no pulses present
+         uint16_t *table = pulse_table;
+         uint8_t pulse_index;
+         uint16_t newest_pulse;
+         uint16_t next_pulse;
+         uint16_t oldest_pulse;
+         
+         do {
+             speed_pulse_occured = false;
+             newest_pulse = pulse_table[0];
+             next_pulse = pulse_table[1];
+             pulse_index = oldest_pulse_index;
+             oldest_pulse = table[pulse_index];
+         } while (speed_pulse_occured);
+         
+         if (newest_pulse != next_pulse) { // if newest pulse is artificial
+           table -= 1; // pretend it is a real pulse by moving it to place 1
+         }
+         uint16_t pulse_time = newest_pulse - oldest_pulse;
+        
+         speed = get_int_average(pulse_time, (pulse_index - 1));
+         
+       } else {
+           speed = 0;
+       }
 
-   if (oldest_pulse_index > 1) {
-     // speed going down when no pulses present
-     uint16_t *table = pulse_table;
-     uint8_t pulse_index;
-     uint16_t newest_pulse;
-     uint16_t next_pulse;
-     uint16_t oldest_pulse;
-     
-     do {
-         speed_pulse_occured = false;
-         newest_pulse = pulse_table[0];
-         next_pulse = pulse_table[1];
-         pulse_index = oldest_pulse_index;
-         oldest_pulse = table[pulse_index];
-     } while (speed_pulse_occured);
-     
-     if (newest_pulse != next_pulse) { // if newest pulse is artificial
-       table -= 1; // pretend it is a real pulse by moving it to place 1
-     }
-     uint16_t pulse_time = newest_pulse - oldest_pulse;
-    
-     speed = get_int_average(pulse_time, (pulse_index - 1));
-     
-   } else {
-       speed = 0;
+       print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
    }
-
-   print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
 }
