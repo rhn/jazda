@@ -3,6 +3,8 @@
 In the current form, it's intended to span less than a few hours. A single frame
 calculation: take a pulse, wait until SVTPLOT_FRAME_TIME passes and a pulse
 occurs OR until stopped, calculate speed during that time.
+therefore, the speed is always less than actual after a stop. FIXME: The less
+pulses in last frame, the bigger the difference from actual speed.
 
 Possible optimizations: pulse_count starts from -1 and becomes rotation_count
 */
@@ -59,6 +61,7 @@ void svt_on_pulse(const uint16_t now) {
 
 void svt_on_stop(const uint16_t now) {
    svt_update(now);
+   svt_insert_average(0);
    svt_pulse_count = 0;
 }
 
