@@ -63,7 +63,7 @@ void svt_on_stop(const uint16_t now) {
 }
 
 void svt_redraw(const uint8_t force) {
-    if ((svt_pulse_count == 0) || force) { // there's been a change, redraw
+    if ((svt_pulse_count <= 1) || force) { // there's been a change, redraw
        draw_circular_buffer_plot(svt_averages);
     }
 }
