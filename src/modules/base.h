@@ -1,5 +1,13 @@
 #include "common.h"
 
+struct module_flags_struct {
+    unsigned int distance_changed :1;
+    unsigned int maxspeed_changed :1;
+    unsigned int stopwatch_changed :1;
+    unsigned int avgspeed_changed :1;
+};
+struct module_flags_struct module_flags = {0, 0, 0, 0};
+
 #ifdef COMBINED_RESET
     #include "combined_reset.h"
 #endif

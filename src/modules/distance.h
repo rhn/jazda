@@ -6,20 +6,27 @@ volatile uint32_t distance = 0;
 inline void distance_on_pulse(void) {
   distance += PULSE_DIST;
   // TODO: asm this to use 1 tmp reg?
+  module_flags.distance_changed = true;
 }
 
 void distance_redraw(const uint8_t force) {
-   upoint_t position = {0, 5};
-   upoint_t glyph_size = {8, 8};
-   print_number(distance >> FRAC_BITS, position, glyph_size, 1, NIBBLEPAIR(DIST_SIGNIFICANT_DIGITS, DIST_FRACTION_DIGITS));
+   if (module_flags.distance_changed || force) {
+      upoint_t position = {0, 5};
+      upoint_t glyph_size = {8, 8};
+      module_flags.distance_changed = false;
+      print_number(distance >> FRAC_BITS, position, glyph_size, 1, NIBBLEPAIR(DIST_SIGNIFICANT_DIGITS, DIST_FRACTION_DIGITS));
+   }
 }
 
 void distance_reset(void) {
    distance = 0;
+   module_flags.distance_changed = true;
 }
 
 module_actions_t *distance_select(const uint8_t state) {
-   distance = 0;
+   if (!state) {
+      distance_reset();
+   }
    return NULL;
 }
 

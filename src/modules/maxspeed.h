@@ -11,7 +11,6 @@ time differences of different pulse counts.
 
 // TODO: -1 and no special code or 0 and special case? size optimization
 volatile uint16_t maxspeed_min_difference = -1;
-volatile uint8_t maxspeed_modified = false;
 
 void maxspeed_on_pulse(void) {
     if (oldest_pulse_index < PULSE_TABLE_SIZE) { // rolling average of PULSE_TABLE_SIZE pulses
@@ -21,13 +20,13 @@ void maxspeed_on_pulse(void) {
     
     if (maxspeed_min_difference > pulse_difference) {
         maxspeed_min_difference = pulse_difference;
-        maxspeed_modified = true;
+        module_flags.maxspeed_changed = true;
     }
 }
 
 void maxspeed_reset(void) {
     maxspeed_min_difference = -1;
-    maxspeed_modified = true;
+    module_flags.maxspeed_changed = true;
 }
 
 module_actions_t *maxspeed_select(const uint8_t state) {
@@ -38,8 +37,9 @@ module_actions_t *maxspeed_select(const uint8_t state) {
 }
 
 void maxspeed_redraw(const uint8_t force) {
-    if (force || maxspeed_modified) {
+    if (force || module_flags.maxspeed_changed) {
         uint16_t speed;
+        module_flags.maxspeed_changed = false;
         if (maxspeed_min_difference == (uint16_t)-1) {
             speed = 0;
         } else {
@@ -48,7 +48,6 @@ void maxspeed_redraw(const uint8_t force) {
         upoint_t position = {0, 5};
         upoint_t glyph_size = {8, 8};
         print_number(speed, position, glyph_size, 1, SPEED_DIGITS);
-        maxspeed_modified = false;
     }
 }
 

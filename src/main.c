@@ -17,7 +17,7 @@
 
 /* advanced options */
 #define MAXBUFFERX 10 // used for drawing, defines maximum width of a character // TODO: move somewhere else
-#define FRAC_BITS 10 // Fixed-point mantissa for PULSE_DIST and SPEED_FACTOR. WARNING! modifying may lead to overflow errors and better precision (most likely just the former). Less then 8 is not recommended if LONG_SPEED is used
+#define FRAC_BITS 10 // Fixed-point fraction for PULSE_DIST and SPEED_FACTOR. WARNING! modifying may lead to overflow errors and better precision (most likely just the former). Less then 8 is not recommended if LONG_SPEED is used
 
 /* imports depending on constants */
 #include "display/pcd8544.h"
