@@ -232,11 +232,6 @@ void speed_redraw() {
     
      speed = get_int_average(pulse_time, (pulse_index - 1));
      
-     // FIXME: workaround
-     if (speed > 1000) {
-         speed = 0;
-         debug_variable = newest_pulse - pulse_table[1];
-     }
    } else {
        speed = 0;
    }
