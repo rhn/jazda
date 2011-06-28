@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>rhn/jazda @ GitHub</title>
+
+  <style type="text/css">
+    body {
+      margin-top: 1.0em;
+      background-color: #fff;
+      font-family: Helvetica, Arial, FreeSans, san-serif;
+      color: #000;
+    }
+    #container {
+      margin: 0 auto;
+      width: 700px;
+    }
+    h1 { font-size: 3.8em; color: #000; margin-bottom: 3px; }
+    h1 .small { font-size: 0.4em; }
+    h1 a { text-decoration: none }
+    h2 { font-size: 1.5em; color: #000; }
+    h3 { text-align: center; color: #000; }
+    a { color: #aa1100; }
+    .description { margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    .photo .description {
+        margin-top: 0;
+    }
+    .download { float: right; }
+    pre { background: #000; color: #fff; padding: 15px;}
+    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+    .footer { text-align:center; padding-top:30px; font-style: italic; }
+    table,
+    tr,
+    th,
+    td {
+        border-width: 1px;
+        border-color: black;
+        border-style: solid;
+    }
+    img.preview {
+        height: 300px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <h1><a href="http://github.com/rhn/jazda">jazda</a>
+      <span class="small">
+        <span class="description">
+          a free bicycle computer
+        </span>
+      </span>
+    </h1>
+    <p>
+        <a href="http://rhn.github.com/jazda/">Go to main page</a>
+    </p>
+    <h2>Videos</h2>
+    <p>I made a video of the computer in action, showing all the functions, specifically speed calculation, all module values updating, speed & modules behavior on stop, common counter reset. You can hear double clicks at each module switch, this is due to using a salvaged button panel with resistors connected to buttons.</p>
+    <a href="media/working.avi">Download MPEG4/MP3 encoded video (13.9MB)</a>
+    <a href="media/working.ogv">Download Theora/Vorbis encoded video (14.9MB)</a>
+    <h2>Screen shots</h2>
+    <p>Please note that the project is at an early stage and values are shown without commas!
+    <br />
+    The default unit of speed is km/h and the last digit is the fractional part.
+    <br />
+    The default unit of distance is km and the fractional part is last two digits.
+    <br />
+    Both plots are capped at ~51.2 km/h.
+    </p>
+    <div class="photo"><a href="media/initial.JPG"><img class="preview" src="media/initial.JPG" /></a><div class="description">Screen fresh after poweron, all values set to 0. From top to bottom: the big 00 is the speed, the 1 is a debugging value, module list with "DIS" highlighted, distance since last counter reset</div></div>
+    <div class="photo"><a href="media/distance.JPG"><img class="preview" src="media/distance.JPG" /></a><div class="description">Distance module after traveling 360m</div></div>
+    <div class="photo"><a href="media/stopwatch.JPG"><img class="preview" src="media/stopwatch.JPG" /></a><div class="description">Stopwatch displaying 1min 13sec since restart, speed meter at 12.9 km/h</div></div>
+    <div class="photo"><a href="media/debug_backlight.JPG"><img class="preview" src="media/debug_backlight.JPG" /></a><div class="description">Debug module which currently is blank but activates the backlight</div></div>
+    <div class="photo"><a href="media/maxspeed.JPG"><img class="preview" src="media/maxspeed.JPG" /></a><div class="description">Maximum speed = 32 km/h</div></div>
+    <div class="photo"><a href="media/avgspeed.JPG"><img class="preview" src="media/avgspeed.JPG" /></a><div class="description">Average speed displaying 14.9 km/h and some debug data</div></div>
+    <div class="photo"><a href="media/svtplot.JPG"><img class="preview" src="media/svtplot.JPG" /></a><div class="description">Speed vs time plot</div></div>
+    <div class="footer">
+      get the source code on GitHub : <a href="http://github.com/rhn/jazda">rhn/jazda</a>
+    </div>
+
+  </div>
+
+  
+</body>
+</html>

@@ -23,6 +23,9 @@
     h3 { text-align: center; color: #000; }
     a { color: #aa1100; }
     .description { margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    .photo .description {
+        margin-top: 0;
+    }
     .download { float: right; }
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
@@ -34,6 +37,9 @@
         border-width: 1px;
         border-color: black;
         border-style: solid;
+    }
+    img.preview {
+        height: 300px;
     }
   </style>
 </head>
@@ -47,9 +53,29 @@
         </span>
       </span>
     </h1>
+    <p>
+        <a href="http://rhn.github.com/jazda/">Go to main page</a>
+    </p>
+    <h2>Main prerequisites</h2>
+    <ul>
+        <li>AtMega8 or better - the core of the device where all the software goes.</li>
+        <li>PCD8544-based display unit. These can be found in Nokia 3310, 5110 and similar, or they can be bought off ebay.</li>
+        <li>SN74xx280 parity generator will be necessary if you want more buttons than your AtMega has external interrupt pins.</li>
+        <li>Wired wheel sensor (most of them are reed switches, but anything can do).</li>
+        <li>AVR programmer</li>
+    </ul>
 
+    <h2>Development setup</h2>
+    
+    <div class="photo"><a href="media/setup_big.JPG"><img src="media/setup_small.JPG" /></a>
+        <div class="description">The development version on my desk. Left - battery pack. Right - salvaged button module. Top breadboard-left: parity generator splitting interrupts from all buttons. Top breadboard-right: display module. Bottom breadboard-right: AtMega8 connected directly to a wheel sensor, LCD and interrupt splitter. Bottom breadboard-left: AtMega flashing space (not connected to anything else).
+            <br />
+            <a href="media/setup_big.JPG">Enlarge</a>
+        </div>
+    </div>
+    
     <h2>Cost</h2>
-    <p>Actual price paid for one prototype is listed as "Price paid/unit". All other prices are approximate.
+    <p>Actual price paid for one prototype so far is listed as "Price paid/unit". All other prices are approximate. Keep in mind that the prototype hasn't been assembled yet (waiting for PCBs)!
     LCD module and PCB were bought in packs of 4, all other items cost the same regardless of how many bought.
     </p>
     <table>
@@ -76,13 +102,13 @@
                 <td> Battery compartment </td> <td>1,5 zł</td> <td>1,5</td> <td>0.4</td> <td>0.5</td> <td>0.3</td>
             </tr>
             <tr>
-                <td> 3x switch </td> <td>1,5 zł</td> <td>1,5</td> <td>0.4</td> <td>0.5</td> <td>0.3</td>
+                <td> 3x button </td> <td>1,5 zł</td> <td>1,5</td> <td>0.4</td> <td>0.5</td> <td>0.3</td>
             </tr>
             <tr>
                 <td> 6x ?ohm resistor </td> <td>1,8 zł</td> <td>1,8</td> <td>0.4</td> <td>0.6</td> <td>0.4</td>
             </tr>
             <tr>
-                <td> 6x 1µF cap </td> <td>1,8 zł</td> <td>1,8</td> <td>0.4</td> <td>0.6</td> <td>0.4</td>
+                <td> 7x 1µF cap </td> <td>2,1 zł</td> <td>2,1</td> <td>0.4</td> <td>0.6</td> <td>0.4</td>
             </tr>
             <tr>
                 <td> <a href="connectors.html#one-row">some connector...</a> </td> <td>1 zł</td> <td>1</td> <td>0.25</td> <td>0.3</td> <td>0.2</td>
@@ -94,7 +120,7 @@
                 <td> <a href="connectors.html#jumperplug">the other connectors (4)</a> </td> <td>1,8 zł</td> <td>1,8</td> <td>0.4</td> <td>0.6</td> <td>0.4</td>
             </tr>
             <tr>
-                <td> Total </td> <td>1500,100,900</td> <td>91,4</td> <td>22.5</td> <td>30</td> <td>20</td>
+                <td> Total </td> <td>3,50</td> <td>91,7</td> <td>22.5</td> <td>30</td> <td>20</td>
             </tr>
         </tbody>
     </table>
