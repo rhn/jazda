@@ -8,25 +8,33 @@
   <style type="text/css">
     body {
       margin-top: 1.0em;
-      background-color: #325307;
+      background-color: #fff;
       font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #ffffff;
+      color: #000;
     }
     #container {
       margin: 0 auto;
       width: 700px;
     }
-    h1 { font-size: 3.8em; color: #cdacf8; margin-bottom: 3px; }
+    h1 { font-size: 3.8em; color: #000; margin-bottom: 3px; }
     h1 .small { font-size: 0.4em; }
     h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #cdacf8; }
-    h3 { text-align: center; color: #cdacf8; }
-    a { color: #cdacf8; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    h2 { font-size: 1.5em; color: #000; }
+    h3 { color: #000; }
+    a { color: #aa1100; }
+    .description { margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
+    table,
+    tr,
+    th,
+    td {
+        border-width: 1px;
+        border-color: black;
+        border-style: solid;
+    }
   </style>
 </head>
 
@@ -43,19 +51,43 @@
     </div>
 
     <h1><a href="http://github.com/rhn/jazda">jazda</a>
-      <span class="small">by <a href="http://github.com/rhn">rhn</a></span></h1>
+      <span class="small">
+        <span class="description">
+          a free bicycle computer
+        </span>
+      </span>
+    </h1>
 
-    <div class="description">
-      Bicycle computer
-    </div>
-
-    <p>TBD</p><h2>License</h2>
-<p>GPLv3+</p>
-<h2>Authors</h2>
-<p>rhn (gihu.rhn@porcupinefactory.org)<br/><br/>      </p>
-<h2>Contact</h2>
-<p> (gihu.rhn@porcupinefactory.org)<br/>      </p>
-
+    <p>Jazda is a project aimed to create a hackable bicycle computer from widely-available parts.</p>
+    <h2><a href="https://github.com/rhn/jazda/wiki/">Project wiki</a></h2>
+    
+    <h2>Features</h2>
+    <h3>Functions</h3>
+    <ul>
+        <li>Current speed</li>
+        <li>Trip distance</li>
+        <li>Trip average speed</li>
+        <li>Trip max speed</li>
+        <li>Trip time</li>
+        <li>Speed vs distance plot</li>
+        <li>Speed vs time plot</li>
+    </ul>
+    <h3>Programming highlights</h3>
+    <ul>
+        <li>AVR architecture</li>
+        <li>Low operating voltage (min 2.4V)</li>
+        <li>Interrupt-driven code</li>
+        <li>Open schematics & PCB design</li>
+        <li>Fixed-point arithmetics</li>
+        <li>C programming language (gcc + avr-glibc)</li>
+        <li>Vector digit rendering</li>
+        <li>Line- (not character-) based display</li>
+    </ul>
+    
+    <h2><a href="gallery.html"> Gallery </a></h2>
+    <h2><a href="making.html"> Tutorial (incomplete) </a></h2>
+    <h2>Contact</h2>
+    <p>rhn (gihu.rhn@porcupinefactory.org)</p>
 
     <h2>Download</h2>
     <p>
