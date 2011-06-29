@@ -9,6 +9,12 @@ https://github.com/rhn/jazda/wiki/
 Introduction, tutorial and hardware documents:
 http://rhn.github.com/jazda/
 
+QUICK START
+As of the current (pre-release) version, ALL .h FILES CONTAIN CODE!
+To build, use the commands
+cd src
+../build.sh usbasp m8 main.c
+
 FEATURES
 
 calculates distance with arbitrary precision (set before compilation)
