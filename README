@@ -1,14 +1,20 @@
 Jazda is a bicycle computer based on AVR microcontrollers and mobile phone screens. The project covers both the software and hardware design, providing the source code and schematics.
-Currently, it supports AtTiny2313. The microcontroller was chosen because of its popularity and resistance to damage. Support for AtMega8 is planned in the near future.
-The other significant component is the screen. The project aims to be compatible with at least a few popular low-powered displays, but at the moment only one is supported.
+Originally, it was built around AtTiny2313, now it's AtMega8. The microcontrollers were chosen because of their popularity and resistance to damage.
+The other significant component is the screen. The project aims to be compatible with at least a few popular low-powered displays in the future, but at the moment only one is supported.
+
+Project page:
+https://github.com/rhn/jazda
+Project wiki:
+https://github.com/rhn/jazda/wiki/
+Introduction, tutorial and hardware documents:
+http://rhn.github.com/jazda/
 
 FEATURES
 
 calculates distance with arbitrary precision (set before compilation)
 calculates speed at every impulse with arbitrary precision (set before compilation)
-smart speed decreasing when no pulses come in (wheel stopped)
-displays vector digits
-partially modular design
+smooth speed decreasing when no pulses come in (wheel stopped)
+modular design
 
 HARDWARE REQUIREMENTS
 
@@ -18,8 +24,11 @@ LPH7366 display (Philips PCD8544 LCD driver)
   OR
   Nokia 5110 display module off eBay
 Atmel AtMega8 microcontroller
-2x 1µF capacitors
-3V power supply (2x1.4V batteries work fine)
+3x button
+4x ~1µF capacitors (depends on switches quality)
+SN74xx280 or any other parity generator
+3x ?Ω resistors (pull-up) 
+3V power supply (2x1.2V batteries work fine)
 
 SOFTWARE REQUIREMENTS
 
@@ -33,10 +42,10 @@ SOFTWARE INSTALLATION
 The software has been tested on Linux only.
 To compile and download the software to the chip, go to src/ directory and run the command:
 
-../build.sh usbasp t2313 main.c
+../build.sh usbasp m8 main.c
 
 replacing usbasp with the name of your programmer (refer to avrdude manual to find it).
 For further information, refer to build.sh source code.
 
 Notes regarding parity generator:
-The generator will be connected to buttons which are filtered with capacitors. The resut is that it may generate some noise on output, and therefore, excessive interrupts. This is however handled by interrupt emulation mechanism and shouldn't ever be a problem.
+The generator is be connected to buttons which are filtered with capacitors. The resut is that it may generate some noise on output, and therefore, excessive interrupts. This is however handled by interrupt emulation mechanism and shouldn't ever be a problem.
