@@ -45,7 +45,7 @@ void on_left_button(uint8_t state) {
    (*(current_actions->button_left))(state);
 }
 
-#include "emuint.h"
+#include "emuint.c"
 
 void module_redraw() {
    uint8_t switched = current_module_switched;

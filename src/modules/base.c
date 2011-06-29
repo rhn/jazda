@@ -17,7 +17,7 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "common.h"
+#include "common.c"
 
 #ifdef LITTLE_RAM
     struct module_flags_struct {
@@ -38,39 +38,39 @@
 volatile struct module_flags_struct module_flags = {0, 0, 0, 0};
 
 #ifdef COMBINED_RESET
-    #include "combined_reset.h"
+    #include "combined_reset.c"
 #endif
 
 #ifdef DISTANCE
-    #include "distance.h"
+    #include "distance.c"
 #endif
 
 #ifdef CURRENT_SPEED
     #ifdef SPEED_VS_DISTANCE_PLOT
-        #include "svdplot.h"
+        #include "svdplot.c"
     #endif
     #ifdef MAXSPEED
-        #include "maxspeed.h"
+        #include "maxspeed.c"
     #endif
 #endif
 
 #ifdef SPEED_VS_TIME_PLOT
-    #include "svtplot.h"
+    #include "svtplot.c"
 #endif
 
 #ifdef STOPWATCH
-    #include "stopwatch.h"
+    #include "stopwatch.c"
 #endif
 
 #ifdef AVGSPEED
-    #include "avgspeed.h"
+    #include "avgspeed.c"
 #endif
 
 #ifdef DEBUG
-    #include "debug.h"
+    #include "debug.c"
 #endif
 
-#include "signals.h"
+#include "signals.c"
 
 // table of module records
 const module_record_t modules[] = {

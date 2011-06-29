@@ -27,10 +27,10 @@
 #include "values.h"
 
 #ifdef ATTINY2313
-  #include "avr/attiny2313.h"
+  #include "avr/attiny2313.c"
 #else
   #ifdef ATMEGA8
-    #include "avr/atmega8.h"
+    #include "avr/atmega8.c"
   #endif
 #endif
 
@@ -39,28 +39,28 @@
 #define FRAC_BITS 10 // Fixed-point fraction for PULSE_DIST and SPEED_FACTOR. WARNING! modifying may lead to overflow errors and better precision (most likely just the former). Less then 8 is not recommended if LONG_SPEED is used
 
 /* imports depending on constants */
-#include "display/pcd8544.h"
-#include "display/drawing.h"
+#include "display/pcd8544.c"
+#include "display/drawing.c"
 
 // basic builtins
 
-#include "builtins/timer.h"
+#include "builtins/timer.c"
 #ifdef CURRENT_SPEED
-    #include "builtins/speed.h"
+    #include "builtins/speed.c"
 #endif
 
-#include "builtins/plots.h"
+#include "builtins/plots.c"
 
 // modules
 
-#include "modules/base.h"
+#include "modules/base.c"
 
 // debug builtin placed last to have access to all variables
 #ifdef DEBUG
-    #include "builtins/events.h"
+    #include "builtins/events.c"
 #endif
 
-#include "actions.h"
+#include "actions.c"
 
 void main() __attribute__ ((noreturn));
 void main(void) {
