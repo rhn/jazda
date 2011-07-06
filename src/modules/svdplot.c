@@ -54,7 +54,7 @@ void svd_on_pulse(const uint16_t now) {
         svd_pulse_number = 0; // clear counter
         svd_insert_average(0); // insert a space
     } else if (svd_pulse_number == SVDPLOT_FRAME_PULSES - 1) { // if last pulse of a frame
-        uint16_t avg = get_int_average(now - svd_previous_frame_time, SVDPLOT_FRAME_PULSES); // TODO: move away to main loop
+        uint16_t avg = get_average_speed(now - svd_previous_frame_time, SVDPLOT_FRAME_PULSES); // TODO: move away to main loop
         svd_previous_frame_time = now;
         svd_pulse_number = 0; // clear counter
         

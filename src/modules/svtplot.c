@@ -52,7 +52,7 @@ void svt_update(const uint16_t now) {
     // can happen when the timer just hits (last pulse is committed) and on_stop
     // fires
     if (rotations > 0) {
-        uint16_t avg = get_int_average(now - svt_frame_start_time, rotations);
+        uint16_t avg = get_average_speed(now - svt_frame_start_time, rotations);
         // TRUNCATING AVERAGE
         avg >>= SVTPLOT_SPEED_TRUNC;
 

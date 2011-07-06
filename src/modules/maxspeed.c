@@ -62,7 +62,7 @@ void maxspeed_redraw(const uint8_t force) {
         if (maxspeed_min_difference == (uint16_t)-1) {
             speed = 0;
         } else {
-            speed = get_int_average(maxspeed_min_difference, PULSE_TABLE_SIZE - 1);
+            speed = get_average_speed(maxspeed_min_difference, PULSE_TABLE_SIZE - 1);
         }
         upoint_t position = {0, 5};
         upoint_t glyph_size = {8, 8};

@@ -42,6 +42,8 @@
 #include "display/pcd8544.c"
 #include "display/drawing.c"
 
+
+#include "calculations.c"
 // basic builtins
 
 #include "builtins/timer.c"

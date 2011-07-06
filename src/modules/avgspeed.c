@@ -50,19 +50,17 @@ module_actions_t *avgspeed_select(const uint8_t state) {
 
 void avgspeed_redraw(const uint8_t force) {
     if (force || module_flags.avgspeed_changed) {
-        uint32_t speed;
+        uint16_t speed;
         upoint_t position = {0, 5};
         upoint_t glyph_size = {8, 8};
         module_flags.avgspeed_changed = false;
         if (avgspeed_pulses) {
             uint32_t time_difference = avgspeed_total_time;
     //        speed = ((uint32_t)(((uint64_t)SPEED_FACTOR * ((avgspeed_pulses - 1))) >> FRAC_BITS)) / time_difference;
-            speed = get_int_average_long(time_difference, avgspeed_pulses);
-            print_number(avgspeed_pulses, position, glyph_size, 1, 4<<4);
+            speed = get_average_speed_long(time_difference, avgspeed_pulses);
         } else {
             speed = 0;
         }
-        position.y = 4;
         print_number(speed, position, glyph_size, 1, SPEED_DIGITS);
     }
 }

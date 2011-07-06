@@ -63,7 +63,8 @@
 #define RSTPIN PC1
 
 /* special options */
-#define HIGH_PRECISION_SPEED // makes speed calculation 32-bit instead of truncating to 16
+#define HIGH_PRECISION_CALCULATIONS // makes speed calculation 32-bit instead of truncating to 16
+#define LONG_CALCULATIONS // makes calculations possible on longer data types
 
 /* PREFERENCES */
 #define DEBUG
@@ -74,7 +75,6 @@
 #define STOPWATCH
 #define MAXSPEED
 #define AVGSPEED
-#define LONG_SPEED
 #define COMBINED_RESET
 #define SPEED_VS_TIME_PLOT
 #define METRIC_PULSE_DIST 2133L // millimeters
