@@ -22,6 +22,8 @@ Global signal handling. Not part of the module API
 */
 /* MODULE ACTIONS MANAGEMENT */
 
+#include "actions.h"
+
 const module_actions_t default_actions = {&module_switch_left,
                                           &module_switch_right};
 
@@ -44,8 +46,6 @@ void on_right_button(uint8_t state) {
 void on_left_button(uint8_t state) {
    (*(current_actions->button_left))(state);
 }
-
-#include "emuint.c"
 
 void module_redraw() {
    uint8_t switched = current_module_switched;

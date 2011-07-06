@@ -45,10 +45,10 @@ void setup_pulse(void) {
   GIMSK |= (1<<INT0);
 }
 
-inline void on_pulse(void);
+inline void on_speed_pulse(void);
 
 ISR(INT0_vect) {
-    on_pulse();
+    on_speed_pulse();
 }
 
 

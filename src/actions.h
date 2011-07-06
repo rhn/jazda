@@ -18,41 +18,13 @@
 */
 
 /*
-Signal dispatchers.
-Must be included after modules to be able to reference them.
+Global signal handling. Not part of the module API
 */
 
-/* MODULE HOOKS */
+void on_select_button(uint8_t state);
 
-inline void on_crank_pulse(void) {
-  uint16_t now = get_time();
-}
+void on_right_button(uint8_t state);
 
-inline void on_speed_pulse(void) {
-// speed interrupt
-  uint16_t now = get_time();
-  #ifdef DISTANCE
-    distance_on_pulse();
-  #endif
-  #ifdef CURRENT_SPEED
-    speed_on_pulse(now);
-  #endif
-  #ifdef SPEED_VS_TIME_PLOT
-    svt_on_pulse(now);
-  #endif
-}
+void on_left_button(uint8_t state);
 
-inline void on_each_second(void) {
-   #ifdef STOPWATCH
-      stopwatch_on_each_second();
-   #endif
-}
-
-inline void on_stop(uint16_t now) {
-    #ifdef CURRENT_SPEED
-        speed_on_stop(now);
-    #endif
-    #ifdef SPEED_VS_TIME_PLOT
-        svt_on_stop(now);
-    #endif
-}
+void module_redraw();

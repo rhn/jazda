@@ -1,27 +1,26 @@
-/* ----- PROJECT-DEPENDENT DECLARATIONS ---- */
+/*
+    Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
 
-#define EMUINT0PIN LEFTPIN
-#define EMUINT0PORT LEFTPORT
-#define EMUINT0DIR LEFTDIR
-void EMUINT0_handler(uint8_t state) {
-    on_left_button(state);
-}
+    This file is part of Jazda.
 
-#define EMUINT1PIN RIGHTPIN
-#define EMUINT1PORT RIGHTPORT
-#define EMUINT1DIR RIGHTDIR
-void EMUINT1_handler(uint8_t state) {
-    on_right_button(state);
-}
+    Jazda is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-#define EMUINT2PIN SELECTPIN
-#define EMUINT2PORT SELECTPORT
-#define EMUINT2DIR SELECTDIR
-void EMUINT2_handler(uint8_t state) {
-    on_select_button(state);
-}
+    Jazda is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-/* THE ACTUAL LIBRARY */
+    You should have received a copy of the GNU General Public License
+    along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+/* Library for implementing pin-change interrupts utilizing a single interrupt
+and a parity generator.
+*/
 
 volatile char emuintpinstate = 0;
 
