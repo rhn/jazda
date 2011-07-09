@@ -43,10 +43,14 @@
 #include "display/drawing.c"
 
 
-#include "calculations.c"
+#include "lib/calculations.c"
 // basic builtins
 
 #include "builtins/timer.c"
+
+#ifdef CRANK
+    #include "builtins/crank.c"
+#endif
 #ifdef CURRENT_SPEED
     #include "builtins/speed.c"
 #endif

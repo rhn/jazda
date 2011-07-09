@@ -20,6 +20,7 @@
 #include "avr.c"
 
 #include "../actions.h"
+#include "../modules/signals.h"
 
 #define EMUINT0PIN LEFTPIN
 #define EMUINT0PORT LEFTPORT

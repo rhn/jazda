@@ -77,7 +77,7 @@
            return speed;
         }
     #else
-        uint16_t get_int_average(const uint32_t pulse_distance, const uint16_t time_amount, const uint8_t pulse_count) {
+        uint16_t get_rot_speed(const uint32_t pulse_distance, const uint16_t time_amount, const uint8_t pulse_count) {
            // SPEED_FACTOR is fixed point with TIMER_BITS fractional bits truncated by SPEED_TRUNCATION_BITS bits
            // pulse_time is fixed point with TIMER_BITS fractional bits
            // to get correct division, pulse_time needs to be truncated by SPEED_TRUNCATION_BITS

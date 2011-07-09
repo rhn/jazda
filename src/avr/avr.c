@@ -29,6 +29,8 @@ FIXME: race condition in reading extended_time while overflow should be
 happening.
 */
 
+#include "../modules/signals.h"
+
 volatile uint16_t extended_time = 0;
 
 void setup_pulse(void) {

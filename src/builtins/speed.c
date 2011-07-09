@@ -168,6 +168,7 @@ void speed_on_pulse(uint16_t now) {
   speed_pulse_occured = true;
 }
 
+// OBFUSCATION WARNING
 void speed_redraw() {
    if (speed_pulse_occured) {
        speed_pulse_occured = false;
