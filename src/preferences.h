@@ -34,15 +34,15 @@
 #define BUTTONPORT PORTD
 #define BUTTONPIN PD3
 
-#define LEFTPIN PD5
+#define LEFTPIN PD7
 #define LEFTPORT PIND
 #define LEFTDIR DDRD
 
-#define RIGHTPIN PD6
+#define RIGHTPIN PD0
 #define RIGHTPORT PIND
 #define RIGHTDIR DDRD
 
-#define SELECTPIN PD7
+#define SELECTPIN PD6
 #define SELECTPORT PIND
 #define SELECTDIR DDRD
   

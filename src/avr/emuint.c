@@ -90,11 +90,14 @@ void update_emuint_state(void) {
     #endif
 }
 
+
+volatile uint8_t emu = 0;
 void emuint_dispatch(void) {
     char oldstate = emuintpinstate;
     update_emuint_state();    
         
     char statechange = oldstate ^ emuintpinstate;
+    emu = statechange;
     
     #ifdef EMUINT0PIN
     if (statechange & 0b00000001) {

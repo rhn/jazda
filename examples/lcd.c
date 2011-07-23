@@ -23,7 +23,7 @@
 #define RSTDIR DDRC
 #define RSTPORT PORTC
 #define RSTPIN PC1
-#include "display/pcd8544.h"
+#include "display/pcd8544.c"
 
 /* EXAMPLE 5
 LCD test pattern

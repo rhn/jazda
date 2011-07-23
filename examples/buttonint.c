@@ -4,7 +4,7 @@
 #include <avr/interrupt.h>
 
 /* EXAMPLE 3
-Switching diodes /XXX: broken on atmega8
+Switching diodes (verified to work with AtMega8)
 
 Features: Hardware interrupt, pin input, pin output
 
@@ -31,13 +31,18 @@ int main(void) {
   DDRD |= 1<<PD5; /* set Pd5 to output */
   DDRD |= 1<<PD6; /* set Pd6 to output */
   DDRB &= ~(1<<PB0); /* set Pb0 to input */
+  PORTB |= 1<<PB0; // enable pullup resistor
+  DDRD &= ~(1<<PD2); /* set PD2 (INT0) to input */
+  PORTD |= 1<<PD2; // enable pullup resistor
 
   // Set Pin 6 (PD2) as the pin to use for interrupts
-  // XXX isn't this invalid?
-  PCMSK |= (1<<PIND2);
+  // XXX isn't this valid only for tiny2313?
+  // PCMSK |= (1<<PIND2);
   
   // interrupt on INT0 pin falling edge (sensor triggered)
-  MCUCR = (1<<ISC01) | (1<<ISC00);
+  // mega8
+  MCUCR |= (1<<ISC01);
+  MCUCR &= ~(1<<ISC00);
   
   // turn on interrupts!
   GIMSK |= (1<<INT0);
