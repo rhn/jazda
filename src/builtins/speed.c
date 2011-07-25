@@ -48,8 +48,8 @@ TODO: split away svd plot into a module
 
 #define SPEED_SIGNIFICANT_DIGITS 2 // 99km/h is good enough
 #define SPEED_FRACTION_DIGITS 1 // better than my sigma
-#define PULSE_TABLE_SIZE 3
-#define STOPPED_TIMEOUT 3 // seconds
+#define WHEEL_PULSE_TABLE_SIZE 3
+#define WHEEL_STOPPED_TIMEOUT 3 // seconds
 
 /* ---------- CONSTANTS --------------- */
 // numbers
@@ -84,13 +84,11 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
 
 // TODO: optimize: move 0 to variable on ts own and see if size decreases
 // TODO: check if volatile is necessary with tables
-volatile uint16_t pulse_table[PULSE_TABLE_SIZE + 1];
+volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE + 1];
 // index of the oldest pulse in the table
-volatile uint8_t oldest_pulse_index = 0;
+volatile uint8_t wheel_oldest_pulse_index = 0;
 // flag for notifying about pulse_table and oldest_pulse_index changes
 volatile uint8_t speed_pulse_occured = true;
-
-void on_stop(uint16_t now);
 
 #ifdef SPEED_VS_DISTANCE_PLOT
     void svd_on_pulse(uint16_t now);
@@ -114,56 +112,57 @@ uint16_t get_average_speed(const uint16_t time_amount, const uint8_t pulse_count
     return get_rot_speed(SPEED_FACTOR, time_amount, pulse_count);
 }
 
-void speed_on_timeout(void);
-void speed_on_timeout(void) {
+#include "../modules/signals.h" // this file here implements on_wheel_stop detection
+
+void wheel_on_timeout(void) {
   uint16_t now = get_time();
   // will sometimes be triggered with 1 pulse in table, but only after
   // STOPPED_TIMEOUT * ONE_SECOND have passed, never getting into the condition.
   // if you break it, BURN.
   // delay can be actually anything. No possibility of prediction. The following just looks good.
-  if (now - pulse_table[1] < STOPPED_TIMEOUT * ONE_SECOND) {
-    set_timer_callback(now + pulse_table[1] - pulse_table[2], &speed_on_timeout);
+  if (now - wheel_pulse_table[1] < WHEEL_STOPPED_TIMEOUT * ONE_SECOND) {
+    set_timer_callback(now + wheel_pulse_table[1] - wheel_pulse_table[2], &wheel_on_timeout);
   } else {
     on_wheel_stop(now);
   }
 }
 
 void speed_on_wheel_stop(const uint16_t now) {
-    oldest_pulse_index = 0;
-    pulse_table[0] = now;
+    wheel_oldest_pulse_index = 0;
+    wheel_pulse_table[0] = now;
     speed_pulse_occured = true;
 }
 
 void speed_on_wheel_pulse(uint16_t now) {
-  pulse_table[0] = now;
+  wheel_pulse_table[0] = now;
 
-  for (uint8_t i = PULSE_TABLE_SIZE; i > 0; --i) {
-    pulse_table[i] = pulse_table[i - 1];
+  for (uint8_t i = WHEEL_PULSE_TABLE_SIZE; i > 0; --i) {
+    wheel_pulse_table[i] = wheel_pulse_table[i - 1];
   }
 
   uint16_t ahead;
-  if (oldest_pulse_index == 0) {
+  if (wheel_oldest_pulse_index == 0) {
     // 100 is added to make sure that on_trigger will detect this as a stop
-    ahead = STOPPED_TIMEOUT * ONE_SECOND + 100;
+    ahead = WHEEL_STOPPED_TIMEOUT * ONE_SECOND + 100;
   } else {
-    uint16_t predicted = now - pulse_table[2];
+    uint16_t predicted = now - wheel_pulse_table[2];
     ahead = predicted + (predicted / 4);
   }
   // NOTE: remove ahead / 4 to save 10 bytes
-  set_timer_callback(now + ahead, &speed_on_timeout);
+  set_timer_callback(now + ahead, &wheel_on_timeout);
 
   // Modules that need start pulse notification
   #ifdef SPEED_VS_DISTANCE_PLOT
-    svd_on_pulse(now);
+    svd_on_wheel_pulse(now);
   #endif
   #ifdef AVGSPEED
-    avgspeed_on_pulse();
+    avgspeed_on_wheel_pulse();
   #endif
-  if (oldest_pulse_index < PULSE_TABLE_SIZE) {
-    oldest_pulse_index++;
+  if (wheel_oldest_pulse_index < WHEEL_PULSE_TABLE_SIZE) {
+    wheel_oldest_pulse_index++;
   }
   #ifdef MAXSPEED
-    maxspeed_on_pulse();
+    maxspeed_on_wheel_pulse();
   #endif
   speed_pulse_occured = true;
 }
@@ -176,9 +175,9 @@ void speed_redraw() {
        upoint_t position = {0, 0};
        upoint_t glyph_size = {10, 16};
        
-       if (oldest_pulse_index > 1) {
+       if (wheel_oldest_pulse_index > 1) {
          // speed going down when no pulses present
-         uint16_t *table = pulse_table;
+         uint16_t *table = wheel_pulse_table;
          uint8_t pulse_index;
          uint16_t newest_pulse;
          uint16_t next_pulse;
@@ -186,9 +185,9 @@ void speed_redraw() {
          
          do {
              speed_pulse_occured = false;
-             newest_pulse = pulse_table[0];
-             next_pulse = pulse_table[1];
-             pulse_index = oldest_pulse_index;
+             newest_pulse = wheel_pulse_table[0];
+             next_pulse = wheel_pulse_table[1];
+             pulse_index = wheel_oldest_pulse_index;
              oldest_pulse = table[pulse_index];
          } while (speed_pulse_occured);
          

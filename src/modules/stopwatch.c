@@ -70,7 +70,7 @@ void stopwatch_increment(void) {
 }
 
 void stopwatch_on_each_second(void) {
-   if (oldest_pulse_index != 0) {
+   if (wheel_oldest_pulse_index != 0) {
       stopwatch_increment();
    }
 }

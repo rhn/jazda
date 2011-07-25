@@ -29,16 +29,16 @@ time differences of different pulse counts.
 
 
 // TODO: -1 and no special code or 0 and special case? size optimization
-volatile uint16_t maxspeed_min_difference = -1;
+static volatile uint16_t maxspeed_min_difference = -1;
 
-void maxspeed_on_pulse(void) {
-    if (oldest_pulse_index < PULSE_TABLE_SIZE) { // rolling average of PULSE_TABLE_SIZE pulses
+void maxspeed_on_wheel_pulse(void) {
+    if (wheel_oldest_pulse_index < WHEEL_PULSE_TABLE_SIZE) { // rolling average of PULSE_TABLE_SIZE pulses
         return;
     }
-    uint16_t pulse_difference = pulse_table[1] - pulse_table[PULSE_TABLE_SIZE];
+    uint16_t time_difference = wheel_pulse_table[1] - wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];
     
-    if (maxspeed_min_difference > pulse_difference) {
-        maxspeed_min_difference = pulse_difference;
+    if (maxspeed_min_difference > time_difference) {
+        maxspeed_min_difference = time_difference;
         module_flags.maxspeed_changed = true;
     }
 }
@@ -62,7 +62,7 @@ void maxspeed_redraw(const uint8_t force) {
         if (maxspeed_min_difference == (uint16_t)-1) {
             speed = 0;
         } else {
-            speed = get_average_speed(maxspeed_min_difference, PULSE_TABLE_SIZE - 1);
+            speed = get_average_speed(maxspeed_min_difference, WHEEL_PULSE_TABLE_SIZE - 1);
         }
         upoint_t position = {0, 5};
         upoint_t glyph_size = {8, 8};
