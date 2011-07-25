@@ -38,6 +38,6 @@ void on_crank_pulse_collect_data(uint16_t now) {
   if (crank_pulse_count < CRANK_PULSES) {
     crank_pulse_count++;
   }
-  
+
   // TODO: set timer trigger to a few secs in the future
 }

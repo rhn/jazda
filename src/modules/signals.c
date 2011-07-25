@@ -30,7 +30,7 @@ Must be included after modules to be able to reference them.
       uint16_t now = get_time();
       on_crank_pulse_collect_data(now);
       #ifdef CADENCE
-        cadence_on_crank_pulse(void);
+        cadence_on_crank_pulse();
       #endif
    }
 #endif

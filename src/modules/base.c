@@ -25,6 +25,7 @@
         unsigned int maxspeed_changed :1;
         unsigned int stopwatch_changed :1;
         unsigned int avgspeed_changed :1;
+        unsigned int cadence_changed :1;
     };
 #else
     struct module_flags_struct {
@@ -32,10 +33,11 @@
         uint8_t maxspeed_changed;
         uint8_t stopwatch_changed;
         uint8_t avgspeed_changed;
+        uint8_t cadence_changed;
     };
 #endif
 
-volatile struct module_flags_struct module_flags = {0, 0, 0, 0};
+volatile struct module_flags_struct module_flags = {0, 0, 0, 0, 0};
 
 #ifdef COMBINED_RESET
     #include "combined_reset.c"
@@ -64,6 +66,10 @@ volatile struct module_flags_struct module_flags = {0, 0, 0, 0};
 
 #ifdef AVGSPEED
     #include "avgspeed.c"
+#endif
+
+#ifdef CADENCE
+    #include "cadence.c"
 #endif
 
 #ifdef DEBUG
@@ -95,9 +101,12 @@ const module_record_t modules[] = {
     #ifdef SPEED_VS_TIME_PLOT
         svt_record,
     #endif
+    #ifdef CADENCE
+        cadence_record,
+    #endif
     };
 
-#define MODULES_NUMBER sizeof(modules)/sizeof(module_record_t)
+#define MODULES_COUNT sizeof(modules)/sizeof(module_record_t)
 
 // currently displayed module
 volatile uint8_t current_module = 0;
@@ -108,7 +117,7 @@ void module_switch_right(uint8_t state) {
    if (state) {
        return;
    }
-   if (current_module < MODULES_NUMBER - 1) {
+   if (current_module < MODULES_COUNT - 1) {
        current_module++;
    } else {
        current_module = 0;
@@ -121,7 +130,7 @@ void module_switch_left(uint8_t state) {
        return;
    }
    if (current_module == 0) {
-       current_module = MODULES_NUMBER - 1;
+       current_module = MODULES_COUNT - 1;
    } else {
        current_module--;
    }
@@ -134,7 +143,7 @@ void module_redraw_menu(void) {
    uint8_t module_index;
    set_row(3);
    set_column(0);
-   for (module_index = 0; module_index < MODULES_NUMBER; module_index++) {
+   for (module_index = 0; module_index < MODULES_COUNT; module_index++) {
       uint8_t sig_index;
       for (sig_index = 0; sig_index < MODULE_SIGNATURE_SIZE; sig_index++) {
         char stamp = modules[module_index].signature[sig_index];

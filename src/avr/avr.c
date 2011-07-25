@@ -69,6 +69,11 @@ void setup_buttons(void) {
   SELECTDIR &= ~(1<<SELECTPIN);
   SELECTPORT |= 1<<SELECTPIN;
   
+  #ifdef CRANK
+      CRANKDIR &= ~(1<<CRANKPIN);
+      CRANKPORT |= 1<<CRANKPIN;
+  #endif
+  
   // interrupt on INT1 pin both edges (emuint state change)
   MCUCR |= (1<<ISC10);
   MCUCR &= ~(1<<ISC11);

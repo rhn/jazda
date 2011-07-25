@@ -24,14 +24,16 @@ REQUIRES: crank
 #include "../builtins/crank.h"
 #include "../lib/calculations.h"
 
+#include "cadence.h"
+
 static inline uint16_t get_crank_average(uint16_t time_difference, uint8_t pulse_count) {
-    return get_rotational_speed(CRANK_FACTOR, time_difference, pulse_count);
+    return get_rot_speed(CRANK_FACTOR, time_difference, pulse_count);
 }
 
 void cadence_on_crank_pulse(void) {
-    if (!cadence_stopped) {
+//    if (!crank_stopped) { // TODO: extend crank to support stop
         module_flags.cadence_changed = true;
-    }
+//    }
 }
 
 void cadence_on_stop(void) {
@@ -47,14 +49,10 @@ void cadence_redraw(const uint8_t force) {
         
         if (crank_pulse_count > 1) {
             uint16_t time_difference = crank_pulse_times[0] - crank_pulse_times[crank_pulse_count - 1];
-    //        speed = ((uint32_t)(((uint64_t)SPEED_FACTOR * ((avgspeed_pulses - 1))) >> FRAC_BITS)) / time_difference;
-            rpm = get_crank_average(time_difference, crank_pulse_count);
+            rpm = get_crank_average(time_difference, crank_pulse_count - 1);
         } else {
             rpm = 0;
         }
         print_number(rpm, position, glyph_size, 1, CADENCE_DIGITS);
     }
 }
-
-#define cadence_signature {0b10000000, 0b01100000, 0b00011000, 0b00000110, 0b00000001, 0b00000110, 0b00011000, 0b11100000}
-#define cadence_record {&cadence_redraw, &module_select_null, cadence_signature}

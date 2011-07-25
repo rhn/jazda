@@ -27,8 +27,8 @@
 #define PULSEPIN PD2
 
 #define CRANKDIR DDRD
-#define CRANKPORT PORTD
-#define CRANKPIN PD4
+#define CRANKPORT PIND
+#define CRANKPIN PD1
 
 #define BUTTONDIR DDRD
 #define BUTTONPORT PORTD
@@ -74,6 +74,7 @@
 #define DEBUG
 
 #define CRANK
+#define CADENCE
 #define DISTANCE
 #define CURRENT_SPEED
 #define SPEED_VS_DISTANCE_PLOT

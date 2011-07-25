@@ -17,12 +17,11 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-extern volatile uint8_t emu;
+volatile uint8_t event_count = 0; // extern
+volatile uint8_t value = 0;
 
 void events_redraw(void) {
-   static uint16_t count = 0;
    upoint_t position = {0, 2};
    upoint_t glyph_size = {8, 8};
-   print_number(emu, position, glyph_size, 1, 4<<4);
-   count++;
+   print_number(crank_pulse_count, position, glyph_size, 1, 4<<4);
 }

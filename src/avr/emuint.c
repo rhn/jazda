@@ -101,7 +101,6 @@ void emuint_dispatch(void) {
     
     #ifdef EMUINT0PIN
     if (statechange & 0b00000001) {
-        pulses++;
         EMUINT0_handler(emuintpinstate & 0b00000001);
     }
     #endif
