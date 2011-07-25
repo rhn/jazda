@@ -124,17 +124,17 @@ void speed_on_timeout(void) {
   if (now - pulse_table[1] < STOPPED_TIMEOUT * ONE_SECOND) {
     set_timer_callback(now + pulse_table[1] - pulse_table[2], &speed_on_timeout);
   } else {
-    on_stop(now);
+    on_wheel_stop(now);
   }
 }
 
-void speed_on_stop(const uint16_t now) {
+void speed_on_wheel_stop(const uint16_t now) {
     oldest_pulse_index = 0;
     pulse_table[0] = now;
     speed_pulse_occured = true;
 }
 
-void speed_on_pulse(uint16_t now) {
+void speed_on_wheel_pulse(uint16_t now) {
   pulse_table[0] = now;
 
   for (uint8_t i = PULSE_TABLE_SIZE; i > 0; --i) {

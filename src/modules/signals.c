@@ -17,6 +17,8 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "signals.h"
+
 /*
 Signal dispatchers.
 Must be included after modules to be able to reference them.
@@ -25,7 +27,6 @@ Must be included after modules to be able to reference them.
 /* MODULE HOOKS */
 
 #ifdef CRANK
-   #include "../builtins/crank.h"
    inline void on_crank_pulse(void) {
       uint16_t now = get_time();
       on_crank_pulse_collect_data(now);
@@ -35,17 +36,17 @@ Must be included after modules to be able to reference them.
    }
 #endif
 
-inline void on_speed_pulse(void) {
+inline void on_wheel_pulse(void) {
 // speed interrupt
   uint16_t now = get_time();
   #ifdef DISTANCE
-    distance_on_pulse();
+    distance_on_wheel_pulse();
   #endif
   #ifdef CURRENT_SPEED
-    speed_on_pulse(now);
+    speed_on_wheel_pulse(now);
   #endif
   #ifdef SPEED_VS_TIME_PLOT
-    svt_on_pulse(now);
+    svt_on_wheel_pulse(now);
   #endif
 }
 
@@ -55,11 +56,11 @@ inline void on_each_second(void) {
    #endif
 }
 
-inline void on_stop(uint16_t now) {
+inline void on_wheel_stop(uint16_t now) {
     #ifdef CURRENT_SPEED
-        speed_on_stop(now);
+        speed_on_wheel_stop(now);
     #endif
     #ifdef SPEED_VS_TIME_PLOT
-        svt_on_stop(now);
+        svt_on_wheel_stop(now);
     #endif
 }

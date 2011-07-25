@@ -17,6 +17,10 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* this file connects signals from modules/signals.h and button handlers from
+actions.h to device-specific hardware using avr.c file for the generic ones.
+*/
+
 #include "avr.c"
 
 #include "../actions.h"

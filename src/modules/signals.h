@@ -22,14 +22,19 @@ Signal dispatchers.
 Must be included after modules to be able to reference them.
 */
 
+#ifdef CADENCE
+    #include "cadence.h"
+#endif
+
 /* MODULE HOOKS */
 
 #ifdef CRANK
+   #include "../builtins/crank.h"
    inline void on_crank_pulse(void);
 #endif
 
-inline void on_speed_pulse(void);
+inline void on_wheel_pulse(void);
 
 inline void on_each_second(void);
 
-inline void on_stop(uint16_t now);
+inline void on_wheel_stop(uint16_t now);

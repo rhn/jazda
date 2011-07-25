@@ -70,7 +70,7 @@
 
 void main() __attribute__ ((noreturn));
 void main(void) {
-  setup_pulse();
+  setup_wheel_pulse();
   setup_buttons();
   setup_cpu();
   lcd_setup();

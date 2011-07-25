@@ -22,7 +22,7 @@
 
 volatile uint32_t distance = 0;
 
-inline void distance_on_pulse(void) {
+inline void distance_on_wheel_pulse(void) {
   distance += PULSE_DIST;
   // TODO: asm this to use 1 tmp reg?
   module_flags.distance_changed = true;

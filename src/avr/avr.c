@@ -19,10 +19,12 @@
 
 #include <avr/interrupt.h>
 
-/* AVR-specific routines */
+/* AVR-specific routines.
+This module links signals from signals.h to interrupts in generic AVR hardware.
 
-/* REQUIRES:
+REQUIRES:
 AVR #defines regarding interrupts
+Signals
 
 TODO: chip-specific functions to chip-specific files
 FIXME: race condition in reading extended_time while overflow should be
@@ -33,7 +35,7 @@ happening.
 
 volatile uint16_t extended_time = 0;
 
-void setup_pulse(void) {
+void setup_wheel_pulse(void) {
   /* -----  hwint button */  
   PULSEDIR &= ~(1<<PULSEPIN); /* set PD2 to input */
   PULSEPORT |= 1<<PULSEPIN; // enable pullup resistor
@@ -47,12 +49,9 @@ void setup_pulse(void) {
   GIMSK |= (1<<INT0);
 }
 
-inline void on_speed_pulse(void);
-
 ISR(INT0_vect) {
-    on_speed_pulse();
+    on_wheel_pulse();
 }
-
 
 void setup_buttons(void) {
   /* -----  hwint button */  
