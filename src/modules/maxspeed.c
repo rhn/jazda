@@ -32,10 +32,10 @@ time differences of different pulse counts.
 static volatile uint16_t maxspeed_min_difference = -1;
 
 void maxspeed_on_wheel_pulse(void) {
-    if (wheel_oldest_pulse_index < WHEEL_PULSE_TABLE_SIZE) { // rolling average of PULSE_TABLE_SIZE pulses
+    if (wheel_pulse_count < WHEEL_PULSE_TABLE_SIZE) { // rolling average of PULSE_TABLE_SIZE pulses
         return;
     }
-    uint16_t time_difference = wheel_pulse_table[1] - wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];
+    uint16_t time_difference = wheel_pulse_table[0] - wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE - 1];
     
     if (maxspeed_min_difference > time_difference) {
         maxspeed_min_difference = time_difference;
