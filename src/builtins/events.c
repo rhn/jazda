@@ -23,5 +23,5 @@ volatile uint8_t value = 0;
 void events_redraw(void) {
    upoint_t position = {0, 2};
    upoint_t glyph_size = {8, 8};
-   print_number(crank_pulse_count, position, glyph_size, 1, 4<<4);
+   print_number(event_count, position, glyph_size, 1, 4<<4);
 }

@@ -32,6 +32,7 @@ happening.
 */
 
 #include "../modules/signals.h"
+#include "../builtins/timer.h"
 
 volatile uint16_t extended_time = 0;
 
@@ -145,17 +146,13 @@ void clear_trigger() {
   TIMSK &= ~(1 << OCIE1A);
 }
 
-inline void on_trigger(void);
-
 ISR(TIMER1_COMPA_vect) {
-    on_trigger();
+    timer_dispatch();
 }
 
 ISR(TIMER1_OVF_vect) {
     extended_time++;
 }
-
-inline void on_each_second();
 
 ISR(TIMER1_COMPB_vect) {
     on_each_second();

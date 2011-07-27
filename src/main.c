@@ -75,7 +75,7 @@ void main(void) {
   setup_cpu();
   lcd_setup();
   lcd_init();
-  setup_timer();
+  timer_initialize();
 
   // sleep enable bit
   MCUCR |= 1 << SE;

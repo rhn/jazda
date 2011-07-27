@@ -90,16 +90,18 @@ volatile uint8_t wheel_oldest_pulse_index = 0;
 // flag for notifying about pulse_table and oldest_pulse_index changes
 volatile uint8_t speed_pulse_occured = true;
 
+volatile int8_t speed_timer_handle = -1;
+
 #ifdef SPEED_VS_DISTANCE_PLOT
-    void svd_on_pulse(uint16_t now);
+    void svd_on_wheel_pulse(uint16_t now);
 #endif
 
 #ifdef MAXSPEED
-    void maxspeed_on_pulse(void);
+    void maxspeed_on_wheel_pulse(void);
 #endif
 
 #ifdef AVGSPEED
-    void avgspeed_on_pulse(void);
+    void avgspeed_on_wheel_pulse(void);
 #endif
 
 #ifdef LONG_CALCULATIONS
@@ -113,17 +115,20 @@ uint16_t get_average_speed(const uint16_t time_amount, const uint8_t pulse_count
 }
 
 #include "../modules/signals.h" // this file here implements on_wheel_stop detection
+#include "../builtins/timer.h"
 
 void wheel_on_timeout(void) {
   uint16_t now = get_time();
+  wheel_pulse_table[0] = now;
   // will sometimes be triggered with 1 pulse in table, but only after
   // STOPPED_TIMEOUT * ONE_SECOND have passed, never getting into the condition.
   // if you break it, BURN.
   // delay can be actually anything. No possibility of prediction. The following just looks good.
   if (now - wheel_pulse_table[1] < WHEEL_STOPPED_TIMEOUT * ONE_SECOND) {
-    set_timer_callback(now + wheel_pulse_table[1] - wheel_pulse_table[2], &wheel_on_timeout);
+    speed_timer_handle = timer_set_callback(now + wheel_pulse_table[1] - wheel_pulse_table[2], &wheel_on_timeout);
   } else {
     on_wheel_stop(now);
+    speed_timer_handle = -1;
   }
 }
 
@@ -148,8 +153,10 @@ void speed_on_wheel_pulse(uint16_t now) {
     uint16_t predicted = now - wheel_pulse_table[2];
     ahead = predicted + (predicted / 4);
   }
+  
+  timer_clear_callback(speed_timer_handle);
   // NOTE: remove ahead / 4 to save 10 bytes
-  set_timer_callback(now + ahead, &wheel_on_timeout);
+  speed_timer_handle = timer_set_callback(now + ahead, &wheel_on_timeout);
 
   // Modules that need start pulse notification
   #ifdef SPEED_VS_DISTANCE_PLOT
