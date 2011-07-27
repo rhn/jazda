@@ -117,7 +117,7 @@ uint16_t get_average_speed(const uint16_t time_amount, const uint8_t pulse_count
 }
 
 #include "../modules/signals.h" // this file here implements on_wheel_stop detection
-#include "../builtins/timer.h"
+#include "../lib/timer.h"
 
 void wheel_on_timeout(void) {
   uint16_t now = get_time();

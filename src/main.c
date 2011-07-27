@@ -46,7 +46,7 @@
 #include "lib/calculations.c"
 // basic builtins
 
-#include "builtins/timer.c"
+#include "lib/timer.c"
 
 #ifdef CRANK
     #include "builtins/crank.c"

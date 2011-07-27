@@ -32,7 +32,7 @@ happening.
 */
 
 #include "../modules/signals.h"
-#include "../builtins/timer.h"
+#include "../lib/timer.h"
 
 volatile uint16_t extended_time = 0;
 
