@@ -94,19 +94,21 @@ void wheel_on_timeout(void) {
 }
 
 void speed_on_wheel_stop(const uint16_t now) {
+}
+
+
+void on_wheel_stop_collect_data(const uint16_t now) {
     wheel_pulse_count = 0;
 }
 
-void speed_on_wheel_pulse(uint16_t now) {
-  speed_newest_reading = now;
-
+void on_wheel_pulse_collect_data(const uint16_t now) {
   for (uint8_t i = WHEEL_PULSE_TABLE_SIZE - 1; i > 0; --i) {
     wheel_pulse_table[i] = wheel_pulse_table[i - 1];
   }
   wheel_pulse_table[0] = now;
   uint16_t ahead;
   if (wheel_pulse_count == 0) {
-    // 100 is added to make sure that on_trigger will detect this as a stop
+    // 100 is added to make sure that on_timeout will detect this as a stop
     ahead = WHEEL_STOPPED_TIMEOUT * ONE_SECOND + 100;
   } else {
     uint16_t predicted = now - wheel_pulse_table[1];
@@ -120,7 +122,10 @@ void speed_on_wheel_pulse(uint16_t now) {
   if (wheel_pulse_count < WHEEL_PULSE_TABLE_SIZE) {
     wheel_pulse_count++;
   }
+}
 
+void speed_on_wheel_pulse(uint16_t now) {
+  speed_newest_reading = now;
   speed_pulse_occured = true;
 }
 

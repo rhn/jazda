@@ -55,6 +55,7 @@ Must be included after modules to be able to reference them.
 inline void on_wheel_pulse(void) {
 // speed interrupt
   uint16_t now = get_time();
+  on_wheel_pulse_collect_data(now);
   #ifdef DISTANCE
     distance_on_wheel_pulse();
   #endif
@@ -85,6 +86,7 @@ inline void on_each_second(void) {
 }
 
 inline void on_wheel_stop(uint16_t now) {
+    on_wheel_stop_collect_data(now);
     #ifdef CURRENT_SPEED
         speed_on_wheel_stop(now);
     #endif
