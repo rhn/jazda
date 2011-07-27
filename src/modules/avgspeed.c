@@ -27,9 +27,9 @@ volatile uint32_t avgspeed_total_time = 0;
 volatile uint16_t avgspeed_pulses = 0;
 
 void avgspeed_on_wheel_pulse(void) {
-    if (wheel_oldest_pulse_index) {
+    if (wheel_pulse_count > 1) {
         // pulse index not incremented yet, but data already in the table!
-        avgspeed_total_time += wheel_pulse_table[0] - wheel_pulse_table[2];
+        avgspeed_total_time += wheel_pulse_table[0] - wheel_pulse_table[1];
         avgspeed_pulses++;
         module_flags.avgspeed_changed = true;
     }

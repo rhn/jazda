@@ -49,7 +49,7 @@ void svd_insert_average(const uint8_t value) {
 }
 
 void svd_on_wheel_pulse(const uint16_t now) {
-    if (wheel_oldest_pulse_index == 0) { // if first pulse after a stop
+    if (wheel_pulse_count == 1) { // if first pulse after a stop
         svd_previous_frame_time = now; // set a new start time
         svd_pulse_number = 0; // clear counter
         svd_insert_average(0); // insert a space

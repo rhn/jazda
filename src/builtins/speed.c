@@ -82,11 +82,13 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
     #endif
 #endif
 
-// TODO: optimize: move 0 to variable on ts own and see if size decreases
 // TODO: check if volatile is necessary with tables
-volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE + 1];
+volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];
 // index of the oldest pulse in the table
-volatile uint8_t wheel_oldest_pulse_index = 0;
+volatile uint8_t wheel_pulse_count = 0;
+
+// reading from either wheel pulse or wheel stop event
+volatile uint16_t speed_newest_reading;
 // flag for notifying about pulse_table and oldest_pulse_index changes
 volatile uint8_t speed_pulse_occured = true;
 
@@ -124,11 +126,11 @@ void wheel_on_timeout(void) {
   // if you break it, BURN.
   // delay can be actually anything. No possibility of prediction. The following just looks good.
   
-  wheel_pulse_table[0] = now;
+  speed_newest_reading = now;
   speed_pulse_occured = true;
   
-  if (now - wheel_pulse_table[1] < WHEEL_STOPPED_TIMEOUT * ONE_SECOND) {
-    speed_timer_handle = timer_set_callback(now + wheel_pulse_table[1] - wheel_pulse_table[2], &wheel_on_timeout);
+  if (now - wheel_pulse_table[0] < WHEEL_STOPPED_TIMEOUT * ONE_SECOND) {
+    speed_timer_handle = timer_set_callback(now + wheel_pulse_table[0] - wheel_pulse_table[1], &wheel_on_timeout);
   } else {
     on_wheel_stop(now);
     speed_timer_handle = -1;
@@ -136,28 +138,32 @@ void wheel_on_timeout(void) {
 }
 
 void speed_on_wheel_stop(const uint16_t now) {
-    wheel_oldest_pulse_index = 0;
+    wheel_pulse_count = 0;
 }
 
 void speed_on_wheel_pulse(uint16_t now) {
-  wheel_pulse_table[0] = now;
+  speed_newest_reading = now;
 
-  for (uint8_t i = WHEEL_PULSE_TABLE_SIZE; i > 0; --i) {
+  for (uint8_t i = WHEEL_PULSE_TABLE_SIZE - 1; i > 0; --i) {
     wheel_pulse_table[i] = wheel_pulse_table[i - 1];
   }
-
+  wheel_pulse_table[0] = now;
   uint16_t ahead;
-  if (wheel_oldest_pulse_index == 0) {
+  if (wheel_pulse_count == 0) {
     // 100 is added to make sure that on_trigger will detect this as a stop
     ahead = WHEEL_STOPPED_TIMEOUT * ONE_SECOND + 100;
   } else {
-    uint16_t predicted = now - wheel_pulse_table[2];
+    uint16_t predicted = now - wheel_pulse_table[1];
     ahead = predicted + (predicted / 4);
   }
   
   timer_clear_callback(speed_timer_handle);
   // NOTE: remove ahead / 4 to save 10 bytes
   speed_timer_handle = timer_set_callback(now + ahead, &wheel_on_timeout);
+
+  if (wheel_pulse_count < WHEEL_PULSE_TABLE_SIZE) {
+    wheel_pulse_count++;
+  }
 
   // Modules that need start pulse notification
   #ifdef SPEED_VS_DISTANCE_PLOT
@@ -166,12 +172,10 @@ void speed_on_wheel_pulse(uint16_t now) {
   #ifdef AVGSPEED
     avgspeed_on_wheel_pulse();
   #endif
-  if (wheel_oldest_pulse_index < WHEEL_PULSE_TABLE_SIZE) {
-    wheel_oldest_pulse_index++;
-  }
   #ifdef MAXSPEED
     maxspeed_on_wheel_pulse();
   #endif
+
   speed_pulse_occured = true;
 }
 
@@ -183,9 +187,8 @@ void speed_redraw() {
        upoint_t position = {0, 0};
        upoint_t glyph_size = {10, 16};
        
-       if (wheel_oldest_pulse_index > 1) {
+       if (wheel_pulse_count > 1) {
          // speed going down when no pulses present
-         uint16_t *table = wheel_pulse_table;
          uint8_t pulse_index;
          uint16_t newest_pulse;
          uint16_t next_pulse;
@@ -193,18 +196,19 @@ void speed_redraw() {
          
          do {
              speed_pulse_occured = false;
-             newest_pulse = wheel_pulse_table[0];
-             next_pulse = wheel_pulse_table[1];
-             pulse_index = wheel_oldest_pulse_index;
-             oldest_pulse = table[pulse_index];
+             newest_pulse = speed_newest_reading;
+             next_pulse = wheel_pulse_table[0];
+             pulse_index = wheel_pulse_count - 1;
+             if (newest_pulse != next_pulse) { // if newest pulse is artificial
+                oldest_pulse = wheel_pulse_table[pulse_index - 1];
+             } else {
+                oldest_pulse = wheel_pulse_table[pulse_index];
+             }
          } while (speed_pulse_occured);
-         
-         if (newest_pulse != next_pulse) { // if newest pulse is artificial
-           table -= 1; // pretend it is a real pulse by moving it to place 1
-         }
-         uint16_t pulse_time = newest_pulse - oldest_pulse;
+         uint8_t interval_count = pulse_index;
+         uint16_t intervals_duration = newest_pulse - oldest_pulse;
         
-         speed = get_average_speed(pulse_time, (pulse_index - 1));
+         speed = get_average_speed(intervals_duration, interval_count);
          
        } else {
            speed = 0;
