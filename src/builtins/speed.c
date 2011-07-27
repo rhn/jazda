@@ -119,11 +119,14 @@ uint16_t get_average_speed(const uint16_t time_amount, const uint8_t pulse_count
 
 void wheel_on_timeout(void) {
   uint16_t now = get_time();
-  wheel_pulse_table[0] = now;
   // will sometimes be triggered with 1 pulse in table, but only after
   // STOPPED_TIMEOUT * ONE_SECOND have passed, never getting into the condition.
   // if you break it, BURN.
   // delay can be actually anything. No possibility of prediction. The following just looks good.
+  
+  wheel_pulse_table[0] = now;
+  speed_pulse_occured = true;
+  
   if (now - wheel_pulse_table[1] < WHEEL_STOPPED_TIMEOUT * ONE_SECOND) {
     speed_timer_handle = timer_set_callback(now + wheel_pulse_table[1] - wheel_pulse_table[2], &wheel_on_timeout);
   } else {
@@ -134,8 +137,6 @@ void wheel_on_timeout(void) {
 
 void speed_on_wheel_stop(const uint16_t now) {
     wheel_oldest_pulse_index = 0;
-    wheel_pulse_table[0] = now;
-    speed_pulse_occured = true;
 }
 
 void speed_on_wheel_pulse(uint16_t now) {
