@@ -24,6 +24,22 @@ Signal dispatchers.
 Must be included after modules to be able to reference them.
 */
 
+
+#include "../builtins/speed.h"
+
+
+#ifdef SPEED_VS_DISTANCE_PLOT
+    void svd_on_wheel_pulse(uint16_t now);
+#endif
+
+#ifdef MAXSPEED
+    void maxspeed_on_wheel_pulse(void);
+#endif
+
+#ifdef AVGSPEED
+    void avgspeed_on_wheel_pulse(void);
+#endif
+
 /* MODULE HOOKS */
 
 #ifdef CRANK
@@ -45,6 +61,18 @@ inline void on_wheel_pulse(void) {
   #ifdef CURRENT_SPEED
     speed_on_wheel_pulse(now);
   #endif
+  
+  // Modules that need start pulse notification
+  #ifdef SPEED_VS_DISTANCE_PLOT
+    svd_on_wheel_pulse(now);
+  #endif
+  #ifdef AVGSPEED
+    avgspeed_on_wheel_pulse();
+  #endif
+  #ifdef MAXSPEED
+    maxspeed_on_wheel_pulse();
+  #endif
+
   #ifdef SPEED_VS_TIME_PLOT
     svt_on_wheel_pulse(now);
   #endif

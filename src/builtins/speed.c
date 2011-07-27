@@ -17,39 +17,7 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* Builtin calculating and displaying current speed.
-
-HIGH_PRECISION_SPEED governs whether speed counter is 16 or 32-bit
-
-pulse_table - a queue of pulse times (indices: 1..PULSE_TABLE_SIZE)
-              index 1: the newest pulse
-              index 0: last event (may be pulse or timer event)
-              
-oldest_pulse_index - current size of the queue
-
-At each pulse, the new pulse is put on the queue and last element discarded if
-queue full.
-Speed is calculated between first and last pulse in queue on redraw. A timer
-event is set some time after the predicted next pulse. If the pulse comes, timer
-is set again. If the pulse doesn't come, current speed is lower than displayed.
-Difference between event time and oldest pulse is base for updating speed.
-Another trigger is set with same timeout until STOPPED_TIMEOUT from newest pulse
-is exceeded.
-
-SWITCHES:
-
-HIGH_PRECISION_SPEED: if defined, speed is calculated in 32 bits
-
-TODO: split away svd plot into a module
-*/
-
-/* ---------- PREFERENCES --------------- */
-
-
-#define SPEED_SIGNIFICANT_DIGITS 2 // 99km/h is good enough
-#define SPEED_FRACTION_DIGITS 1 // better than my sigma
-#define WHEEL_PULSE_TABLE_SIZE 3
-#define WHEEL_STOPPED_TIMEOUT 3 // seconds
+#include "speed.h"
 
 /* ---------- CONSTANTS --------------- */
 // numbers
@@ -94,17 +62,8 @@ volatile uint8_t speed_pulse_occured = true;
 
 volatile int8_t speed_timer_handle = -1;
 
-#ifdef SPEED_VS_DISTANCE_PLOT
-    void svd_on_wheel_pulse(uint16_t now);
-#endif
-
-#ifdef MAXSPEED
-    void maxspeed_on_wheel_pulse(void);
-#endif
-
-#ifdef AVGSPEED
-    void avgspeed_on_wheel_pulse(void);
-#endif
+#include "../modules/signals.h" // this file here implements on_wheel_stop detection
+#include "../lib/timer.h"
 
 #ifdef LONG_CALCULATIONS
     uint16_t get_average_speed_long(uint32_t time_amount, const uint16_t pulse_count) { 
@@ -115,9 +74,6 @@ volatile int8_t speed_timer_handle = -1;
 uint16_t get_average_speed(const uint16_t time_amount, const uint8_t pulse_count) {
     return get_rot_speed(SPEED_FACTOR, time_amount, pulse_count);
 }
-
-#include "../modules/signals.h" // this file here implements on_wheel_stop detection
-#include "../lib/timer.h"
 
 void wheel_on_timeout(void) {
   uint16_t now = get_time();
@@ -165,22 +121,11 @@ void speed_on_wheel_pulse(uint16_t now) {
     wheel_pulse_count++;
   }
 
-  // Modules that need start pulse notification
-  #ifdef SPEED_VS_DISTANCE_PLOT
-    svd_on_wheel_pulse(now);
-  #endif
-  #ifdef AVGSPEED
-    avgspeed_on_wheel_pulse();
-  #endif
-  #ifdef MAXSPEED
-    maxspeed_on_wheel_pulse();
-  #endif
-
   speed_pulse_occured = true;
 }
 
 // OBFUSCATION WARNING
-void speed_redraw() {
+void speed_redraw(void) {
    if (speed_pulse_occured) {
        speed_pulse_occured = false;
        uint16_t speed;
