@@ -59,9 +59,9 @@ extern volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];
 // index of the oldest pulse in the table
 extern volatile uint8_t wheel_pulse_count;
 
-void speed_on_wheel_stop(const uint16_t now);
+void speed_on_wheel_stop(void);
 void speed_on_wheel_pulse(const uint16_t now);
 void speed_redraw(void);
 
 void on_wheel_pulse_collect_data(const uint16_t now);
-void on_wheel_stop_collect_data(const uint16_t now);
+void on_wheel_stop_collect_data(void);

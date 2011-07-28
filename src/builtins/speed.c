@@ -54,6 +54,7 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
 volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];
 // index of the oldest pulse in the table
 volatile uint8_t wheel_pulse_count = 0;
+volatile int8_t wheel_timer_handle = -1;
 
 // reading from either wheel pulse or wheel stop event
 volatile uint16_t speed_newest_reading;
@@ -75,30 +76,31 @@ uint16_t get_average_speed(const uint16_t time_amount, const uint8_t pulse_count
     return get_rot_speed(SPEED_FACTOR, time_amount, pulse_count);
 }
 
+void speed_on_timeout(void) {
+   uint16_t now = get_time();
+   // gradual speed decrease before stopping
+   speed_newest_reading = now;
+   speed_pulse_occured = true;
+   
+   speed_timer_handle = timer_set_callback(now + wheel_pulse_table[0] - wheel_pulse_table[1], &speed_on_timeout);
+}
+
 void wheel_on_timeout(void) {
-  uint16_t now = get_time();
-  // will sometimes be triggered with 1 pulse in table, but only after
-  // STOPPED_TIMEOUT * ONE_SECOND have passed, never getting into the condition.
-  // if you break it, BURN.
-  // delay can be actually anything. No possibility of prediction. The following just looks good.
-  
-  speed_newest_reading = now;
-  speed_pulse_occured = true;
-  
-  if (now - wheel_pulse_table[0] < WHEEL_STOPPED_TIMEOUT * ONE_SECOND) {
-    speed_timer_handle = timer_set_callback(now + wheel_pulse_table[0] - wheel_pulse_table[1], &wheel_on_timeout);
-  } else {
-    on_wheel_stop(now);
+   uint16_t now = get_time();
+   wheel_timer_handle = -1;
+   on_wheel_stop(now);
+}
+
+void speed_on_wheel_stop(void) {
+    speed_pulse_occured = true;
+    // no need to set "now" value: during redraw after a stop, speed will be 0 anyway
+    
+    timer_clear_callback(speed_timer_handle);
     speed_timer_handle = -1;
-  }
 }
 
-void speed_on_wheel_stop(const uint16_t now) {
-}
-
-
-void on_wheel_stop_collect_data(const uint16_t now) {
-    wheel_pulse_count = 0;
+void on_wheel_stop_collect_data(void) {
+   wheel_pulse_count = 0;
 }
 
 void on_wheel_pulse_collect_data(const uint16_t now) {
@@ -106,27 +108,32 @@ void on_wheel_pulse_collect_data(const uint16_t now) {
     wheel_pulse_table[i] = wheel_pulse_table[i - 1];
   }
   wheel_pulse_table[0] = now;
-  uint16_t ahead;
-  if (wheel_pulse_count == 0) {
-    // 100 is added to make sure that on_timeout will detect this as a stop
-    ahead = WHEEL_STOPPED_TIMEOUT * ONE_SECOND + 100;
-  } else {
-    uint16_t predicted = now - wheel_pulse_table[1];
-    ahead = predicted + (predicted / 4);
-  }
-  
-  timer_clear_callback(speed_timer_handle);
-  // NOTE: remove ahead / 4 to save 10 bytes
-  speed_timer_handle = timer_set_callback(now + ahead, &wheel_on_timeout);
 
   if (wheel_pulse_count < WHEEL_PULSE_TABLE_SIZE) {
     wheel_pulse_count++;
   }
+  
+  /* timeouts */
+  // clear old timeout for stop detection (or do nothing if one not set)
+  timer_clear_callback(wheel_timer_handle);
+  // set new timeout for stop detection
+  uint16_t ahead = WHEEL_STOPPED_TIMEOUT * ONE_SECOND;
+  wheel_timer_handle = timer_set_callback(now + ahead, &wheel_on_timeout);
 }
 
 void speed_on_wheel_pulse(uint16_t now) {
   speed_newest_reading = now;
   speed_pulse_occured = true;
+  
+  timer_clear_callback(speed_timer_handle);
+  
+  if (wheel_pulse_count > 1) {
+    // set timer for smooth slowdown. only set if 
+    uint16_t predicted = now - wheel_pulse_table[1];
+    uint16_t ahead = predicted + (predicted / 4);  
+    // NOTE: remove ahead / 4 to save 10 bytes
+    speed_timer_handle = timer_set_callback(now + ahead, &speed_on_timeout);
+  }
 }
 
 // OBFUSCATION WARNING
