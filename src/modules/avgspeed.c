@@ -23,6 +23,8 @@ Doesn't add single pulses to average when bicycle is stopped. Average counted
 from first pulse in streak to stopped time.
 */
 
+#include "../builtins/wheel.h"
+
 volatile uint32_t avgspeed_total_time = 0;
 volatile uint16_t avgspeed_pulses = 0;
 

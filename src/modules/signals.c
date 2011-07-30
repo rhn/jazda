@@ -26,7 +26,7 @@ Must be included after modules to be able to reference them.
 
 
 #include "../builtins/speed.h"
-
+#include "../builtins/wheel.h"
 
 #ifdef SPEED_VS_DISTANCE_PLOT
     void svd_on_wheel_pulse(uint16_t now);

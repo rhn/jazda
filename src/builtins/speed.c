@@ -18,6 +18,9 @@
 */
 
 #include "speed.h"
+#include "wheel.h"
+#include "../lib/timer.h"
+#include "../lib/calculations.h"
 
 /* ---------- CONSTANTS --------------- */
 // numbers
@@ -50,12 +53,6 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
     #endif
 #endif
 
-// TODO: check if volatile is necessary with tables
-volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];
-// index of the oldest pulse in the table
-volatile uint8_t wheel_pulse_count = 0;
-volatile int8_t wheel_timer_handle = -1;
-
 // reading from either wheel pulse or wheel stop event
 volatile uint16_t speed_newest_reading;
 // flag for notifying about pulse_table and oldest_pulse_index changes
@@ -63,8 +60,6 @@ volatile uint8_t speed_pulse_occured = true;
 
 volatile int8_t speed_timer_handle = -1;
 
-#include "../modules/signals.h" // this file here implements on_wheel_stop detection
-#include "../lib/timer.h"
 
 #ifdef LONG_CALCULATIONS
     uint16_t get_average_speed_long(uint32_t time_amount, const uint16_t pulse_count) { 
@@ -85,40 +80,12 @@ void speed_on_timeout(void) {
    speed_timer_handle = timer_set_callback(now + wheel_pulse_table[0] - wheel_pulse_table[1], &speed_on_timeout);
 }
 
-void wheel_on_timeout(void) {
-   uint16_t now = get_time();
-   wheel_timer_handle = -1;
-   on_wheel_stop(now);
-}
-
 void speed_on_wheel_stop(void) {
     speed_pulse_occured = true;
     // no need to set "now" value: during redraw after a stop, speed will be 0 anyway
     
     timer_clear_callback(speed_timer_handle);
     speed_timer_handle = -1;
-}
-
-void on_wheel_stop_collect_data(void) {
-   wheel_pulse_count = 0;
-}
-
-void on_wheel_pulse_collect_data(const uint16_t now) {
-  for (uint8_t i = WHEEL_PULSE_TABLE_SIZE - 1; i > 0; --i) {
-    wheel_pulse_table[i] = wheel_pulse_table[i - 1];
-  }
-  wheel_pulse_table[0] = now;
-
-  if (wheel_pulse_count < WHEEL_PULSE_TABLE_SIZE) {
-    wheel_pulse_count++;
-  }
-  
-  /* timeouts */
-  // clear old timeout for stop detection (or do nothing if one not set)
-  timer_clear_callback(wheel_timer_handle);
-  // set new timeout for stop detection
-  uint16_t ahead = WHEEL_STOPPED_TIMEOUT * ONE_SECOND;
-  wheel_timer_handle = timer_set_callback(now + ahead, &wheel_on_timeout);
 }
 
 void speed_on_wheel_pulse(uint16_t now) {

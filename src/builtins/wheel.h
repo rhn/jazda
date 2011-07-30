@@ -17,18 +17,26 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* Builtin calculating and displaying current speed.
+/* Builtin managing wheel information
 
-Speed is calculated between first and last pulse in queue on redraw. A timer
-event is set some time after the predicted next pulse. If the pulse comes, timer
-is set again. If the pulse doesn't come, the timeout is considered the next
-valid pulse (thus lowering the speed).
+pulse_table - a queue of pulse times (indices: 1..PULSE_TABLE_SIZE)
+              index 1: the newest pulse
+              index 0: last event (may be pulse or timer event)
+
+At each pulse, the new pulse is put on the queue and last element discarded if
+queue full.
+If no pulse occurs within WHEEL_STOPPED_TIMEOUT seconds, then a stop signal is
+dispatched.
 */
 
 /* ---------- PREFERENCES --------------- */
-#define SPEED_SIGNIFICANT_DIGITS 2 // 99km/h is good enough
-#define SPEED_FRACTION_DIGITS 1 // better than my sigma
 
-void speed_on_wheel_stop(void);
-void speed_on_wheel_pulse(const uint16_t now);
-void speed_redraw(void);
+#define WHEEL_PULSE_TABLE_SIZE 3
+#define WHEEL_STOPPED_TIMEOUT 3 // seconds
+
+extern volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];
+// index of the oldest pulse in the table
+extern volatile uint8_t wheel_pulse_count;
+
+void on_wheel_pulse_collect_data(const uint16_t now);
+void on_wheel_stop_collect_data(void);

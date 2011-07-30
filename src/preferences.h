@@ -69,6 +69,7 @@
 /* special options */
 #define HIGH_PRECISION_CALCULATIONS // makes speed calculation 32-bit instead of truncating to 16
 #define LONG_CALCULATIONS // makes calculations possible on longer data types
+#define FRAC_BITS 10 // Fixed-point fraction for PULSE_DIST and SPEED_FACTOR. WARNING! modifying may lead to overflow errors and better precision (most likely just the former). Less then 8 is not recommended if LONG_SPEED is used
 
 /* PREFERENCES */
 #define DEBUG

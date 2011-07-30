@@ -23,6 +23,8 @@ Time is updated on each second interrupt, thanks to that it's displayed
 instantly with little jitter, but offset in relation to reset time.
 */
 
+#include "../builtins/wheel.h"
+
 volatile time_storage_t stopwatch_time = {0, 0, 0};
 
 void stopwatch_redraw(uint8_t force) {

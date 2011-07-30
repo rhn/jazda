@@ -34,6 +34,8 @@ SVDPLOT_LENGTH_KM - length of the visible area of the plot. It is the base for
 SVDPLOT_SPEED_TRUNC - decreasing factor to fit speed into uint8_t TODO: eliminate
 */
 
+#include "../builtins/wheel.h"
+
 #define SVDPLOT_LENGTH_KM 1 // distance axis length
 #define SVDPLOT_SPEED_TRUNC 5
 //#define SVDPLOT_FRAME_PULSES 4
