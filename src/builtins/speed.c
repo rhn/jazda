@@ -82,7 +82,7 @@ void speed_on_timeout(void) {
    speed_newest_reading = now;
    speed_pulse_occured = true;
    
-   speed_timer_handle = -1;//timer_set_callback(now + wheel_pulse_table[0] - wheel_pulse_table[1], &speed_on_timeout);
+   speed_timer_handle = timer_set_callback(now + wheel_pulse_table[0] - wheel_pulse_table[1], &speed_on_timeout);
 }
 
 void wheel_on_timeout(void) {
