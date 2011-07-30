@@ -177,7 +177,7 @@ void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t w
    width: line width of the glyph
    digits: total digits (to be spaced), fractional part digits
 */
-void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const nibblepair_t digits) {
+void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const number_display_t digits) {
     
 // prints a number, aligned to right, throwing in 0's when necessary
  // TODO: fake decimal point?
@@ -185,8 +185,8 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
     // integer only
     uint32_t bcd = 0;
     register uint8_t *ptr;
-    uint8_t frac_digits = digits & 0x0F;
-    uint8_t all_digits = (digits >> 4) + frac_digits;
+    uint8_t frac_digits = digits.fractional;
+    uint8_t all_digits = digits.integer + frac_digits;
 
     // BCD conversion
     for (int8_t i = 31; ; i--) { //32 should be size of int - FRACBITS

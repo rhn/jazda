@@ -21,13 +21,17 @@
 REQUIRES: crank
 */
 
-#include "../builtins/crank.h"
-#include "../lib/calculations.h"
-
 #include "cadence.h"
 
+#include "../builtins/crank.h"
+#include "../lib/calculations.h"
+#include "../display/drawing.h"
+
+#define CADENCE_FACTOR ((((uint32_t)(ONE_SECOND)) << FRAC_BITS) * 60)
+
+
 static inline uint16_t get_crank_average(uint16_t time_difference, uint8_t pulse_count) {
-    return get_rot_speed(CRANK_FACTOR, time_difference, pulse_count);
+    return get_rot_speed(CADENCE_FACTOR, time_difference, pulse_count);
 }
 
 void cadence_on_crank_pulse(void) {

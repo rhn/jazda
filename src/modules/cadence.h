@@ -21,8 +21,7 @@
 REQUIRES: crank
 */
 
-#define CRANK_FACTOR ((((uint32_t)(ONE_SECOND)) << FRAC_BITS) * 60)
-#define CADENCE_DIGITS NIBBLEPAIR(3, 0)
+#define CADENCE_DIGITS (number_display_t){.integer=3, .fractional=0}
 
 void cadence_on_crank_pulse(void);
 void cadence_on_stop(void);

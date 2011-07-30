@@ -43,9 +43,10 @@ typedef struct glyph_desc {
     uint8_t line_width;
 } glyphdesc_t;
 
-#define nibblepair_t uint8_t
-#define NIBBLEPAIR(num1, num2) (nibblepair_t)((num1 << 4) | (num2 & 0x0F))
-
+typedef struct number_display {
+    uint8_t integer:4;
+    uint8_t fractional:4;
+} number_display_t;
 
 // draws a line into the buffer
 void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t toy, const int8_t width);
@@ -61,7 +62,7 @@ void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t w
    width: line width of the glyph
    digits: total digits (to be spaced), fractional part digits
 */
-void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const nibblepair_t digits);
+void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const number_display_t digits);
 // prints a number, aligned to right, throwing in 0's when necessary
 
 #endif

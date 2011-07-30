@@ -24,7 +24,7 @@
 
 /* ---------- CONSTANTS --------------- */
 // numbers
-#define SPEED_DIGITS NIBBLEPAIR(SPEED_SIGNIFICANT_DIGITS, SPEED_FRACTION_DIGITS)
+#define SPEED_DIGITS (number_display_t){.integer=SPEED_SIGNIFICANT_DIGITS, .fractional=SPEED_FRACTION_DIGITS}
 /* Speed calculations:
 X - rotation distance in internal units
 N - rotation count
