@@ -25,8 +25,11 @@ instantly with little jitter, but offset in relation to reset time.
 
 #include "../builtins/wheel.h"
 #include "../display/drawing.h"
+#include "../lib/timer.h"
 
 volatile time_storage_t stopwatch_time = {0, 0, 0};
+volatile uint16_t stopwatch_next_call;
+volatile timer_handle_t stopwatch_timer_handle = -1;
 
 void stopwatch_redraw(uint8_t force) {
    if ((force) || module_flags.stopwatch_changed) {
@@ -72,10 +75,23 @@ void stopwatch_increment(void) {
    module_flags.stopwatch_changed = true;
 }
 
-void stopwatch_on_each_second(void) {
-   if (wheel_pulse_count != 0) {
-      stopwatch_increment();
+void stopwatch_on_timeout(void);
+void stopwatch_on_timeout(void) {
+   stopwatch_increment();
+   stopwatch_next_call += ONE_SECOND;
+   stopwatch_timer_handle = timer_set_callback(stopwatch_next_call, &stopwatch_on_timeout);
+}
+
+void stopwatch_on_wheel_pulse(const uint16_t now) {
+   if (wheel_pulse_count == 1) {
+       stopwatch_next_call = now + ONE_SECOND;
+       stopwatch_timer_handle = timer_set_callback(stopwatch_next_call, &stopwatch_on_timeout);
    }
+}
+
+void stopwatch_on_wheel_stop(void) {
+   timer_clear_callback(stopwatch_timer_handle);
+   stopwatch_timer_handle = -1;
 }
 
 #define stopwatch_signature {0b00111000, 0b01000100, 0b10000011, 0b10011111, 0b10001011, 0b01000100, 0b00111000, 0}

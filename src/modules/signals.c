@@ -24,7 +24,6 @@ Signal dispatchers.
 Must be included after modules to be able to reference them.
 */
 
-
 #include "../builtins/speed.h"
 #include "../builtins/wheel.h"
 
@@ -77,12 +76,12 @@ inline void on_wheel_pulse(void) {
   #ifdef SPEED_VS_TIME_PLOT
     svt_on_wheel_pulse(now);
   #endif
+  #ifdef STOPWATCH
+    stopwatch_on_wheel_pulse(now);
+  #endif
 }
 
 inline void on_each_second(void) {
-   #ifdef STOPWATCH
-      stopwatch_on_each_second();
-   #endif
 }
 
 inline void on_wheel_stop(uint16_t now) {
@@ -92,5 +91,8 @@ inline void on_wheel_stop(uint16_t now) {
     #endif
     #ifdef SPEED_VS_TIME_PLOT
         svt_on_wheel_stop(now);
+    #endif
+    #ifdef STOPWATCH
+        stopwatch_on_wheel_stop();
     #endif
 }
