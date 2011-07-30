@@ -22,11 +22,12 @@ Timer management, common to all architectures
 */
 
 #define MAX_TIMERS 7
+#define timer_handle_t int8_t
 
 inline void timer_initialize(void);
 
 inline void timer_dispatch(void);
 
-int8_t timer_set_callback(const uint16_t time, void (*callback)(void));
+timer_handle_t timer_set_callback(const uint16_t time, void (*callback)(void));
 
-void timer_clear_callback(const int8_t identifier);
+void timer_clear_callback(const timer_handle_t identifier);

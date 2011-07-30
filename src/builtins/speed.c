@@ -82,7 +82,7 @@ void speed_on_timeout(void) {
    speed_newest_reading = now;
    speed_pulse_occured = true;
    
-   speed_timer_handle = timer_set_callback(now + wheel_pulse_table[0] - wheel_pulse_table[1], &speed_on_timeout);
+   speed_timer_handle = -1;//timer_set_callback(now + wheel_pulse_table[0] - wheel_pulse_table[1], &speed_on_timeout);
 }
 
 void wheel_on_timeout(void) {
@@ -124,7 +124,6 @@ void on_wheel_pulse_collect_data(const uint16_t now) {
 void speed_on_wheel_pulse(uint16_t now) {
   speed_newest_reading = now;
   speed_pulse_occured = true;
-  
   timer_clear_callback(speed_timer_handle);
   
   if (wheel_pulse_count > 1) {

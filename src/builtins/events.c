@@ -18,10 +18,18 @@
 */
 
 volatile uint8_t event_count = 0; // extern
-volatile uint8_t value = 0;
-
+extern volatile int8_t timer_first_index; // extern
+volatile uint16_t event_value = 0;
 void events_redraw(void) {
    upoint_t position = {0, 2};
    upoint_t glyph_size = {8, 8};
-   print_number(event_count, position, glyph_size, 1, 4<<4);
+   print_number(event_value, position, glyph_size, 1, 4<<4);
+   position.x = 48;
+   uint8_t display;
+   if (timer_first_index < 0) {
+      display = 8;
+   } else {
+      display = timer_first_index;
+   }
+   print_number(display, position, glyph_size, 1, 4<<4);
 }

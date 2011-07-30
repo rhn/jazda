@@ -30,14 +30,15 @@ should be moved to some sort of arch/lib place.
     callback=NULL, next>=0: part of the chain but not active
     callback=NULL, next<0: not part of the chain
 */
+
 typedef struct timer_data {
     uint16_t time;
     void (*callback)(void);
-    int8_t next;
+    timer_handle_t next;
 } timer_data_t;
 
 volatile timer_data_t timer_array[MAX_TIMERS];
-volatile int8_t timer_first_index = -1;
+volatile timer_handle_t timer_first_index = -1;
 
 
 inline void timer_initialize(void) {
@@ -49,19 +50,17 @@ inline void timer_initialize(void) {
 
 // removes invalid/expired requests from the beginning of the chain and sets a new timeout request
 void timer_update_chain(void) {
-    int8_t index = timer_first_index;
-    void (*callback)(void);
-    do {
-        if (index < 0) {
+    timer_handle_t index = timer_first_index;
+
+    while (index >= 0) {
+        if (timer_array[index].callback != NULL) {
             break;
+        } else {
+            timer_handle_t next_index = timer_array[index].next;
+            timer_array[index].next = -1; // remove the entry permanently
+            index = next_index;
         }
-        callback = timer_array[index].callback;
-        int8_t next_index = timer_array[index].next;
-
-        timer_array[index].next = -1; // remove the entry permanently
-
-        index = next_index;
-    } while (callback == NULL);
+    }
     
     if (index >= 0) {
         // FIXME: detect timer requests between timer interrupt and this point
@@ -73,27 +72,27 @@ void timer_update_chain(void) {
 
 // Assumption: at any time when the interrupt comes, timer_first_index points at a valid request (valid callback)
 extern volatile uint8_t event_count;
-
+extern volatile uint16_t event_value;
 inline void timer_dispatch(void) {
-    int8_t index = timer_first_index;
-    event_count++;
+    timer_handle_t index = timer_first_index;
+
     if (index >= 0) {
         timer_data_t request = timer_array[index];
         
         timer_array[index].callback = NULL;
         
-        /* STATE CONSISTENT */
-        (*(request.callback))(); // WARNING: set/clear timer may occur here
-        /* STATE CONSISTENT */
-        
-        // cleanup to point at a valid callback function
+        // cleanup to point at a valid callback function to satisfy Assumption
         timer_update_chain();
+        // timer state update finished
+        
+        /* STATE CONSISTENT */
+        (*(request.callback))(); // set/clear timer may occur here but Assumption is satisfied so it's safe
     } else {
         // BAD NEWS: timer fired without a valid request registered
     }
 }
 
-int8_t timer_find_empty_slot(void) {
+timer_handle_t timer_find_empty_slot(void) {
     for (uint8_t i = 0; i < MAX_TIMERS; i++) {
         if ((timer_array[i].callback == NULL) && (timer_array[i].next < 0)) {
             return i;
@@ -101,32 +100,39 @@ int8_t timer_find_empty_slot(void) {
     }
     return -1;
 }
-
+void enable_backlight(void);
 // FIXME: this code could be executed either from interrupts only (safe) or from
 // normal code and interrupts (RACE CONDITIONS!)
 // returns < 0 if can't register timeout
-int8_t timer_set_callback(const uint16_t time, void (*callback)(void)) {
-    int8_t index = timer_find_empty_slot();
+timer_handle_t timer_set_callback(const uint16_t time, void (*callback)(void)) {
+    timer_handle_t index = timer_find_empty_slot();
+    event_count++;
     if (index < 0) {
         return -1; // failed to find a slot to place the timer in
     }
-
     timer_data_t timer;
     timer.time = time;
     timer.callback = callback;
     // find the position
+    uint16_t now = get_time();
+    uint16_t ahead = time - now;
 
-    int8_t prev_index = -1;
-    int8_t next_index = timer_first_index;
-    
-    do {
-        if (next_index < 0) {
+    timer_handle_t prev_index = -1;
+    timer_handle_t next_index = timer_first_index;
+    uint8_t i = 0;
+    while (next_index >= 0) { // statements separate to achieve predictable evaluation order
+        uint16_t next_ahead = timer_array[next_index].time - now;
+        if (next_ahead > ahead) { // next index is next indeed
             break;
+        }
+        i++;
+        if (i > 10) {
+            event_value = timer_array[0].next;
+            return -1;
         }
         prev_index = next_index;
         next_index = timer_array[prev_index].next;
-    } while (timer_array[next_index].time < time);
-
+    }
     timer.next = next_index;
     timer_array[index] = timer;
     if (prev_index < 0) {
@@ -139,7 +145,7 @@ int8_t timer_set_callback(const uint16_t time, void (*callback)(void)) {
     return index;
 }
 
-void timer_clear_callback(const int8_t identifier) {
+void timer_clear_callback(const timer_handle_t identifier) {
     if (identifier >= 0) {
         timer_array[identifier].callback = NULL;
         if (identifier == timer_first_index) {
