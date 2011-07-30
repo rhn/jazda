@@ -17,8 +17,10 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <avr/pgmspace.h>
+#include "drawing.h"
+
 #include <stdlib.h>
+#include <avr/pgmspace.h>
 /* Drawing on a monochrome line-based 8-bit height screen procedures */
 
 /* REQUIRES:
@@ -26,6 +28,11 @@ pcd8544.h or compatible
 common.h (upoint_t, nibblepair_t)
 DEFINES: MAXBUFFERX: maximum allowed width of a character in a viewport. Wider characters can still be drawn if additional calls are used for further parts (TODO) Takes up MAXBUFFERX * 1B RAM
 */
+
+// for asm routines
+#define STRVALUE(arg) #arg
+#define NUMSTR(num) STRVALUE(num)
+
 
 #define LETTERX _BV(3)
 #define LETTERY _BV(4)
@@ -44,15 +51,8 @@ __attribute__((progmem)) const uint8_t glyphs[] = { POINT(2, 0, 1), POINT(5, 0, 
                            POINT(0, 15, 1), POINT(5, 15, 1), POINT(7, 12, 1), POINT(7, 2, 1), POINT(5, 0, 1), POINT(2, 0, 1), POINT(0, 2, 1), POINT(0, 6, 1), POINT(2, 8, 1), POINT(7, 8, 1), 0, // 9
                            }; 
 
-typedef struct glyph_desc {
-    upoint_t size;
-    uint8_t line_width;
-} glyphdesc_t;
-
-
 //digit table
 const uint8_t letter[] = { 0, 10, 14, 21, 32, 37, 46, 58, 62, 76};
-
 
 void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t toy, const int8_t width) {
 // draws a line into the buffer

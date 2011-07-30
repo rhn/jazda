@@ -24,6 +24,7 @@ instantly with little jitter, but offset in relation to reset time.
 */
 
 #include "../builtins/wheel.h"
+#include "../display/drawing.h"
 
 volatile time_storage_t stopwatch_time = {0, 0, 0};
 

@@ -35,6 +35,8 @@ SVDPLOT_SPEED_TRUNC - decreasing factor to fit speed into uint8_t TODO: eliminat
 */
 
 #include "../builtins/wheel.h"
+#include "../display/drawing.h"
+#include "../lib/calculations.h"
 
 #define SVDPLOT_LENGTH_KM 1 // distance axis length
 #define SVDPLOT_SPEED_TRUNC 5

@@ -29,6 +29,8 @@ time differences of different pulse counts.
 
 
 #include "../builtins/wheel.h"
+#include "../display/drawing.h"
+#include "../lib/calculations.h"
 
 // TODO: -1 and no special code or 0 and special case? size optimization
 static volatile uint16_t maxspeed_min_difference = -1;

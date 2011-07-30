@@ -24,6 +24,8 @@ from first pulse in streak to stopped time.
 */
 
 #include "../builtins/wheel.h"
+#include "../display/drawing.h"
+#include "../lib/calculations.h"
 
 volatile uint32_t avgspeed_total_time = 0;
 volatile uint16_t avgspeed_pulses = 0;
