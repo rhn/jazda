@@ -24,10 +24,9 @@ struct module_flags_struct {
     uint8_t maxspeed_changed;
     uint8_t stopwatch_changed;
     uint8_t avgspeed_changed;
-    uint8_t cadence_changed;
 };
 
-volatile struct module_flags_struct module_flags = {0, 0, 0, 0, 0};
+volatile struct module_flags_struct module_flags = {0, 0, 0, 0};
 
 #ifdef COMBINED_RESET
     #include "combined_reset.c"
@@ -58,10 +57,6 @@ volatile struct module_flags_struct module_flags = {0, 0, 0, 0, 0};
     #include "avgspeed.c"
 #endif
 
-#ifdef CADENCE
-    #include "cadence.c"
-#endif
-
 #ifdef DEBUG
     #include "debug.c"
 #endif
@@ -90,9 +85,6 @@ const module_record_t modules[] = {
     #endif
     #ifdef SPEED_VS_TIME_PLOT
         svt_record,
-    #endif
-    #ifdef CADENCE
-        cadence_record,
     #endif
     };
 

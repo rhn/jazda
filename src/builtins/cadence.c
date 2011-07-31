@@ -21,14 +21,14 @@
 REQUIRES: crank
 */
 
-#include "cadence.h"
-
 #include "../builtins/crank.h"
 #include "../lib/calculations.h"
 #include "../display/drawing.h"
 
+#define CADENCE_DIGITS (number_display_t){.integer=3, .fractional=0}
 #define CADENCE_FACTOR ((((uint32_t)(ONE_SECOND)) << FRAC_BITS) * 60)
 
+volatile uint8_t cadence_changed = true;
 
 static inline uint16_t get_crank_average(uint16_t time_difference, uint8_t pulse_count) {
     return get_rot_speed(CADENCE_FACTOR, time_difference, pulse_count);
@@ -36,20 +36,20 @@ static inline uint16_t get_crank_average(uint16_t time_difference, uint8_t pulse
 
 void cadence_on_crank_pulse(void) {
 //    if (!crank_stopped) { // TODO: extend crank to support stop
-        module_flags.cadence_changed = true;
+        cadence_changed = true;
 //    }
 }
 
 void cadence_on_stop(void) {
-    module_flags.cadence_changed = true;
+    cadence_changed = true;
 }
 
-void cadence_redraw(const uint8_t force) {
-    if (force || module_flags.cadence_changed) {
+void cadence_redraw(void) {
+    if (cadence_changed) {
         uint16_t rpm;
-        upoint_t position = {0, 5};
+        upoint_t position = {0, 0};
         upoint_t glyph_size = {8, 8};
-        module_flags.cadence_changed = false;
+        cadence_changed = false;
         
         if (crank_pulse_count > 1) {
             uint16_t time_difference = crank_pulse_times[0] - crank_pulse_times[crank_pulse_count - 1];

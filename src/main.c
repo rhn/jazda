@@ -53,6 +53,10 @@
     #include "builtins/crank.c"
 #endif
 
+#ifdef CADENCE
+    #include "builtins/cadence.c"
+#endif
+
 #ifdef CURRENT_SPEED
     #include "builtins/speed.c"
 #endif
@@ -88,6 +92,9 @@ void main(void) {
   for (; ; ) {
     #ifdef CURRENT_SPEED
        speed_redraw();
+    #endif
+    #ifdef CADENCE
+       cadence_redraw();
     #endif
     #ifdef DEBUG
        events_redraw();

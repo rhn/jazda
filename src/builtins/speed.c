@@ -107,7 +107,7 @@ void speed_redraw(void) {
    if (speed_pulse_occured) {
        speed_pulse_occured = false;
        uint16_t speed;
-       upoint_t position = {0, 0};
+       upoint_t position = {50, 0};
        upoint_t glyph_size = {10, 16};
        
        if (wheel_pulse_count > 1) {

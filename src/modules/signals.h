@@ -22,10 +22,6 @@ Signal dispatchers.
 Must be included after modules to be able to reference them.
 */
 
-#ifdef CADENCE
-    #include "cadence.h"
-#endif
-
 /* MODULE HOOKS */
 
 #ifdef CRANK
