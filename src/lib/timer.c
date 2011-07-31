@@ -25,6 +25,7 @@ should be moved to some sort of arch/lib place.
 
 #include "timer.h"
 
+#define TIMER_DELAY 10
 
 /* linked-list containing timer entries
     callback=NULL, next>=0: part of the chain but not active
@@ -67,6 +68,17 @@ inline void timer_dispatch(void) {
         
         /* STATE CONSISTENT */
         (*(request.callback))(); // set/clear timer may occur here but Assumption is satisfied so it's safe
+        
+        // check if the next event should already have been triggered
+        if (timer_count > 0) {
+            // - request.time is not unnecessary: it sets the 0 for comparison
+            // time_since_requested will always be >= 0 because request_time can be at most TIMER_DELAY into the future
+            uint16_t time_since_requested = get_time() - request.time + TIMER_DELAY;
+            uint16_t time_difference = timer_array[0].time - request.time;
+            if (time_difference <= time_since_requested) {
+                set_immediate_trigger();
+            }
+        }
     } else {
         // BAD NEWS: timer fired without a valid request registered
     }

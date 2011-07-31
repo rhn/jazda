@@ -129,7 +129,11 @@ CS12 CS11 CS10 Description
   TIMSK |= 1 << OCIE1B;
 }
 
-inline uint16_t get_time() {
+inline void set_immediate_trigger(void) {
+  TIFR |= 1 << OCF1A;
+}
+
+inline uint16_t get_time(void) {
   return TCNT1;
 }
 
