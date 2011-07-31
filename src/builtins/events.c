@@ -25,7 +25,7 @@ volatile uint16_t event_value = 0;
 void events_redraw(void) {
    upoint_t position = {0, 2};
    upoint_t glyph_size = {8, 8};
-   print_number(event_value, position, glyph_size, 1, (number_display_t){.integer=4, .fractional=0});
+   print_number(event_value, position, glyph_size, 1, (number_display_t){.integer=2, .fractional=0});
    position.x = 48;
    uint8_t display;
    if (timer_count < 0) {
