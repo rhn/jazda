@@ -24,7 +24,7 @@
 // TODO: check if volatile is necessary with tables
 volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];
 volatile uint8_t wheel_pulse_count = 0;
-volatile int8_t wheel_timer_handle = -1;
+volatile timer_handle_t wheel_timer_handle = -1;
 
 void wheel_on_timeout(void) {
    uint16_t now = get_time();

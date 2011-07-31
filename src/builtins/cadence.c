@@ -49,12 +49,10 @@ static inline uint16_t get_crank_average(uint16_t time_difference, uint8_t pulse
 }
 
 void cadence_on_crank_pulse(void) {
-//    if (!crank_stopped) { // TODO: extend crank to support stop
-        cadence_changed = true;
-//    }
+    cadence_changed = true;
 }
 
-void cadence_on_stop(void) {
+void cadence_on_crank_stop(void) {
     cadence_changed = true;
 }
 

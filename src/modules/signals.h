@@ -25,8 +25,9 @@ Must be included after modules to be able to reference them.
 /* MODULE HOOKS */
 
 #ifdef CRANK
-   #include "../builtins/crank.h"
    inline void on_crank_pulse(void);
+   
+   inline void on_crank_stop(void);
 #endif
 
 inline void on_wheel_pulse(void);

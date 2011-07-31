@@ -21,10 +21,21 @@
 */
 
 #include "crank.h"
+#include "../lib/timer.h"
+#include "../modules/signals.h"
 
 volatile uint16_t crank_pulse_times[CRANK_PULSES]; // extern
 volatile uint8_t crank_pulse_count = 0; // extern
-// volatile uint8_t crank_stopped = true;
+volatile timer_handle_t crank_timer_handle = -1;
+
+void crank_on_timeout(void) {
+   crank_timer_handle = -1;
+   on_crank_stop();
+}
+
+void on_crank_stop_collect_data(void) {
+   crank_pulse_count = 0;
+}
 
 void on_crank_pulse_collect_data(uint16_t now) {
   // shift the whole array of pulses towards the old end
@@ -39,5 +50,10 @@ void on_crank_pulse_collect_data(uint16_t now) {
     crank_pulse_count++;
   }
 
-  // TODO: set timer trigger to a few secs in the future
+  /* timeouts */
+  // clear old timeout for stop detection (or do nothing if one not set)
+  timer_clear_callback(crank_timer_handle);
+  // set new timeout for stop detection
+  uint16_t ahead = CRANK_STOPPED_TIMEOUT;
+  crank_timer_handle = timer_set_callback(now + ahead, &crank_on_timeout); 
 }

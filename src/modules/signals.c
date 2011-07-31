@@ -42,11 +42,20 @@ Must be included after modules to be able to reference them.
 /* MODULE HOOKS */
 
 #ifdef CRANK
+   #include "../builtins/crank.h"
+   
    inline void on_crank_pulse(void) {
       uint16_t now = get_time();
       on_crank_pulse_collect_data(now);
       #ifdef CADENCE
         cadence_on_crank_pulse();
+      #endif
+   }
+   
+   void on_crank_stop(void) {
+      on_crank_stop_collect_data();
+      #ifdef CADENCE
+        cadence_on_crank_stop();
       #endif
    }
 #endif
