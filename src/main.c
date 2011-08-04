@@ -24,7 +24,7 @@
 
 #include "common.h"
 
-#include "values.h"
+#include "preferences.h"
 
 #ifdef ATTINY2313
   #include "avr/attiny2313.c"
@@ -34,25 +34,25 @@
   #endif
 #endif
 
-/* advanced options */
-#define MAXBUFFERX 10 // used for drawing, defines maximum width of a character // TODO: move somewhere else
-
 /* imports depending on constants */
 #include "display/pcd8544.c"
 #include "display/drawing.c"
 
 
 #include "lib/calculations.c"
-// basic builtins
-
 #include "lib/timer.c"
 
+// subsystems
+#include "builtins/distance.c"
+
+// data collectors
 #include "builtins/wheel.c"
 
 #ifdef CRANK
     #include "builtins/crank.c"
 #endif
 
+// data displayers
 #ifdef CADENCE
     #include "builtins/cadence.c"
 #endif

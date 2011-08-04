@@ -70,6 +70,7 @@
 #define HIGH_PRECISION_CALCULATIONS // makes speed calculation 32-bit instead of truncating to 16
 #define LONG_CALCULATIONS // makes calculations possible on longer data types
 #define FRAC_BITS 10 // Fixed-point fraction for PULSE_DIST and SPEED_FACTOR. WARNING! modifying may lead to overflow errors and better precision (most likely just the former). Less then 8 is not recommended if LONG_SPEED is used
+#define ONE_SECOND 3695 // in timer ticks, calibrated for 1MHz/256 // TODO: autocalculate
 
 /* PREFERENCES */
 #define DEBUG
@@ -84,5 +85,6 @@
 #define AVGSPEED
 #define COMBINED_RESET
 #define SPEED_VS_TIME_PLOT
+
 #define CONSTANT_PULSE_DISTANCE
 #define METRIC_PULSE_DIST 2133L // millimeters

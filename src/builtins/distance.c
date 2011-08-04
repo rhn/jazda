@@ -17,8 +17,20 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "preferences.h"
+/* distance data management subsystem */
+#include "distance.h"
 
-/* GENERATED VALUES */
 
-#define ONE_SECOND 3695 // in timer ticks, calibrated for 1MHz/256 // TODO: autocalculate
+#ifdef CONSTANT_PULSE_DISTANCE
+    const uint16_t millimeters_pulse_distance = INITIAL_METRIC_PULSE_DIST;
+    const uint16_t pulse_dist = get_pulse_dist(INITIAL_METRIC_PULSE_DIST);
+#else
+    volatile uint16_t millimeters_pulse_distance = INITIAL_METRIC_PULSE_DIST;
+    volatile uint16_t pulse_dist = get_pulse_dist(INITIAL_METRIC_PULSE_DIST);
+#endif
+
+#ifndef CONSTANT_PULSE_DISTANCE
+    void update_pulse_distance(void) {
+        pulse_distance = get_pulse_dist(millimeters_pulse_distance);
+    }
+#endif

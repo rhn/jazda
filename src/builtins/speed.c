@@ -21,6 +21,7 @@
 #include "wheel.h"
 #include "../lib/timer.h"
 #include "../lib/calculations.h"
+#include "distance.h"
 
 /* ---------- CONSTANTS --------------- */
 // numbers
@@ -54,6 +55,8 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
     #endif
 #endif
 
+#define INITIAL_SPEED_FACTOR get_speed_factor(INITIAL_PULSE_DIST)
+
 // reading from either wheel pulse or wheel stop event
 volatile uint16_t speed_newest_reading;
 // flag for notifying about pulse_table and oldest_pulse_index changes
@@ -62,9 +65,9 @@ volatile uint8_t speed_pulse_occured = true;
 volatile int8_t speed_timer_handle = -1;
 
 #ifdef CONSTANT_PULSE_DISTANCE
-    const SPEED_FACTOR_t speed_factor = get_speed_factor(pulse_dist);
+    const SPEED_FACTOR_t speed_factor = INITIAL_SPEED_FACTOR;
 #else
-    volatile SPEED_FACTOR_t speed_factor = get_speed_factor(pulse_dist);
+    volatile SPEED_FACTOR_t speed_factor = INITIAL_SPEED_FACTOR;
 #endif
 
 #ifndef CONSTANT_PULSE_DISTANCE

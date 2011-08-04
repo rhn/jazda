@@ -21,12 +21,13 @@
 
 /* REQUIRES:
 pcd8544.h or compatible
-common.h (upoint_t, nibblepair_t)
 DEFINES: MAXBUFFERX: maximum allowed width of a character in a viewport. Wider characters can still be drawn if additional calls are used for further parts (TODO) Takes up MAXBUFFERX * 1B RAM
 */
 
 #ifndef _DRAWING_H_
 #define _DRAWING_H_
+
+#define MAXBUFFERX 10 // used for drawing, defines maximum width of a character
 
 typedef struct unsigned_point {
     uint8_t x;

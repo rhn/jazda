@@ -18,6 +18,7 @@
 */
 
 #include "../display/drawing.h"
+#include "../builtins/distance.h"
 
 #define DIST_SIGNIFICANT_DIGITS 3 // 999km is good enough
 #define DIST_FRACTION_DIGITS 2 // same as my sigma
@@ -25,7 +26,7 @@
 volatile uint32_t distance = 0;
 
 inline void distance_on_wheel_pulse(void) {
-  distance += PULSE_DIST;
+  distance += pulse_dist;
   // TODO: asm this to use 1 tmp reg?
   module_flags.distance_changed = true;
 }
