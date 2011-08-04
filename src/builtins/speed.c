@@ -43,13 +43,14 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
 */
 // TODO: power 10 ** (SPEED_DIGITS - DIST_DIGITS + 2)
 #ifdef LONG_CALCULATIONS
-    #define SPEED_FACTOR (uint32_t)(PULSE_DIST * ONE_SECOND * 36 * 10) // T and N excluded as variable
+    #define SPEED_FACTOR_t uint32_t
+    #define get_speed_factor(pdist) pdist * ONE_SECOND * 36 * 10 // T and N excluded as variable
 #else
     #ifdef HIGH_PRECISION_CALCULATIONS
-        #define SPEED_FACTOR (uint32_t)(PULSE_DIST * ONE_SECOND * 36 * 10) // T and N excluded as variable
+        #define get_speed_factor(pdist) pdist * ONE_SECOND * 36 * 10 // T and N excluded as variable
     #else
         #define SPEED_TRUNCATION_BITS 1
-        #define SPEED_FACTOR (uint16_t)((PULSE_DIST * 36 * 10) >> (FRAC_BITS - TIMER_BITS + SPEED_TRUNCATION_BITS)) // T and N excluded as variable
+        #define get_speed_factor(pdist) (pdist * 36 * 10) >> (FRAC_BITS - TIMER_BITS + SPEED_TRUNCATION_BITS) // T and N excluded as variable
     #endif
 #endif
 
@@ -60,15 +61,26 @@ volatile uint8_t speed_pulse_occured = true;
 
 volatile int8_t speed_timer_handle = -1;
 
+#ifdef CONSTANT_PULSE_DISTANCE
+    const SPEED_FACTOR_t speed_factor = get_speed_factor(pulse_dist);
+#else
+    volatile SPEED_FACTOR_t speed_factor = get_speed_factor(pulse_dist);
+#endif
+
+#ifndef CONSTANT_PULSE_DISTANCE
+    void speed_update_factor(void) {
+        speed_factor = get_speed_factor(pulse_dist);
+    }
+#endif
 
 #ifdef LONG_CALCULATIONS
     uint16_t get_average_speed_long(uint32_t time_amount, const uint16_t pulse_count) { 
-       return get_rot_speed_long(SPEED_FACTOR, time_amount, pulse_count);
+       return get_rot_speed_long(speed_factor, time_amount, pulse_count);
     }
 #endif
 
 uint16_t get_average_speed(const uint16_t time_amount, const uint8_t pulse_count) {
-    return get_rot_speed(SPEED_FACTOR, time_amount, pulse_count);
+    return get_rot_speed(speed_factor, time_amount, pulse_count);
 }
 
 void speed_on_timeout(void) {

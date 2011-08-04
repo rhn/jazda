@@ -32,3 +32,13 @@ valid pulse (thus lowering the speed).
 void speed_on_wheel_stop(void);
 void speed_on_wheel_pulse(const uint16_t now);
 void speed_redraw(void);
+
+#ifdef LONG_CALCULATIONS
+    uint16_t get_average_speed_long(uint32_t time_amount, const uint16_t pulse_count);
+#endif
+
+uint16_t get_average_speed(const uint16_t time_amount, const uint8_t pulse_count);
+
+#ifndef CONSTANT_PULSE_DISTANCE
+    void speed_update_factor(void);
+#endif

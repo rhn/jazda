@@ -25,5 +25,5 @@
 
 // converts METRIC_PULSE_DIST in mm to km/100 (10^DIST_FRACTION_DIGITS) with FRAC_BITS long mantissa
 #define PULSE_DIST (uint64_t)((uint64_t)(METRIC_PULSE_DIST << FRAC_BITS) / 10000L) // TODO: power 10 ^ (6 - DIST_DIGITS) : 6 = mm->km
-
+#define pulse_dist PULSE_DIST
 #define ONE_SECOND 3695 // in timer ticks, calibrated for 1MHz/256 // TODO: autocalculate

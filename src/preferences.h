@@ -84,4 +84,5 @@
 #define AVGSPEED
 #define COMBINED_RESET
 #define SPEED_VS_TIME_PLOT
+#define CONSTANT_PULSE_DISTANCE
 #define METRIC_PULSE_DIST 2133L // millimeters
