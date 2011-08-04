@@ -31,6 +31,6 @@
 
 #ifndef CONSTANT_PULSE_DISTANCE
     void update_pulse_distance(void) {
-        pulse_distance = get_pulse_dist(millimeters_pulse_distance);
+        pulse_dist = get_pulse_dist(millimeters_pulse_distance);
     }
 #endif

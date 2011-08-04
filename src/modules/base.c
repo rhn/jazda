@@ -24,9 +24,10 @@ struct module_flags_struct {
     uint8_t maxspeed_changed;
     uint8_t stopwatch_changed;
     uint8_t avgspeed_changed;
+    uint8_t config_changed;
 };
 
-volatile struct module_flags_struct module_flags = {0, 0, 0, 0};
+volatile struct module_flags_struct module_flags = {0, 0, 0, 0, 0};
 
 #ifdef COMBINED_RESET
     #include "combined_reset.c"
