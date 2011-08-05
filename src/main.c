@@ -42,6 +42,7 @@
 #include "lib/calculations.c"
 #include "lib/timer.c"
 #include "lib/plots.c"
+#include "lib/modules.c"
 
 // subsystems
 #include "builtins/distance.c"
