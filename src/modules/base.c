@@ -17,6 +17,8 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../lib/modules.h"
+
 struct module_flags_struct {
     uint8_t distance_changed;
     uint8_t maxspeed_changed;
