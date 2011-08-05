@@ -23,19 +23,10 @@
 // TODO: plot position. Currently hardcoded to use with modules
 */
 
-#define PLOT_SIZE 84
-#define PLOT_BASE_LINE 4
+
+#include "plots.h"
+
 #define PLOT_LINE_HEIGHT 2
-
-typedef struct circular_buffer {
-    uint8_t values[PLOT_SIZE];
-    uint8_t next_index; // index of the next value to be recorded, init to 0
-    uint8_t num_values; // number of currently stored value, initialize to 0
-} circular_buffer_t;
-
-// example initialization
-// volatile circular_buffer_t svt_averages = { .next_index = 0, .num_values = 0 };
-
 
 void circular_buffer_insert_value(circular_buffer_t *buffer, const uint8_t value) {
     (*buffer).values[(*buffer).next_index] = value;
@@ -48,10 +39,6 @@ void circular_buffer_insert_value(circular_buffer_t *buffer, const uint8_t value
     }
 }
 
-/**
-Draws the plot over 2 lines. Performs no scaling of values - value of speed in
-values will become the height of a bar in pixels.
-*/
 void draw_circular_buffer_plot_line(const circular_buffer_t buffer, const uint8_t line) {
   uint8_t maxheight = (PLOT_LINE_HEIGHT - line) * 8;
   

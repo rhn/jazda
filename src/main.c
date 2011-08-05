@@ -41,6 +41,7 @@
 
 #include "lib/calculations.c"
 #include "lib/timer.c"
+#include "lib/plots.c"
 
 // subsystems
 #include "builtins/distance.c"
@@ -60,8 +61,6 @@
 #ifdef CURRENT_SPEED
     #include "builtins/speed.c"
 #endif
-
-#include "builtins/plots.c"
 
 // modules
 

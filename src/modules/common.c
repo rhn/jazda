@@ -17,6 +17,11 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../lib/plots.h"
+#include "../actions.h"
+
+#define MODULE_BASE_LINE 4
+
 void erase_screen(uint8_t count) {
     for (; count > 0; count--) {
         send_raw_byte(0, true);
@@ -28,8 +33,6 @@ void erase_module_screen(void) {
     set_column(0);
     erase_screen(2*84);
 }
-
-#define MODULE_BASE_LINE 4
 
 void draw_circular_buffer_plot(const circular_buffer_t buffer) {
     for (uint8_t line = 0; line < PLOT_LINE_HEIGHT; line++) {
