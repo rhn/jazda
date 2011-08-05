@@ -45,17 +45,19 @@ Y=\frac{NL}{T}36\cdot10^{b-a+2}X
 // TODO: power 10 ** (SPEED_DIGITS - DIST_DIGITS + 2)
 #ifdef LONG_CALCULATIONS
     #define SPEED_FACTOR_t uint32_t
-    #define get_speed_factor(pdist) pdist * ONE_SECOND * 36 * 10 // T and N excluded as variable
+    #define get_speed_factor(pdist) ((SPEED_FACTOR_t)pdist * ONE_SECOND * 36 * 10) // T and N excluded as variable
 #else
     #ifdef HIGH_PRECISION_CALCULATIONS
-        #define get_speed_factor(pdist) pdist * ONE_SECOND * 36 * 10 // T and N excluded as variable
+        #define SPEED_FACTOR_t uint32_t
+        #define get_speed_factor(pdist) ((SPEED_FACTOR_t)pdist * ONE_SECOND * 36 * 10) // T and N excluded as variable
     #else
+        #define SPEED_FACTOR_t uint16_t
         #define SPEED_TRUNCATION_BITS 1
-        #define get_speed_factor(pdist) (pdist * 36 * 10) >> (FRAC_BITS - TIMER_BITS + SPEED_TRUNCATION_BITS) // T and N excluded as variable
+        #define get_speed_factor(pdist) (((SPEED_FACTOR_t)pdist * 36 * 10) >> (FRAC_BITS - TIMER_BITS + SPEED_TRUNCATION_BITS)) // T and N excluded as variable
     #endif
 #endif
 
-#define INITIAL_SPEED_FACTOR get_speed_factor(INITIAL_PULSE_DIST)
+#define INITIAL_SPEED_FACTOR (get_speed_factor(INITIAL_PULSE_DIST))
 
 // reading from either wheel pulse or wheel stop event
 volatile uint16_t speed_newest_reading;
