@@ -31,6 +31,8 @@ value on average.
 Possible optimizations: pulse_count starts from -1 and becomes rotation_count
 */
 
+#include "../lib/plots.h"
+
 #define SVTPLOT_LENGTH_SEC 84*2 // time axis length.
 #define SVTPLOT_SPEED_TRUNC 5
 //#define SVTPLOT_FRAME_TIME 2000
