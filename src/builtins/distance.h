@@ -21,11 +21,11 @@
 
 // These two defines shouldn't ever be used by modules
 // converts METRIC_PULSE_DIST in mm to km/100 (10^DIST_FRACTION_DIGITS) with FRAC_BITS long mantissa
-#define get_pulse_dist(mpd) (uint64_t)((uint64_t)(mpd << FRAC_BITS) / 10000L) // TODO: power 10 ^ (6 - DIST_DIGITS) : 6 = mm->km
+#define get_pulse_dist(mpd) ((((uint32_t)mpd) << FRAC_BITS) / 10000L) // TODO: power 10 ^ (6 - DIST_DIGITS) : 6 = mm->km
 #ifndef INITIAL_METRIC_PULSE_DIST
-    #define INITIAL_METRIC_PULSE_DIST METRIC_PULSE_DIST
+    #define INITIAL_METRIC_PULSE_DIST (METRIC_PULSE_DIST)
 #endif
-#define INITIAL_PULSE_DIST get_pulse_dist(INITIAL_METRIC_PULSE_DIST)
+#define INITIAL_PULSE_DIST (get_pulse_dist(INITIAL_METRIC_PULSE_DIST))
 
 
 #ifdef CONSTANT_PULSE_DISTANCE
