@@ -21,6 +21,15 @@
 Global signal handling. Not part of the module API
 */
 
+#ifndef _ACTIONS_H_
+#define _ACTIONS_H_
+typedef struct module_actions {
+    void (*button_left)(uint8_t state);
+    void (*button_right)(uint8_t state);
+} module_actions_t;
+
+extern const module_actions_t default_actions;
+
 void on_select_button(uint8_t state);
 
 void on_right_button(uint8_t state);
@@ -28,3 +37,4 @@ void on_right_button(uint8_t state);
 void on_left_button(uint8_t state);
 
 void module_redraw();
+#endif

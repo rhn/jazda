@@ -2,6 +2,8 @@
 
 Tuned for pcd8544 display width */
 
+#include "../actions.h"
+
 #define BACKLIGHTDIR DDRC
 #define BACKLIGHTPORT PORTC
 #define BACKLIGHTPIN PC5

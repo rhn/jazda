@@ -32,9 +32,7 @@ volatile module_actions_t *current_actions = &default_actions;
 // TODO: if no function defined, do nothing. see if space is saved
 void on_select_button(uint8_t state) {
    module_actions_t *actions = (*(modules[current_module].select_button))(state);
-   if (actions == NULL) {
-      current_actions = &default_actions;
-   } else {
+   if (actions != NULL) {
       current_actions = actions;
    }
 }

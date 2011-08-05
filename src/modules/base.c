@@ -58,6 +58,10 @@ volatile struct module_flags_struct module_flags = {0, 0, 0, 0, 0};
     #include "avgspeed.c"
 #endif
 
+#ifdef CONFIG
+    #include "config.c"
+#endif
+
 #ifdef DEBUG
     #include "debug.c"
 #endif
@@ -86,6 +90,9 @@ const module_record_t modules[] = {
     #endif
     #ifdef SPEED_VS_TIME_PLOT
         svt_record,
+    #endif
+    #ifdef CONFIG
+        config_record,
     #endif
     };
 

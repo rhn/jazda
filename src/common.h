@@ -31,11 +31,6 @@ typedef struct module_record {
     char signature[MODULE_SIGNATURE_SIZE]; // module logo for display
 } module_record_t;
 
-typedef struct module_actions {
-    void (*button_left)(uint8_t state);
-    void (*button_right)(uint8_t state);
-} module_actions_t;
-
 typedef struct time_storage {
     uint8_t seconds;
     uint8_t minutes;
