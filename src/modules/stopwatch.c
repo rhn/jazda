@@ -27,6 +27,12 @@ instantly with little jitter, but offset in relation to reset time.
 #include "../display/drawing.h"
 #include "../lib/timer.h"
 
+typedef struct time_storage {
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+} time_storage_t;
+
 volatile time_storage_t stopwatch_time = {0, 0, 0};
 volatile uint16_t stopwatch_next_call;
 volatile timer_handle_t stopwatch_timer_handle = -1;

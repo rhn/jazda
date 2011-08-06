@@ -19,10 +19,19 @@
 
 /* functions and defines to use in modules */
 
+#ifndef _LIB_MODULES_H_
+#define _LIB_MODULES_H_
 #include "../lib/plots.h"
 #include "../actions.h"
 
 #define MODULE_BASE_LINE 4
+#define MODULE_SIGNATURE_SIZE 8
+
+typedef struct module_record {
+    void (*redraw)(uint8_t force);
+    module_actions_t* (*select_button)(uint8_t state); // function pointer
+    char signature[MODULE_SIGNATURE_SIZE]; // module logo for display
+} module_record_t;
 
 // clears count columns in front of cursor
 void erase_screen(uint8_t count);
@@ -33,4 +42,5 @@ void erase_module_screen(void);
 void draw_circular_buffer_plot(const circular_buffer_t buffer);
 
 // null action for modules on select
-module_actions_t *module_select_null(const uint8_t state);
+module_actions_t* module_select_null(const uint8_t state);
+#endif

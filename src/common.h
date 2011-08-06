@@ -23,16 +23,3 @@
 #define false 0
 #define HIGH(PORT, PIN) PORT |= _BV(PIN)
 #define LOW(PORT, PIN) PORT &= ~_BV(PIN)
-#define MODULE_SIGNATURE_SIZE 8
-
-typedef struct module_record {
-    void (*redraw)(uint8_t force);
-    struct module_actions * (*select_button)(uint8_t state);
-    char signature[MODULE_SIGNATURE_SIZE]; // module logo for display
-} module_record_t;
-
-typedef struct time_storage {
-    uint8_t seconds;
-    uint8_t minutes;
-    uint8_t hours;
-} time_storage_t;
