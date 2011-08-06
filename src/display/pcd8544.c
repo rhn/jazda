@@ -18,6 +18,7 @@
 */
 
 #include <util/delay.h>
+#include "pcd8544.h"
 
 /* Monochrome line-based display, each line is 8 bits high */
 /* HARDWARE
@@ -70,11 +71,6 @@ void send_raw_byte(const uint8_t payload, const uint8_t data) {
    LOW(D_CPORT, D_CPIN);
 }
 
-#define blank_screen() send_raw_byte(0b00001000, false)
-#define darken_screen() send_raw_byte(0b00001001, false)
-#define normal_screen() send_raw_byte(0b00001100, false)
-#define inverse_screen() send_raw_byte(0b00001101, false)
-
 void set_column(const uint8_t col) {
     if (col < 84) {
         send_raw_byte(col | 0b10000000, false);
@@ -89,7 +85,6 @@ void set_row(const uint8_t row) {
 
 /* prepares the display for operation */
 void lcd_init() {
-//    for(;;){
   send_raw_byte(0b00100001, false); // extended instruction set
   send_raw_byte(0b10000000 | 66, false); // set voltage to just under 7V (3V+66*0.06V steps)
   send_raw_byte(0b00000100, false); // set temp coeff
