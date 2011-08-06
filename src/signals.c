@@ -22,27 +22,13 @@
 /*
 Signal dispatchers.
 Must be included after modules to be able to reference them.
+The only includes in this file should be standard data collectors callbacks.
 */
 
-#include "../builtins/speed.h"
-#include "../builtins/wheel.h"
-
-#ifdef SPEED_VS_DISTANCE_PLOT
-    void svd_on_wheel_pulse(uint16_t now);
-#endif
-
-#ifdef MAXSPEED
-    void maxspeed_on_wheel_pulse(void);
-#endif
-
-#ifdef AVGSPEED
-    void avgspeed_on_wheel_pulse(void);
-#endif
-
-/* MODULE HOOKS */
+#include "builtins/wheel.h"
 
 #ifdef CRANK
-   #include "../builtins/crank.h"
+   #include "builtins/crank.h"
    
    inline void on_crank_pulse(void) {
       uint16_t now = get_time();

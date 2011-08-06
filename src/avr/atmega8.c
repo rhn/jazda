@@ -24,7 +24,7 @@ actions.h to device-specific hardware using avr.c file for the generic ones.
 #include "avr.c"
 
 #include "../actions.h"
-#include "../modules/signals.h"
+#include "../signals.h"
 
 #define EMUINT0PIN LEFTPIN
 #define EMUINT0PORT LEFTPORT

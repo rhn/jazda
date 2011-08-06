@@ -66,8 +66,6 @@ volatile struct module_flags_struct module_flags = {0, 0, 0, 0, 0};
     #include "debug.c"
 #endif
 
-#include "signals.c"
-
 // table of module records
 const module_record_t modules[] = {
     #ifdef DISTANCE

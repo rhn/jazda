@@ -19,7 +19,7 @@
 
 #include "wheel.h"
 #include "../lib/timer.h"
-#include "../modules/signals.h" // this file here implements on_wheel_stop detection
+#include "../signals.h" // this file here implements on_wheel_stop detection
 
 // TODO: check if volatile is necessary with tables
 volatile uint16_t wheel_pulse_table[WHEEL_PULSE_TABLE_SIZE];

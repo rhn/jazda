@@ -73,6 +73,7 @@
 #endif
 
 #include "actions.c"
+#include "signals.c" // must be included after its all callbacks
 
 void main() __attribute__ ((noreturn));
 void main(void) {

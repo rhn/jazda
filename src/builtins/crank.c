@@ -22,7 +22,7 @@
 
 #include "crank.h"
 #include "../lib/timer.h"
-#include "../modules/signals.h"
+#include "../signals.h"
 
 volatile uint16_t crank_pulse_times[CRANK_PULSES]; // extern
 volatile uint8_t crank_pulse_count = 0; // extern

@@ -31,7 +31,7 @@ FIXME: race condition in reading extended_time while overflow should be
 happening.
 */
 
-#include "../modules/signals.h"
+#include "../signals.h"
 #include "../lib/timer.h"
 
 volatile uint16_t extended_time = 0;
