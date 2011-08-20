@@ -41,6 +41,7 @@ void send_raw_byte(const uint8_t payload, const uint8_t data);
 #define darken_screen() send_raw_byte(0b00001001, false)
 #define normal_screen() send_raw_byte(0b00001100, false)
 #define inverse_screen() send_raw_byte(0b00001101, false)
+#define nop_screen() send_raw_byte(0, false)
 
 /* set cursor column in pixels - between 0 and 84. Out of bounds requests
 ignored */
