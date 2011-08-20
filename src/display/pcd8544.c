@@ -30,6 +30,7 @@
    CLK - serial clock
    SCE - select
    SDA - serial data
+   F_CPU - CPU frequency
 */
 
 /* prepares the chip for using the display */
@@ -67,6 +68,7 @@ void send_raw_byte(const uint8_t payload, const uint8_t data) {
        
        mask = mask >> 1;
    }
+
    LOW(SDAPORT, SDAPIN);
    LOW(D_CPORT, D_CPIN);
 }
