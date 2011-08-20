@@ -23,8 +23,10 @@ Time is updated on each second interrupt, thanks to that it's displayed
 instantly with little jitter, but offset in relation to reset time.
 */
 
+#include "../common.h"
 #include "../builtins/wheel.h"
 #include "../display/drawing.h"
+#include "../display/pcd8544.h"
 #include "../lib/timer.h"
 
 typedef struct time_storage {
@@ -43,9 +45,15 @@ void stopwatch_redraw(uint8_t force) {
        upoint_t glyph_size = {8, 8};
        module_flags.stopwatch_changed = false;
        print_number(stopwatch_time.hours, position, glyph_size, 1, (number_display_t){.integer=4, .fractional=0});
-       position.x += 4 * 9 + 2; // 4 chars + 2 extra pixels space
+       position.x += 4 * 9; // 4 chars + 1 extra pixel space
+       set_column(position.x);
+       send_raw_byte(0b00010100, true);
+       position.x += 2;
        print_number(stopwatch_time.minutes, position, glyph_size, 1, (number_display_t){.integer=1, .fractional=1}); // 1 fractional digit to preserve the "0" in front
-       position.x += 2 * 9 + 2; // 2 chars + 2 extra pixels space
+       position.x += 2 * 9; // 2 chars + 1 extra pixel space
+       set_column(position.x);
+       send_raw_byte(0b00010100, true);
+       position.x += 2;
        print_number(stopwatch_time.seconds, position, glyph_size, 1, (number_display_t){.integer=1, .fractional=1}); // 1 fractional digit to preserve the "0" in front
    }
 }

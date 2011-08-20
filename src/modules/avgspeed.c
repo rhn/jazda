@@ -18,13 +18,16 @@
 */
 
 /* Average speed module
-REQUIRES: speed, LONG_SPEED
+REQUIRES: speed, wheel
 Doesn't add single pulses to average when bicycle is stopped. Average counted
 from first pulse in streak to stopped time.
 */
 
+#include "../common.h"
+#include "../builtins/speed.h"
 #include "../builtins/wheel.h"
 #include "../display/drawing.h"
+#include "../display/pcd8544.h"
 #include "../lib/calculations.h"
 
 volatile uint32_t avgspeed_total_time = 0;
@@ -66,6 +69,10 @@ void avgspeed_redraw(const uint8_t force) {
             speed = 0;
         }
         print_number(speed, position, glyph_size, 1, SPEED_DIGITS);
+
+        // ugly hack to print decimal point
+        set_column(position.x - 1 + SPEED_SIGNIFICANT_DIGITS * (glyph_size.x + 1));
+        send_raw_byte(0b10000000, true);
     }
 }
 

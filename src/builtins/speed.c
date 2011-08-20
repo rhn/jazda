@@ -21,11 +21,12 @@
 #include "wheel.h"
 #include "../lib/timer.h"
 #include "../lib/calculations.h"
+#include "../display/drawing.h"
+#include "../display/pcd8544.h" // decimal point hack
 #include "distance.h"
 
 /* ---------- CONSTANTS --------------- */
 // numbers
-#define SPEED_DIGITS (number_display_t){.integer=SPEED_SIGNIFICANT_DIGITS, .fractional=SPEED_FRACTION_DIGITS}
 /* Speed calculations:
 X - rotation distance in internal units
 N - rotation count
@@ -155,5 +156,11 @@ void speed_redraw(void) {
        }
 
        print_number(speed, position, glyph_size, 2, SPEED_DIGITS);
+       
+       // ugly hack to print decimal point
+       set_column(position.x - 2 + SPEED_SIGNIFICANT_DIGITS * (glyph_size.x + 2));
+       set_row(position.y + 1);
+       send_raw_byte(0b11000000, true);
+       send_raw_byte(0b01000000, true);
    }
 }

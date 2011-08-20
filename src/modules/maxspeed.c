@@ -27,9 +27,11 @@ Same algorithm as speed isn't used due to size/speed overhead when comparing
 time differences of different pulse counts.
 */
 
-
+#include "../common.h"
+#include "../builtins/speed.h"
 #include "../builtins/wheel.h"
 #include "../display/drawing.h"
+#include "../display/pcd8544.h"
 #include "../lib/calculations.h"
 
 // TODO: -1 and no special code or 0 and special case? size optimization
@@ -71,6 +73,10 @@ void maxspeed_redraw(const uint8_t force) {
         upoint_t position = {0, 5};
         upoint_t glyph_size = {8, 8};
         print_number(speed, position, glyph_size, 1, SPEED_DIGITS);
+
+        // ugly hack to print decimal point
+        set_column(position.x - 1 + SPEED_SIGNIFICANT_DIGITS * (glyph_size.x + 1));
+        send_raw_byte(0b10000000, true);
     }
 }
 

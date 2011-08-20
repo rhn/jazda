@@ -29,6 +29,8 @@ valid pulse (thus lowering the speed).
 #define SPEED_SIGNIFICANT_DIGITS 2 // 99km/h is good enough
 #define SPEED_FRACTION_DIGITS 1 // better than my sigma
 
+#define SPEED_DIGITS (number_display_t){.integer=SPEED_SIGNIFICANT_DIGITS, .fractional=SPEED_FRACTION_DIGITS}
+
 void speed_on_wheel_stop(void);
 void speed_on_wheel_pulse(const uint16_t now);
 void speed_redraw(void);

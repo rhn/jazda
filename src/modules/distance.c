@@ -17,6 +17,8 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../common.h"
+#include "../display/pcd8544.h"
 #include "../display/drawing.h"
 #include "../builtins/distance.h"
 
@@ -37,6 +39,10 @@ void distance_redraw(const uint8_t force) {
       upoint_t glyph_size = {8, 8};
       module_flags.distance_changed = false;
       print_number(distance >> FRAC_BITS, position, glyph_size, 1, (number_display_t){.integer=DIST_SIGNIFICANT_DIGITS, .fractional=DIST_FRACTION_DIGITS});
+
+      // ugly hack to print decimal point
+      set_column(position.x - 1 + DIST_SIGNIFICANT_DIGITS * (glyph_size.x + 1));
+      send_raw_byte(0b10000000, true);
    }
 }
 
