@@ -25,15 +25,17 @@ CADENCE_BAR_OPTIMUM is used to display a graphical hint about the cadence the
 user wants to keep.
 CADENCE_BAR_HEIGHT defines how many lines the bar spans vertically.
 WARNING: this module's bar requires a line-based display.
+TODO: accept a range of optimal values
 */
 
+#include "../common.h"
 #include "../builtins/crank.h"
 #include "../lib/calculations.h"
 #include "../display/drawing.h"
 
 #define CADENCE_BAR_HEIGHT 3
-#define CADENCE_BAR_MINIMUM 50
-#define CADENCE_BAR_MAXIMUM 150
+#define CADENCE_BAR_MINIMUM 70
+#define CADENCE_BAR_MAXIMUM 110
 #define CADENCE_BAR_OPTIMUM 90
 
 #define CADENCE_DIGITS (number_display_t){.integer=3, .fractional=0}
@@ -71,7 +73,6 @@ void cadence_draw_bar(uint16_t rpm) {
     upoint_t position = {27, 0};
     for (uint8_t i = 0; i < CADENCE_BAR_HEIGHT; i++) {
         uint8_t current_top = 8 * (CADENCE_BAR_HEIGHT - i);
-        //char buffer[6];
         set_column(position.x);
         set_row(position.y);
         
@@ -88,11 +89,7 @@ void cadence_draw_bar(uint16_t rpm) {
         send_raw_byte(rpm_stamp, true);
         send_raw_byte(rpm_stamp, true);
         send_raw_byte(~optimum_stamp, true);
-        
-        //for (uint8_t y = 0; y < 6; y++) {
-        //    send_raw_byte(buffer[y], true);
-        //}
-        
+                
         position.y++;
     }
 }
