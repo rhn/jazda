@@ -18,7 +18,7 @@
 */
 
 #include "speed.h"
-#include "wheel.h"
+#include "../sensors/wheel.h"
 #include "../lib/timer.h"
 #include "../lib/calculations.h"
 #include "../display/drawing.h"

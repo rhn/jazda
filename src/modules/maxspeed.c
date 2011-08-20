@@ -29,7 +29,7 @@ time differences of different pulse counts.
 
 #include "../common.h"
 #include "../builtins/speed.h"
-#include "../builtins/wheel.h"
+#include "../sensors/wheel.h"
 #include "../display/drawing.h"
 #include "../display/pcd8544.h"
 #include "../lib/calculations.h"

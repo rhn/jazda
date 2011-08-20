@@ -25,10 +25,10 @@ Must be included after modules to be able to reference them.
 The only includes in this file should be standard data collectors callbacks.
 */
 
-#include "builtins/wheel.h"
+#include "sensors/wheel.h"
 
 #ifdef CRANK
-   #include "builtins/crank.h"
+   #include "sensors/crank.h"
    
    inline void on_crank_pulse(void) {
       uint16_t now = get_time();

@@ -47,14 +47,14 @@
 // subsystems
 #include "builtins/distance.c"
 
-// data collectors
-#include "builtins/wheel.c"
+// sensors (data/event capture)
+#include "sensors/wheel.c"
 
 #ifdef CRANK
-    #include "builtins/crank.c"
+    #include "sensors/crank.c"
 #endif
 
-// data displayers
+// data display
 #ifdef CADENCE
     #include "builtins/cadence.c"
 #endif

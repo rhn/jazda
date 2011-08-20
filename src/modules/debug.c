@@ -2,6 +2,7 @@
 
 Tuned for pcd8544 display width */
 
+#include "../common.h"
 #include "../actions.h"
 
 #define BACKLIGHTDIR DDRC

@@ -25,7 +25,7 @@ from first pulse in streak to stopped time.
 
 #include "../common.h"
 #include "../builtins/speed.h"
-#include "../builtins/wheel.h"
+#include "../sensors/wheel.h"
 #include "../display/drawing.h"
 #include "../display/pcd8544.h"
 #include "../lib/calculations.h"

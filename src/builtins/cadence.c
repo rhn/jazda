@@ -29,7 +29,7 @@ TODO: accept a range of optimal values
 */
 
 #include "../common.h"
-#include "../builtins/crank.h"
+#include "../sensors/crank.h"
 #include "../lib/calculations.h"
 #include "../display/drawing.h"
 

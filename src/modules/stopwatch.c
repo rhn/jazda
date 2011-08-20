@@ -24,7 +24,7 @@ instantly with little jitter, but offset in relation to reset time.
 */
 
 #include "../common.h"
-#include "../builtins/wheel.h"
+#include "../sensors/wheel.h"
 #include "../display/drawing.h"
 #include "../display/pcd8544.h"
 #include "../lib/timer.h"
