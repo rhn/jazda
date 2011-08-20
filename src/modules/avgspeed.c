@@ -76,7 +76,7 @@ void avgspeed_redraw(const uint8_t force) {
     }
 }
 
-#define avgspeed_signature {0b10000000, 0b01100000, 0b00011000, 0b00000110, 0b00000001, 0b00000110, 0b00011000, 0b11100000}
+#define avgspeed_signature {0b00011000, 0b00110000, 0b00110000, 0b00011000, 0b00001100, 0b00001100, 0b00011000, 0b00000000}
 #ifdef COMBINED_RESET
     #define avgspeed_record {&avgspeed_redraw, &combined_reset_on_select, avgspeed_signature}
 #else
