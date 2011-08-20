@@ -25,7 +25,6 @@
 
 extern volatile uint16_t crank_pulse_times[CRANK_PULSES];
 extern volatile uint8_t crank_pulse_count;
-// extern volatile uint8_t crank_stopped = true;
 
 void on_crank_pulse_collect_data(uint16_t now);
 void on_crank_stop_collect_data(void);
