@@ -62,7 +62,7 @@ volatile struct module_flags_struct module_flags = {0, 0, 0, 0, 0};
     #include "config.c"
 #endif
 
-#ifdef DEBUG
+#ifdef BACKLIGHT
     #include "debug.c"
 #endif
 
@@ -77,7 +77,7 @@ const module_record_t modules[] = {
     #ifdef STOPWATCH
         stopwatch_record,
     #endif
-    #ifdef DEBUG
+    #ifdef BACKLIGHT
         debug_record,
     #endif
     #ifdef MAXSPEED

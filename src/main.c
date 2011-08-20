@@ -101,9 +101,8 @@ void main(void) {
        events_redraw();
     #endif
     module_redraw();
-    #ifdef DEBUG
-        send_raw_byte(0, true);
-    #endif
+    nop_screen(); // FIXME: the screen doesn't immediately accept the last command
+
     /*
     send_raw_byte(emuintpinstate, true);
         send_raw_byte(emuintpinstate, true);

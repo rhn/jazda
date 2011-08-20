@@ -73,7 +73,7 @@
 #define ONE_SECOND 3695 // in timer ticks, calibrated for 1MHz/256 // TODO: autocalculate
 
 /* PREFERENCES */
-#define DEBUG
+// #define DEBUG
 
 #define CRANK
 #define CADENCE
@@ -86,5 +86,6 @@
 #define COMBINED_RESET
 #define SPEED_VS_TIME_PLOT
 #define CONFIG
+#define BACKLIGHT
 
 #define METRIC_PULSE_DIST 2133L // millimeters
