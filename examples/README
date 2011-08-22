@@ -7,3 +7,6 @@ Ladder of examples from the simplest to using all basic features of the project.
 5: lcd_counter.c - 3 + 4 + number display
 6: lcd_status.c - interrupt splitter (for atmega8, optional)
 7: lcd_drawing.c - advanced functions of the drawing library
+
+To build an example, go to "examples" directory and issue the command:
+sh ../build.sh controller_name m8 example_name.c

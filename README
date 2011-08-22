@@ -9,52 +9,42 @@ https://github.com/rhn/jazda/wiki/
 Introduction, tutorial and hardware documents:
 http://rhn.github.com/jazda/
 
-QUICK START
-As of the current (pre-release) version, ALL .h FILES CONTAIN CODE!
-To build, use the commands
-cd src
-../build.sh usbasp m8 main.c
 
 FEATURES
 
-calculates distance with arbitrary precision (set before compilation)
-calculates speed at every impulse with arbitrary precision (set before compilation)
-smooth speed decreasing when no pulses come in (wheel stopped)
-modular design
+5 speed measuring functions: current, max, average etc
+Cadence measurement
+Plotting as you ride
+Low power consumption
+DIY hardware
+Modular code design
 
-HARDWARE REQUIREMENTS
 
-LPH7366 display (Philips PCD8544 LCD driver)
-  - 9-pin flex tape or a PCB with 1mm-spaced solder pads
-  - 1x 1µF capacitor
-  OR
-  Nokia 5110 display module off eBay
-Atmel AtMega8 microcontroller
-3x button
-4x ~1µF capacitors (depends on switches quality)
-SN74xx280 or any other parity generator
-3x ?Ω resistors (pull-up) 
-3V power supply (2x1.2V batteries work fine)
+ASSEMBLY
 
-SOFTWARE REQUIREMENTS
+For hardware needed to assemble the device, see docs/hardware
+The schematics are available in Eagle format in eagle directory AND on the
+project page (PNG format).
+You will need an AVR programmer to upload the software to the chip!
 
-gcc avr cross-compiler
-avr-libc
-avrdude
-bash (for installation only)
 
-SOFTWARE INSTALLATION
+SOFTWARE BUILDING
 
-The software has been tested on Linux only.
-To compile and download the software to the chip, go to src/ directory and run the command:
+Linux:
+To build & upload the software, you need:
+- avr-gcc
+- avr-libc
+- avrdude
+- Unix shell
+1. Connect the AtMega8 chip to your computer using
+your programmer (refer to the programmer's manual)
+2. Consult avrdude manual to find your programmer's name (in this example, it's
+"usbasp")
+2. Issue the commands:
+cd src
+sh ../build.sh usbasp m8 main.c
+replacing "usbasp" with your programmer's name
 
-../build.sh usbasp m8 main.c
 
-replacing usbasp with the name of your programmer (refer to avrdude manual to find it).
-For further information, refer to build.sh source code.
-
-Notes regarding parity generator:
-The generator is be connected to buttons which are filtered with capacitors. The resut is that it may generate some noise on output, and therefore, excessive interrupts. This is however handled by interrupt emulation mechanism and shouldn't ever be a problem.
-
-Contact information:
+AUTHORS
 rhn@porcupinefactory.org

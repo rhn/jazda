@@ -1,0 +1,25 @@
+GENERAL HARDWARE REQUIREMENTS
+
+LPH7366 display (Philips PCD8544 LCD driver)
+  - 9-pin flex tape or a PCB with 1mm-spaced solder pads
+  - 1x 1µF capacitor
+  OR
+  Nokia 5110 display module off eBay
+Atmel AtMega8 microcontroller (or compatible)
+3x button
+7x ~1µF capacitors
+SN74xx280 or any compatible parity generator
+3V power supply (2x1.2V batteries work fine)
+
+
+Setup 1:
+Exactly as above. AtMega8 or anything compatible can be used. Parity generator is necessary to detect button presses & crank pulses as interrupts in AtMega8.
+The parity generator lines don't need the resistors present in the hardware schematic - the internal ones in AtMega8 should be enough.
+
+Setup2 (work in progress):
+AtMega16 or AtMega32, no parity generator.
+It's possible to connect buttons/crank sensor directly to AtMega16 and AtMega32 and have them detected as interrupt triggers (pin change interrupt). WARNING: the code doesn't support pin change interrupt yet.
+
+
+Notes regarding parity generator:
+The generator must be connected to buttons which are filtered with capacitors. The result is that it may generate some noise on output, and therefore, excessive interrupts. This is however handled by interrupt emulation mechanism and shouldn't ever be a problem.
