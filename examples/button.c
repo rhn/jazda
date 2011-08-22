@@ -3,7 +3,7 @@
 #include <util/delay.h>
 
 /* EXAMPLE 2
-Switching diodes // XXX: borken?
+Switching diodes // XXX: broken?
 
 Features: Pin input, pin output
 

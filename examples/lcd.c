@@ -23,9 +23,9 @@
 #define RSTDIR DDRC
 #define RSTPORT PORTC
 #define RSTPIN PC1
-#include "display/pcd8544.c"
+#include "../src/display/pcd8544.c"
 
-/* EXAMPLE 5
+/* EXAMPLE 4
 LCD test pattern
 
 Features: Serial output

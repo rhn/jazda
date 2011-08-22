@@ -2,8 +2,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "common/common.h"
-
 
 #define CLKDIR DDRC
 #define CLKPORT PORTC
@@ -25,15 +23,14 @@
 #define RSTPORT PORTC
 #define RSTPIN PC1
 
-#include "display/pcd8544.h"
+#include "../src/display/pcd8544.c"
 
-#define MAXBUFFERX 8
-#include "display/drawing.h"
+#include "../src/display/drawing.c"
 
 /* EXAMPLE 6
 LCD button press counter
 
-Features: Serial output, hardware interrupt, pin input, digit display
+Features: Serial output, hardware interrupt, pin input, number display
 
 Connect a PCD8544 screen.
 Connect a switch to PD2 (INT0)
@@ -66,9 +63,12 @@ int main(void) {
     upoint_t glyph_size;
     glyph_size.x = 10;
     glyph_size.y = 16;
+    number_display_t number_data;
+    number_data.integer = 3;
+    number_data.fractional = 0;
     
     for (;;) {
-        print_number(state, position, glyph_size, 2, NIBBLEPAIR(5, 0));
+        print_number(state, position, glyph_size, 2, number_data);
     }
 }
 

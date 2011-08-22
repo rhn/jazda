@@ -2,7 +2,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "common/common.h"
 
 #define CLKDIR DDRC
 #define CLKPORT PORTC
@@ -23,13 +22,12 @@
 #define RSTDIR DDRC
 #define RSTPORT PORTC
 #define RSTPIN PC0
-#include "display/pcd8544.h"
 
-#define MAXBUFFERX 8
-#include "display/drawing.h"
+#include "../src/display/pcd8544.c"
+#include "../src/display/drawing.c"
 
-/* EXAMPLE 7
-LCD button press indicator
+/* EXAMPLE 6
+LCD button press indicator for atmega8 and similar
 
 Features: Serial output, hardware interrupt, split interrupts, pin input, digit display
 
@@ -240,21 +238,24 @@ int main(void) {
     lcd_init();
     upoint_t position;
     upoint_t glyph_size;
+    number_display_t number_data;
+    number_data.integer = 3;
+    number_data.fractional = 0;
     
     for (;;) {
         glyph_size.x = 6;
         glyph_size.y = 8;
         position.x = 0;
         position.y = 0;
-        print_number(interrupts, position, glyph_size, 1, NIBBLEPAIR(3, 0));
+        print_number(interrupts, position, glyph_size, 1, number_data);
         
         position.y = 1;
-        print_number(state[0], position, glyph_size, 1, NIBBLEPAIR(3, 0));
+        print_number(state[0], position, glyph_size, 1, number_data);
         
         position.y = 2;
         glyph_size.x = 6;
         glyph_size.y = 16;
-        print_number(state[1], position, glyph_size, 2, NIBBLEPAIR(3, 0));
+        print_number(state[1], position, glyph_size, 2, number_data);
         
         
         send_raw_byte(0xff, true);

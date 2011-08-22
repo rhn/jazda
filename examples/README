@@ -1,1 +1,9 @@
-Ladder of examples from the simplest to using all features of the project. Use to remember your skills and test your connections.
+Ladder of examples from the simplest to using all basic features of the project. Use to remember your skills and test your connections.
+
+1: blink.c - blinking diodes
+2: button.c - simple button input
+3: buttonint.c - interrupt button input
+4: lcd.c - lcd test pattern
+5: lcd_counter.c - 3 + 4 + number display
+6: lcd_status.c - interrupt splitter (for atmega8, optional)
+7: lcd_drawing.c - advanced functions of the drawing library

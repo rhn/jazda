@@ -2,7 +2,7 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 
-/* EXAMPLE UNFINIshED
+/* EXAMPLE UNFINISHED
 
 Interrupt-driven blinking and switching diodes
 

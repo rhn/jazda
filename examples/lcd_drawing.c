@@ -2,7 +2,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "common/common.h"
 
 #define CLKDIR DDRC
 #define CLKPORT PORTC
@@ -23,12 +22,10 @@
 #define RSTDIR DDRC
 #define RSTPORT PORTC
 #define RSTPIN PC0
-#include "display/pcd8544.h"
+#include "display/pcd8544.c"
+#include "display/drawing.c"
 
-#define MAXBUFFERX 8
-#include "display/drawing.h"
-
-/* EXAMPLE 8
+/* EXAMPLE 7
 LCD drawing example
 
 Features: Serial output, line drawing, glyph drawing, digit printing
