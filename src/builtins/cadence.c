@@ -68,7 +68,7 @@ void cadence_draw_bar(uint16_t rpm) {
     height *= CADENCE_BAR_HEIGHT * 8; // 8px in each line
     height /= CADENCE_BAR_MAXIMUM - CADENCE_BAR_MINIMUM;
     
-    uint16_t optimum_pixels = ((CADENCE_BAR_OPTIMUM - CADENCE_BAR_MINIMUM) * CADENCE_BAR_HEIGHT * 8) / (CADENCE_BAR_MAXIMUM - CADENCE_BAR_MINIMUM);
+    uint8_t optimum_pixels = ((CADENCE_BAR_OPTIMUM - CADENCE_BAR_MINIMUM) * CADENCE_BAR_HEIGHT * 8) / (CADENCE_BAR_MAXIMUM - CADENCE_BAR_MINIMUM);
     
     upoint_t position = {27, 0};
     for (uint8_t i = 0; i < CADENCE_BAR_HEIGHT; i++) {
@@ -77,7 +77,12 @@ void cadence_draw_bar(uint16_t rpm) {
         set_row(position.y);
         
         char optimum_stamp = 0;
-        optimum_stamp |= 1 << (current_top - optimum_pixels + 1);
+        if (current_top < optimum_pixels) {
+            // workaround. For some reason, 1 << (uint8_t variable)253 doesn't yield 0.
+            optimum_pixels = -1;
+        }
+        optimum_stamp = 1 << (current_top - optimum_pixels + 1);
+
         char rpm_stamp = ~0;
         if (height < current_top) {
             rpm_stamp <<= current_top - height;
