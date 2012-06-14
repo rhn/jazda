@@ -1,0 +1,40 @@
+# construction for mmc example only so far
+
+CFLAGS = '-g -std=gnu99 -Os -flto -W -Wall -mcall-prologues -ffreestanding -fpack-struct' #-mno-interrupts'
+CC = 'avr-gcc'
+OBJCOPY = 'avr-objcopy'
+AVRDUDE = 'avrdude'
+
+mmc_files = Split('mmc/mmc_if.c mmc.c')
+
+mcu = ARGUMENTS.get('mcu', 0)
+programmer = ARGUMENTS.get('programmer', 0)
+if not programmer:
+    print('Enter a programmer name')
+    exit(1)
+
+if mcu == 'm8':
+    MCUFLAGS = '-mmcu=atmega8 -DATMEGA8'
+elif mcu == 't2313':
+    MCUFLAGS = '-mmcu=attiny2313 -DATTINY2313'
+else:
+    print("Provide a valid mcu")
+    exit(1)
+
+target_name = 'mmc'
+obj_name = target_name + '.obj'
+hex_name = target_name + '.hex'
+source_files = mmc_files
+
+env = Environment()
+Decider('MD5')
+env.Append(BUILDERS={'Obj': Builder(action=CC + " " + CFLAGS + " -fwhole-program " + MCUFLAGS + " -o $TARGET $SOURCES"),
+                     'Hex': Builder(action=OBJCOPY + " -O ihex -R .eeprom $SOURCES $TARGET"),
+                     'Upload': Builder(action=AVRDUDE + ' -c ' + programmer + " -p " + mcu + ' -U flash:w:$SOURCES')})
+
+env.Obj(obj_name, source_files)
+hex = env.Hex(hex_name, obj_name)
+upload = env.Upload(hex_name)
+
+env.Alias('mmc', upload)
+AlwaysBuild(upload)
