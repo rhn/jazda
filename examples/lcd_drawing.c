@@ -22,8 +22,8 @@
 #define RSTDIR DDRC
 #define RSTPORT PORTC
 #define RSTPIN PC0
-#include "display/pcd8544.c"
-#include "display/drawing.c"
+#include "../src/display/pcd8544.c"
+#include "../src/display/drawing.c"
 
 /* EXAMPLE 7
 LCD drawing example

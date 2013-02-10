@@ -2,7 +2,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "common/common.h"
 
 #define CLKDIR DDRC
 #define CLKPORT PORTC
