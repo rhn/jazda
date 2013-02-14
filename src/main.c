@@ -82,6 +82,10 @@ void main(void) {
   setup_cpu();
   lcd_setup();
   lcd_init();
+  #ifdef LCD_CLEAN
+      lcd_clean();
+  #endif
+  
   timer_initialize();
 
   // sleep enable bit

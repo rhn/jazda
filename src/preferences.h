@@ -87,5 +87,6 @@
 #define SPEED_VS_TIME_PLOT
 #define CONFIG
 #define BACKLIGHT
+#define LCD_CLEAN
 
 #define METRIC_PULSE_DIST 2133L // millimeters
