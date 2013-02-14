@@ -53,3 +53,6 @@ void set_row(const uint8_t row);
 /* prepares the display for operation, but doesn't blank it. Artifacts may stay
 on the screen. */
 void lcd_init();
+
+/* blanks screen by writing a 0 value to all pixels */
+void lcd_clean();

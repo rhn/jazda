@@ -95,3 +95,10 @@ void lcd_init() {
 
   normal_screen();
 }
+
+
+void lcd_clean() {
+    for (uint16_t i = 0; i < 84 * 6; i++) {
+        send_raw_byte(0, true);
+    }
+}
