@@ -64,3 +64,56 @@ void setup_cpu(void) {
    // makes CPU clock 1 MHz
    // can't be done on this device
 }
+
+/* initializes adc with no interrupts */
+void adc_init(void) {
+    ADMUX |= (1 << REFS0); // use Vcc as reference
+    // select Vbg=1.3V as voltage
+    ADMUX |= (1 << MUX3) | (1 << MUX2) | (1 << MUX1);
+}
+
+/* turns on adc */
+void adc_enable(void) {
+    ADCSRA |= (1 << ADEN);
+}
+
+/* turns off adc */
+void adc_disable(void) {
+    ADCSRA &= ~(1 << ADEN);
+}
+
+/* blocking read */
+uint16_t adc_read(int8_t channel) {
+    uint8_t highmask = (uint8_t)(0xff << (MUX0 + 4));
+    uint8_t lowmask = (uint8_t)(~(0xff << MUX0));
+    uint8_t mask = highmask | lowmask;
+    uint8_t bits = (((uint8_t)channel) << MUX0) & ~mask;
+    ADMUX = (ADMUX & mask) | bits;
+    ADCSRA |= (1 << ADSC);
+    
+    while (ADCSRA & (1<<ADSC)) {
+    }
+
+    return ADC;
+}
+
+/* blocking voltage measurement. returns reading in units of 10mV. Resolution: 40mV.
+TODO: think about better return units */
+uint16_t get_battery_voltage(void) {
+    uint16_t raw_reading = adc_read(-2); // -2 == Vbg source @ 1.3V
+    
+    // R - reading
+    // V_{BG} - 1.3V source
+    // V_{CC} - battery, reference
+    // R = {V_{BG}\cdot1024}\over{V_{CC}}
+    // V_{CC} = {V_{BG}\cdot1024}\overR
+    if (raw_reading == 0) {
+        return 0;
+    }
+    
+    // split precision into 2 parts: 130mV, 10bits resolution
+    // apply 8 bits first to get 33280 (fitting in uint16_t)
+    // apply 2 bits later to normalize to 10bits
+    uint16_t voltage = ((130 << 8) / raw_reading) << 2;
+    return voltage;
+}

@@ -240,6 +240,7 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
     ptr = ((uint8_t*)&bcd) + 3;
     
     for (uint8_t i = 8; i > 0; i--) {
+        // iterate tmp over BCD chars
         if (i & 1) {
             tmp = (*ptr) & 0x0F;
             ptr--;
