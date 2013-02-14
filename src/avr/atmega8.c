@@ -100,7 +100,9 @@ uint16_t adc_read(int8_t channel) {
 /* blocking voltage measurement. returns reading in units of 10mV. Resolution: 40mV.
 TODO: think about better return units */
 uint16_t get_battery_voltage(void) {
+    adc_enable();
     uint16_t raw_reading = adc_read(-2); // -2 == Vbg source @ 1.3V
+    adc_disable();
     
     // R - reading
     // V_{BG} - 1.3V source
