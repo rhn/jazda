@@ -87,6 +87,8 @@
 #define SPEED_VS_TIME_PLOT
 #define CONFIG
 #define BACKLIGHT
+//#define BACKLIGHT_VOLTAGE // shows voltage along with backlight
 #define LCD_CLEAN
+
 
 #define METRIC_PULSE_DIST 2133L // millimeters

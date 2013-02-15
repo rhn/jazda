@@ -82,8 +82,12 @@ void main(void) {
   setup_cpu();
   lcd_setup();
   lcd_init();
+  
+  #ifdef BACKLIGHT_VOLTAGE
+     adc_init();
+  #endif
   #ifdef LCD_CLEAN
-      lcd_clean();
+     lcd_clean();
   #endif
   
   timer_initialize();

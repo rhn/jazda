@@ -27,11 +27,11 @@ Global signal handling. Not part of the module API
 const module_actions_t default_actions = {&module_switch_left,
                                           &module_switch_right};
 
-volatile module_actions_t *current_actions = &default_actions;
+volatile module_actions_t* current_actions = &default_actions;
 
 // TODO: if no function defined, do nothing. see if space is saved
 void on_select_button(uint8_t state) {
-   module_actions_t *actions = (*(modules[current_module].select_button))(state);
+   module_actions_t* actions = (*(modules[current_module].select_button))(state);
    if (actions != NULL) {
       current_actions = actions;
    }

@@ -19,6 +19,7 @@
 
 #include "../lib/modules.h"
 
+// XXX: Does this serve only to save a few bytes in RAM? Breaks modularity in a bad way/
 struct module_flags_struct {
     uint8_t distance_changed;
     uint8_t maxspeed_changed;

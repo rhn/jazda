@@ -1,0 +1,28 @@
+Module layout:
+
+// Goodies:
+#include "../common.h"
+
+// Mandatory
+#include "../actions.h"
+
+// All exported names (currently all names) should be prepended with module name. Use "m_" prefix for best results.
+
+// Redraw handler can have any name as long as it follows the signature:
+void module_redraw(const uint8_t force);
+// force decides whether a full screen update is necessary or the module can expect that it controlled the screen in the previous frame (for partial updates)
+// This function can access the screen, but only 2 lower lines
+
+// Action handling function
+const module_actions_t* module_select(const uint8_t state);
+// state notifies if the button was depressed (true) or released (false)
+// return value: a structure of left-right button actions or NULL if they should stay unmodified.
+// This function is run from an interrupt and therefore must not access the screen or do any expensive calculations
+
+// Signature is the module icon. 8 bytes left-to-right, MSB=down
+#define module_signature {0b10011001, 0b01011010, 0b00100100, 0b00011000, 0b00100100, 0b01011010, 0b10011001}
+
+// Basic entry for module
+#define module_record {&module_redraw, &module_select, module_signature}
+
+// Last modification: add module_record reference inside base.c modules[] table.
