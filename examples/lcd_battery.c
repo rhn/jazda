@@ -31,7 +31,6 @@ ADC used to measure battery voltage
 Features: Serial output, analog comparator, number printing.
 
 Connect a PCD8544 screen.
-Connect PC5 to a voltage source and use as a probe.
 */
 
 
