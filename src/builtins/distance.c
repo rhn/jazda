@@ -20,17 +20,26 @@
 /* distance data management subsystem */
 #include "distance.h"
 
-
 #ifdef CONSTANT_PULSE_DISTANCE
-    const uint16_t millimeters_pulse_distance = INITIAL_METRIC_PULSE_DIST;
-    const uint16_t pulse_dist = get_pulse_dist(INITIAL_METRIC_PULSE_DIST);
+    const pulse_dist_mm_t millimeters_pulse_distance = INITIAL_METRIC_PULSE_DIST;
+    const pulse_dist_t pulse_dist = get_pulse_dist(INITIAL_METRIC_PULSE_DIST);
 #else
-    volatile uint16_t millimeters_pulse_distance = INITIAL_METRIC_PULSE_DIST;
-    volatile uint16_t pulse_dist = get_pulse_dist(INITIAL_METRIC_PULSE_DIST);
+    volatile pulse_dist_mm_t millimeters_pulse_distance = INITIAL_METRIC_PULSE_DIST;
+    volatile pulse_dist_t pulse_dist = get_pulse_dist(INITIAL_METRIC_PULSE_DIST);
 #endif
 
 #ifndef CONSTANT_PULSE_DISTANCE
-    void update_pulse_distance(void) {
+    #include "storage.h"
+    #include "../signals.h"
+    
+    void pulse_distance_set_metric(pulse_dist_mm_t mmpd) {
+        millimeters_pulse_distance = mmpd;
         pulse_dist = get_pulse_dist(millimeters_pulse_distance);
+        on_pulse_distance_change(mmpd);
+    }
+    
+    void pulse_distance_update_metric(pulse_dist_mm_t mmpd) {
+        pulse_distance_set_metric(mmpd);
+        storage_save_pulse_distance();
     }
 #endif

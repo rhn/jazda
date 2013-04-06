@@ -1,5 +1,5 @@
 /*
-    Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -17,23 +17,14 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-Signal dispatchers.
-Must be included after modules to be able to reference them.
+/* Storage builtin
+Manages storage in EEPROM so far
 */
 
-/* MODULE HOOKS */
+#define STORAGE_VERSION 1
 
-#ifdef CRANK
-   inline void on_crank_pulse(void);
-   
-   inline void on_crank_stop(void);
-#endif
+void storage_setup(void);
+void storage_reset(void);
+void storage_load(void);
 
-inline void on_wheel_pulse(void);
-
-inline void on_each_second(void);
-
-inline void on_wheel_stop(uint16_t now);
-
-void on_pulse_distance_change(uint16_t mpd);
+void storage_save_pulse_distance(void);

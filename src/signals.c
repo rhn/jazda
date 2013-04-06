@@ -91,3 +91,12 @@ inline void on_wheel_stop(uint16_t now) {
         stopwatch_on_wheel_stop();
     #endif
 }
+
+void on_pulse_distance_change(uint16_t mpd) {
+    #ifdef CONFIG
+        config_on_pulse_distance_change(mpd);
+    #endif
+    #ifdef CURRENT_SPEED
+        speed_update_factor();
+    #endif
+}

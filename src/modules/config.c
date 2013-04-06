@@ -35,8 +35,9 @@ uint16_t speed_factor = multiply(pdist, ONE_SECOND * 36 * 10);
 
 #define CONFIG_DIGITS 4
 
-volatile uint8_t config_level = 0;
-volatile uint8_t config_place;
+static volatile uint8_t config_level = 0;
+static volatile uint8_t config_place;
+static volatile uint16_t config_pulse_distance;
 
 uint16_t config_power10(void) {
     uint16_t ret;
@@ -51,26 +52,28 @@ uint16_t config_power10(void) {
     return ret;
 }
 
-void config_update_values(int16_t difference) {
-    uint16_t newmpd = millimeters_pulse_distance + difference;
+void config_save() {
+    pulse_distance_update_metric(config_pulse_distance);
+}
+
+void config_update_display_values(int16_t difference) {
+    uint16_t newmpd = config_pulse_distance + difference;
     if (newmpd >= 10000) {
         newmpd -= 10 * difference;
     }
-    millimeters_pulse_distance = newmpd;
+    config_pulse_distance = newmpd;
     module_flags.config_changed = true;
-    update_pulse_distance();
-    speed_update_factor();
 }
 
 void config_value_up(uint8_t state) {
     if (!state) {
-        config_update_values(config_power10());
+        config_update_display_values(config_power10());
     }
 }
 
 void config_value_down(uint8_t state) {
     if (!state) {
-        config_update_values(-config_power10());
+        config_update_display_values(-config_power10());
     }
 }
 
@@ -98,7 +101,7 @@ void config_select_digit_right(uint8_t state) {
 
 const module_actions_t config_select_digit_actions = {&config_select_digit_left, &config_select_digit_right};
 
-module_actions_t* config_select(const uint8_t state) {
+const module_actions_t* config_select(const uint8_t state) {
     if (!state) {
         module_flags.config_changed = true;
         if (config_level == 0) {
@@ -110,6 +113,7 @@ module_actions_t* config_select(const uint8_t state) {
                 config_level++;
                 return &config_select_value_actions;
             } else {
+                config_save();
                 config_level = 0;
                 return &default_actions;
             }
@@ -130,7 +134,7 @@ void config_redraw(const uint8_t force) {
         
         // erase old arrows
         erase_module_screen(); // makes screen flicker, but this is not important - not used often
-        print_number(millimeters_pulse_distance, position, glyph_size, 1, (number_display_t) {CONFIG_DIGITS, 0});
+        print_number(config_pulse_distance, position, glyph_size, 1, (number_display_t) {CONFIG_DIGITS, 0});
         if (config_level > 0) {
             position.y += 1;
             position.x = (CONFIG_DIGITS - config_place) * 9;
@@ -145,6 +149,10 @@ void config_redraw(const uint8_t force) {
             }
         }
     }
+}
+
+void config_on_pulse_distance_change(const uint16_t mpd) {
+    config_pulse_distance = mpd;
 }
 
 #define config_signature {0b00111000, 0b00010100, 0b10010100, 0b11100100, 0b10000010, 0b01110001, 0b00001000, 0b00000100}

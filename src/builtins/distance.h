@@ -28,14 +28,24 @@
 #define INITIAL_PULSE_DIST (get_pulse_dist(INITIAL_METRIC_PULSE_DIST))
 
 
+typedef uint16_t pulse_dist_mm_t;
+typedef uint16_t pulse_dist_t;
+
+
 #ifdef CONSTANT_PULSE_DISTANCE
-    extern const uint16_t millimeters_pulse_distance;
-    extern const uint16_t pulse_dist;
+    extern const pulse_dist_mm_t millimeters_pulse_distance;
+    extern const pulse_dist_t pulse_dist;
 #else
-    extern volatile uint16_t millimeters_pulse_distance;
-    extern volatile uint16_t pulse_dist;
+    // Read-only values, only write with pulse_distance_set_mm
+    // TODO: remove external references
+    extern volatile pulse_dist_mm_t millimeters_pulse_distance;
+    extern volatile pulse_dist_t pulse_dist;
 #endif
 
 #ifndef CONSTANT_PULSE_DISTANCE
-    void update_pulse_distance(void);
+    // Only set distance values. Private API, shouldn't be used by modules and builtins other than storage- and init- related
+    void pulse_distance_set_metric(pulse_dist_mm_t mmpd);
+    
+    // Set distance values and save
+    void pulse_distance_update_metric(pulse_dist_mm_t mmpd);
 #endif

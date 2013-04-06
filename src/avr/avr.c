@@ -18,8 +18,9 @@
 */
 
 #include <avr/interrupt.h>
+#include <avr/eeprom.h> 
 
-/* AVR-specific routines.
+/* AVR-specific common routines.
 This module links signals from signals.h to interrupts in generic AVR hardware.
 
 REQUIRES:

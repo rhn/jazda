@@ -46,6 +46,9 @@
 
 // subsystems
 #include "builtins/distance.c"
+#ifdef STORAGE
+    #include "builtins/storage.c"
+#endif
 
 // sensors (data/event capture)
 #include "sensors/wheel.c"
@@ -80,6 +83,10 @@ void main(void) {
   setup_wheel_pulse();
   setup_buttons();
   setup_cpu();
+  #ifdef STORAGE
+      storage_setup();
+      storage_load();
+  #endif
   lcd_setup();
   lcd_init();
   

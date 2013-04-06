@@ -71,9 +71,7 @@ volatile int8_t speed_timer_handle = -1;
     const SPEED_FACTOR_t speed_factor = INITIAL_SPEED_FACTOR;
 #else
     volatile SPEED_FACTOR_t speed_factor = INITIAL_SPEED_FACTOR;
-#endif
 
-#ifndef CONSTANT_PULSE_DISTANCE
     void speed_update_factor(void) {
         speed_factor = get_speed_factor(pulse_dist);
     }

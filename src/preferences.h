@@ -77,6 +77,7 @@
 
 #define CRANK
 #define CADENCE
+#define STORAGE
 #define DISTANCE
 #define CURRENT_SPEED
 #define SPEED_VS_DISTANCE_PLOT
