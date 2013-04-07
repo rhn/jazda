@@ -99,7 +99,7 @@ const module_record_t modules[] = {
 
 // currently displayed module
 volatile uint8_t current_module = 0;
-volatile uint8_t current_module_switched = 1;
+volatile uint8_t current_module_switched = true;
 
 /* ------ ACTIONS ----- */
 void module_switch_right(uint8_t state) {

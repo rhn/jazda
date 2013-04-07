@@ -35,7 +35,7 @@
     void pulse_distance_set_metric(pulse_dist_mm_t mmpd) {
         millimeters_pulse_distance = mmpd;
         pulse_dist = get_pulse_dist(millimeters_pulse_distance);
-        on_pulse_distance_change(mmpd);
+        on_pulse_distance_change();
     }
     
     void pulse_distance_update_metric(pulse_dist_mm_t mmpd) {

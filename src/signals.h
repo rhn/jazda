@@ -36,4 +36,4 @@ inline void on_each_second(void);
 
 inline void on_wheel_stop(uint16_t now);
 
-void on_pulse_distance_change(uint16_t mpd);
+void on_pulse_distance_change(void);
