@@ -1,5 +1,6 @@
 /*
     Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -100,3 +101,12 @@ void on_pulse_distance_change(void) {
         speed_update_factor();
     #endif
 }
+
+#ifdef BACKLIGHT_BUTTON
+    #include "dev/backlight.h"
+    inline void on_backlight_button(uint8_t state) {
+        if (!state) {
+            backlight_switch();
+        }
+    }
+#endif

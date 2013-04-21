@@ -1,5 +1,6 @@
 /*
     Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -54,7 +55,7 @@ void maxspeed_reset(void) {
     module_flags.maxspeed_changed = true;
 }
 
-module_actions_t *maxspeed_select(const uint8_t state) {
+const module_actions_t *maxspeed_select(const uint8_t state) {
     if (state) {
         maxspeed_reset();
     }

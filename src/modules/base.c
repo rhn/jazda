@@ -1,5 +1,6 @@
 /*
     Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -63,7 +64,7 @@ volatile struct module_flags_struct module_flags = {0, 0, 0, 0, 0};
     #include "config.c"
 #endif
 
-#ifdef BACKLIGHT
+#ifdef MOD_BACKLIGHT
     #include "debug.c"
 #endif
 
@@ -78,7 +79,7 @@ const module_record_t modules[] = {
     #ifdef STOPWATCH
         stopwatch_record,
     #endif
-    #ifdef BACKLIGHT
+    #ifdef MOD_BACKLIGHT
         debug_record,
     #endif
     #ifdef MAXSPEED

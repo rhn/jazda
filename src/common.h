@@ -1,5 +1,6 @@
 /*
     Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -17,9 +18,20 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef __COMMON_H__
+#define __COMMON_H__
+
 #include <stdlib.h>
+
+// offers some type-safety. Use this instead of #defined
+enum boolean_enum {
+    FALSE = 0,
+    TRUE = 1
+} boolean_t;
 
 #define true 1
 #define false 0
 #define HIGH(PORT, PIN) PORT |= _BV(PIN)
 #define LOW(PORT, PIN) PORT &= ~_BV(PIN)
+
+#endif // __COMMON_H__

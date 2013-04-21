@@ -1,5 +1,6 @@
 /*
     Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -22,6 +23,8 @@
 /* REQUIRES: none
 */
 
+// - Inputs
+
 #define PULSEDIR DDRD
 #define PULSEPORT PORTD
 #define PULSEPIN PD2
@@ -30,9 +33,13 @@
 #define CRANKPORT PIND
 #define CRANKPIN PD1
 
+// -- Button interrupt
+
 #define BUTTONDIR DDRD
 #define BUTTONPORT PORTD
 #define BUTTONPIN PD3
+
+// -- Buttons
 
 #define LEFTPIN PD7
 #define LEFTPORT PIND
@@ -45,7 +52,14 @@
 #define SELECTPIN PD6
 #define SELECTPORT PIND
 #define SELECTDIR DDRD
-  
+
+#define BACKLIGHTBTNPIN PD4
+#define BACKLIGHTBTNPORT PIND
+#define BACKLIGHTBTNDIR DDRD
+
+// - Output
+// -- Screen
+
 #define CLKDIR DDRC
 #define CLKPORT PORTC
 #define CLKPIN PC4
@@ -66,6 +80,11 @@
 #define RSTPORT PORTC
 #define RSTPIN PC1
 
+// -- Backlight
+#define BACKLIGHTDIR DDRC
+#define BACKLIGHTPORT PORTC
+#define BACKLIGHTPIN PC5
+
 /* special options */
 #define HIGH_PRECISION_CALCULATIONS // makes speed calculation 32-bit instead of truncating to 16
 #define LONG_CALCULATIONS // makes calculations possible on longer data types
@@ -78,6 +97,7 @@
 #define CRANK
 #define CADENCE
 #define STORAGE
+#define BACKLIGHT
 #define DISTANCE
 #define CURRENT_SPEED
 #define SPEED_VS_DISTANCE_PLOT
@@ -87,7 +107,8 @@
 #define COMBINED_RESET
 #define SPEED_VS_TIME_PLOT
 #define CONFIG
-#define BACKLIGHT
+// #define MOD_BACKLIGHT // backlight control via module
+#define BACKLIGHT_BUTTON // backlight control via hw button
 //#define BACKLIGHT_VOLTAGE // shows voltage along with backlight
 #define LCD_CLEAN
 

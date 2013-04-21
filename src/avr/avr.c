@@ -75,6 +75,11 @@ void setup_buttons(void) {
       CRANKPORT |= 1<<CRANKPIN;
   #endif
   
+  #ifdef BACKLIGHT_BUTTON
+     BACKLIGHTBTNDIR &= ~(1<<BACKLIGHTBTNPIN);
+     BACKLIGHTBTNPORT |= 1<<BACKLIGHTBTNPIN;
+  #endif
+  
   // interrupt on INT1 pin both edges (emuint state change)
   MCUCR |= (1<<ISC10);
   MCUCR &= ~(1<<ISC11);

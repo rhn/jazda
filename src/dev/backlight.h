@@ -1,5 +1,5 @@
 /*
-    Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -17,27 +17,12 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-Signal dispatchers.
-Must be included after modules to be able to reference them.
-*/
+/* Backlight state management */
 
-/* MODULE HOOKS */
+void backlight_init(void);
 
-#ifdef CRANK
-   inline void on_crank_pulse(void);
-   
-   inline void on_crank_stop(void);
-#endif
+void backlight_switch(void);
 
-inline void on_wheel_pulse(void);
+void backlight_off(void);
 
-inline void on_each_second(void);
-
-inline void on_wheel_stop(uint16_t now);
-
-void on_pulse_distance_change(void);
-
-#ifdef BACKLIGHT_BUTTON
-    inline void on_backlight_button(uint8_t state);
-#endif
+void backlight_on(void);

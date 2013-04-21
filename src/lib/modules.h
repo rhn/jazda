@@ -1,5 +1,6 @@
 /*
     Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -29,7 +30,7 @@
 
 typedef struct module_record {
     void (*redraw)(uint8_t force);
-    module_actions_t* (*select_button)(uint8_t state); // function pointer
+    const module_actions_t* (*select_button)(uint8_t state); // function pointer
     char signature[MODULE_SIGNATURE_SIZE]; // module logo for display
 } module_record_t;
 
@@ -42,5 +43,5 @@ void erase_module_screen(void);
 void draw_circular_buffer_plot(const circular_buffer_t buffer);
 
 // null action for modules on select
-module_actions_t* module_select_null(const uint8_t state);
+const module_actions_t* module_select_null(const uint8_t state);
 #endif

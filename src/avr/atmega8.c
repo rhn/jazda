@@ -1,5 +1,6 @@
 /*
     Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -25,6 +26,7 @@ actions.h to device-specific hardware using avr.c file for the generic ones.
 
 #include "../actions.h"
 #include "../signals.h"
+
 
 #define EMUINT0PIN LEFTPIN
 #define EMUINT0PORT LEFTPORT
@@ -55,6 +57,15 @@ void EMUINT2_handler(uint8_t state) {
         if (!state) {
             on_crank_pulse();
         }
+    }
+#endif
+
+#ifdef BACKLIGHT_BUTTON
+    #define EMUINT4PIN BACKLIGHTBTNPIN
+    #define EMUINT4PORT BACKLIGHTBTNPORT
+    #define EMUINT4DIR BACKLIGHTBTNDIR
+    void EMUINT4_handler(uint8_t state) {
+        on_backlight_button(state);
     }
 #endif
 

@@ -39,6 +39,6 @@ void draw_circular_buffer_plot(const circular_buffer_t buffer) {
     }
 }
 
-module_actions_t *module_select_null(const uint8_t state) {
+const module_actions_t *module_select_null(const uint8_t state) {
     return NULL;
 }

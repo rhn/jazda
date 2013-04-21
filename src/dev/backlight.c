@@ -1,5 +1,5 @@
-/*
-    Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+ /*
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -17,27 +17,37 @@
     along with Jazda.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-Signal dispatchers.
-Must be included after modules to be able to reference them.
+/* Backlight state management
+ Requires:
+ BACKLIGHT{DIR|PORT|PIN} defines
 */
 
-/* MODULE HOOKS */
+#include "../common.h"
+#include "backlight.h"
 
-#ifdef CRANK
-   inline void on_crank_pulse(void);
-   
-   inline void on_crank_stop(void);
-#endif
+volatile uint8_t backlight_state;
 
-inline void on_wheel_pulse(void);
+void backlight_init(void) {
+    HIGH(BACKLIGHTDIR, BACKLIGHTPIN);
+    backlight_off();
+}
 
-inline void on_each_second(void);
+void backlight_switch(void) {
+    if (backlight_state == 0) {
+        backlight_on();
+    } else {
+        backlight_off();
+    }
+}
 
-inline void on_wheel_stop(uint16_t now);
+// TODO: see if can read output state
 
-void on_pulse_distance_change(void);
+void backlight_off(void) {
+    LOW(BACKLIGHTPORT, BACKLIGHTPIN);
+    backlight_state = 0;
+}
 
-#ifdef BACKLIGHT_BUTTON
-    inline void on_backlight_button(uint8_t state);
-#endif
+void backlight_on(void) {
+    HIGH(BACKLIGHTPORT, BACKLIGHTPIN);
+    backlight_state = 1;
+}

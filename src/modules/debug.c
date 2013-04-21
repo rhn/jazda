@@ -1,17 +1,19 @@
-/* Dummy display module
+/* Debug display module
 
-Tuned for pcd8544 display width */
+Tuned for pcd8544 display width
+Requires backlight
+*/
 
 #include "../common.h"
 #include "../actions.h"
 
+#ifdef BACKLIGHT
+    #include "../dev/backlight.h"
+#endif
+
 #ifdef BACKLIGHT_VOLTAGE
     #include "../display/drawing.h"
 #endif
-
-#define BACKLIGHTDIR DDRC
-#define BACKLIGHTPORT PORTC
-#define BACKLIGHTPIN PC5
 
 #ifdef BACKLIGHT_VOLTAGE
     uint16_t m_debug_voltage = 0;
@@ -55,20 +57,9 @@ void debug_redraw(const uint8_t force) {
    #endif
 }
 
-void enable_backlight(void) {
-  static int state = 0;
-  BACKLIGHTDIR |= 1<<BACKLIGHTPIN;
-  if (state++ % 2) {
-    LOW(BACKLIGHTPORT, BACKLIGHTPIN);
-  } else {
-    HIGH(BACKLIGHTPORT, BACKLIGHTPIN);
-  }
-}
-
-
 const module_actions_t* debug_select(const uint8_t state) {
-   if (state) {
-       enable_backlight();
+   if (!state) {
+       backlight_switch();
    }
    return NULL;
 }
