@@ -93,7 +93,7 @@ void scale(point_t *point, const upoint_t pxsize) {
    (*point).y = tmp / LETTERY;
 }
 
-void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const upoint_t glyph_size, const uint8_t width, const int8_t xoffset, const int8_t yoffset) {
+void draw_glyph(uint8_t *buffer, const glyph_point_t *glyph, const upoint_t glyph_size, const uint8_t width, const int8_t xoffset, const int8_t yoffset) {
 // user must take care that characters have proper line width
    uint8_t byte;
    point_t prev;
@@ -123,7 +123,7 @@ void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const upoint_t glyph_size
 void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t width, upoint_t position) {
    // TODO: draw into viewport
    uint8_t buffer [MAXBUFFERX]; // for drawing characters
-   const uint8_t *glyph = drawing_glyphs + drawing_digit[digit];
+   const glyph_point_t *glyph = drawing_glyphs + drawing_digit[digit];
    uint8_t line;
    int8_t i;
    

@@ -32,17 +32,26 @@ DEFINES: MAXBUFFERX: maximum allowed width of a character in a viewport. Wider c
 
 #define MAXBUFFERX 10 // used for drawing, defines maximum width of a character
 
-#define POINT(x, y, break) break << 7 | x << 4 | y
-__attribute__((progmem)) const uint8_t drawing_glyphs[] = { POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 2, 1), POINT(7, 13, 1), POINT(5, 15, 1), POINT(2, 15, 1), POINT(0, 13, 1), POINT(0, 2, 1), POINT(2, 0, 1), 0, // 0
-                           POINT(1, 4, 1), POINT(5, 0, 1), POINT(5, 15, 1), 0, // 1
-                           POINT(0, 3, 1), POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 3, 1), POINT(0, 15, 1), POINT(7, 15, 1), 0, // 2
-                           POINT(0, 3, 1), POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 2, 1), POINT(4, 7, 1), POINT(7, 9, 1), POINT(7, 13, 1), POINT(5, 15, 1), POINT(2, 15, 1), POINT(0, 12, 1), 0, // 3
-                           POINT(7, 10, 1), POINT(0, 10, 1), POINT(5, 0, 1), POINT(5, 15, 1), 0, // 4
-                           POINT(7, 0, 1), POINT(0, 0, 1), POINT(0, 7, 1), POINT(5, 7, 1), POINT(7, 9, 1), POINT(7, 13, 1), POINT(5, 15, 1), POINT(0, 15, 1), 0, // 5
-                           POINT(7, 2, 1), POINT(5, 0, 1), POINT(2, 0, 1), POINT(0, 3, 1), POINT(0, 13, 1), POINT(2, 15, 1), POINT(5, 15, 1), POINT(7, 13, 1), POINT(7, 10, 1), POINT(5, 8, 1), POINT(0, 8, 1), 0, // 6
-                           POINT(0, 0, 1), POINT(7, 0, 1), POINT(0, 15, 1), 0, // 7
-                           POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 2, 1), POINT(7, 5, 1), POINT(0, 10, 1), POINT(0, 13, 1), POINT(2, 15, 1), POINT(5, 15, 1), POINT(7, 13, 1), POINT(7, 10, 1), POINT(0, 5, 1), POINT(0, 2, 1), POINT(2, 0, 1), 0, // 8
-                           POINT(0, 15, 1), POINT(5, 15, 1), POINT(7, 12, 1), POINT(7, 2, 1), POINT(5, 0, 1), POINT(2, 0, 1), POINT(0, 2, 1), POINT(0, 6, 1), POINT(2, 8, 1), POINT(7, 8, 1), 0, // 9
+typedef struct glyph_point_struct { // watch out for ordering
+    int y:4;
+    int x:3;
+    int cont:1;
+} glyph_point_t;
+
+
+#define GPOINT(x, y) {y, x, 1}
+#define GSTOP(x, y) {y, x, 0}
+#define GEND {0, 0, 0}
+__attribute__((progmem)) const glyph_point_t drawing_glyphs[] = { GPOINT(2, 0), GPOINT(5, 0), GPOINT(7, 2), GPOINT(7, 13), GPOINT(5, 15), GPOINT(2, 15), GPOINT(0, 13), GPOINT(0, 2), GSTOP(2, 0), GEND, // 0
+                           GPOINT(1, 4), GPOINT(5, 0), GPOINT(5, 15), GEND, // 1
+                           GPOINT(0, 3), GPOINT(2, 0), GPOINT(5, 0), GPOINT(7, 3), GPOINT(0, 15), GSTOP(7, 15), GEND, // 2
+                           GPOINT(0, 3), GPOINT(2, 0), GPOINT(5, 0), GPOINT(7, 2), GPOINT(4, 7), GPOINT(7, 9), GPOINT(7, 13), GPOINT(5, 15), GPOINT(2, 15), GSTOP(0, 12), GEND, // 3
+                           GPOINT(7, 10), GPOINT(0, 10), GPOINT(5, 0), GSTOP(5, 15), GEND, // 4
+                           GPOINT(7, 0), GPOINT(0, 0), GPOINT(0, 7), GPOINT(5, 7), GPOINT(7, 9), GPOINT(7, 13), GPOINT(5, 15), GSTOP(0, 15), GEND, // 5
+                           GPOINT(7, 2), GPOINT(5, 0), GPOINT(2, 0), GPOINT(0, 3), GPOINT(0, 13), GPOINT(2, 15), GPOINT(5, 15), GPOINT(7, 13), GPOINT(7, 10), GPOINT(5, 8), GSTOP(0, 8), GEND, // 6
+                           GPOINT(0, 0), GPOINT(7, 0), GSTOP(0, 15), GEND, // 7
+                           GPOINT(2, 0), GPOINT(5, 0), GPOINT(7, 2), GPOINT(7, 5), GPOINT(0, 10), GPOINT(0, 13), GPOINT(2, 15), GPOINT(5, 15), GPOINT(7, 13), GPOINT(7, 10), GPOINT(0, 5), GPOINT(0, 2), GSTOP(2, 0), GEND, // 8
+                           GPOINT(0, 15), GPOINT(5, 15), GPOINT(7, 12), GPOINT(7, 2), GPOINT(5, 0), GPOINT(2, 0), GPOINT(0, 2), GPOINT(0, 6), GPOINT(2, 8), GSTOP(7, 8), GEND, // 9
                            }; 
 
 //digit table
@@ -73,7 +82,8 @@ typedef struct number_display {
 void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t toy, const int8_t width);
 
 // user must take care that characters have proper line width
-void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const upoint_t glyph_size, const uint8_t width, const int8_t xoffset, const int8_t yoffset);
+// glyph is in programspace
+void draw_glyph(uint8_t *buffer, const glyph_point_t *glyph, const upoint_t glyph_size, const uint8_t width, const int8_t xoffset, const int8_t yoffset);
 
 void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t width, upoint_t position);
 
