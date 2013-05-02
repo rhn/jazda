@@ -246,23 +246,25 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
     uint8_t frac_digits = digits.fractional;
     uint8_t all_digits = digits.integer + frac_digits;
 
-    uint32_t bcd = int_to_bcd32(bin).bin;
-    register uint8_t* ptr;
+    bcd32_t bcd = int_to_bcd32(bin);
+    bcd_nibble_t* ptr;
     
     uint8_t tmp;
     uint8_t print = 0; // 0: don't print
                        // 1: leave space
                        // 2: print
     
-    ptr = ((uint8_t*)&bcd) + 3;
+    ptr = &(bcd.nibbles[3]);
     
     for (uint8_t i = 8; i > 0; i--) {
         // iterate tmp over BCD chars
         if (i & 1) {
             tmp = (*((uint8_t*)ptr)) & 0x0F;
+//            tmp = ((bcd_nibble_t*)ptr)->low; // gcc tries to access these uring shifts
             ptr--;
         } else {
             tmp = (*((uint8_t*)ptr)) >> 4;
+//            tmp = ((bcd_nibble_t*)ptr)->high;
         }
         if (tmp) {
             print = 2;
