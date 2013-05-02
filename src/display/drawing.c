@@ -1,5 +1,6 @@
 /*
     Copyright 2011 rhn <gihu.rhn@porcupinefactory.org>
+    Copyright 2013 Paweł Czaplejewicz
 
     This file is part of Jazda.
 
@@ -18,9 +19,7 @@
 */
 
 #include "drawing.h"
-
 #include <stdlib.h>
-#include <avr/pgmspace.h>
 /* Drawing on a monochrome line-based 8-bit height screen procedures */
 
 /* REQUIRES:
@@ -33,26 +32,10 @@ DEFINES: MAXBUFFERX: maximum allowed width of a character in a viewport. Wider c
 #define STRVALUE(arg) #arg
 #define NUMSTR(num) STRVALUE(num)
 
-
 #define LETTERX _BV(3)
 #define LETTERY _BV(4)
-#define POINT(x, y, break) break << 7 | x << 4 | y
 
 #define FIXED_POINT_BITS 8
-__attribute__((progmem)) const uint8_t glyphs[] = { POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 2, 1), POINT(7, 13, 1), POINT(5, 15, 1), POINT(2, 15, 1), POINT(0, 13, 1), POINT(0, 2, 1), POINT(2, 0, 1), 0, // 0
-                           POINT(1, 4, 1), POINT(5, 0, 1), POINT(5, 15, 1), 0, // 1
-                           POINT(0, 3, 1), POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 3, 1), POINT(0, 15, 1), POINT(7, 15, 1), 0, // 2
-                           POINT(0, 3, 1), POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 2, 1), POINT(4, 7, 1), POINT(7, 9, 1), POINT(7, 13, 1), POINT(5, 15, 1), POINT(2, 15, 1), POINT(0, 12, 1), 0, // 3
-                           POINT(7, 10, 1), POINT(0, 10, 1), POINT(5, 0, 1), POINT(5, 15, 1), 0, // 4
-                           POINT(7, 0, 1), POINT(0, 0, 1), POINT(0, 7, 1), POINT(5, 7, 1), POINT(7, 9, 1), POINT(7, 13, 1), POINT(5, 15, 1), POINT(0, 15, 1), 0, // 5
-                           POINT(7, 2, 1), POINT(5, 0, 1), POINT(2, 0, 1), POINT(0, 3, 1), POINT(0, 13, 1), POINT(2, 15, 1), POINT(5, 15, 1), POINT(7, 13, 1), POINT(7, 10, 1), POINT(5, 8, 1), POINT(0, 8, 1), 0, // 6
-                           POINT(0, 0, 1), POINT(7, 0, 1), POINT(0, 15, 1), 0, // 7
-                           POINT(2, 0, 1), POINT(5, 0, 1), POINT(7, 2, 1), POINT(7, 5, 1), POINT(0, 10, 1), POINT(0, 13, 1), POINT(2, 15, 1), POINT(5, 15, 1), POINT(7, 13, 1), POINT(7, 10, 1), POINT(0, 5, 1), POINT(0, 2, 1), POINT(2, 0, 1), 0, // 8
-                           POINT(0, 15, 1), POINT(5, 15, 1), POINT(7, 12, 1), POINT(7, 2, 1), POINT(5, 0, 1), POINT(2, 0, 1), POINT(0, 2, 1), POINT(0, 6, 1), POINT(2, 8, 1), POINT(7, 8, 1), 0, // 9
-                           }; 
-
-//digit table
-const uint8_t letter[] = { 0, 10, 14, 21, 32, 37, 46, 58, 62, 76};
 
 void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t toy, const int8_t width) {
 // draws a line into the buffer
@@ -140,7 +123,7 @@ void draw_glyph(uint8_t *buffer, const uint8_t *glyph, const upoint_t glyph_size
 void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t width, upoint_t position) {
    // TODO: draw into viewport
    uint8_t buffer [MAXBUFFERX]; // for drawing characters
-   const uint8_t *glyph = glyphs + letter[digit];
+   const uint8_t *glyph = drawing_glyphs + drawing_digit[digit];
    uint8_t line;
    int8_t i;
    
