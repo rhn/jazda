@@ -37,6 +37,11 @@ DEFINES: MAXBUFFERX: maximum allowed width of a character in a viewport. Wider c
 
 #define FIXED_POINT_BITS 8
 
+typedef union glyph_point_conv {
+    uint8_t bin;
+    glyph_point_t glyph_point;
+} glyph_point_conv_t;
+
 void draw_line(uint8_t *buffer, int8_t fromx, int8_t fromy, int8_t tox, int8_t toy, const int8_t width) {
 // draws a line into the buffer
    uint8_t stamp = 0;
@@ -93,24 +98,29 @@ void scale(point_t *point, const upoint_t pxsize) {
    (*point).y = tmp / LETTERY;
 }
 
+point_t read_point(const glyph_point_t *glyph_point) {
+    glyph_point_conv_t conv;
+    point_t ret;
+    conv.bin = pgm_read_byte(glyph_point);
+    ret.y = conv.bin & 0b00001111;
+    ret.x = (conv.bin >> 4) & 0b00000111;
+    return ret;
+}
+
 void draw_glyph(uint8_t *buffer, const glyph_point_t *glyph, const upoint_t glyph_size, const uint8_t width, const int8_t xoffset, const int8_t yoffset) {
-// user must take care that characters have proper line width
-   uint8_t byte;
+// user must take care that characters have proper line width 
    point_t prev;
    point_t next;
    upoint_t pxsize = {glyph_size.x - width + 1, glyph_size.y - width + 1};
    int8_t i;
 
-   byte = pgm_read_byte(&(glyph[0]));
-   prev.y = byte & 0b00001111;
-   prev.x = (byte >> 4) & 0b00000111;
+   prev = read_point(&(glyph[0]));
+   
    prev.x -= xoffset;
    prev.y -= yoffset;
    scale(&prev, pxsize);
    for (i = 1; pgm_read_byte(&(glyph[i])); i++) {
-      byte = pgm_read_byte(&(glyph[i]));
-      next.y = byte & 0b00001111;
-      next.x = (byte >> 4) & 0b00000111;
+      next = read_point(&(glyph[i]));
       next.x -= xoffset;
       next.y -= yoffset;
       scale(&next, pxsize);
