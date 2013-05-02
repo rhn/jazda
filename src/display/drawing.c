@@ -249,11 +249,11 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
     bcd32_t bcd = int_to_bcd32(bin);
 
     uint8_t tmp; // should be bcd_nibble_t
-    uint8_t print = 0; // 0: don't print
-                       // 1: leave space
-                       // 2: print
 
     for (int8_t i = 7; i >= 0; i--) {
+        if (i >= all_digits) {
+            continue;
+        } // HACK: gcc likes it better size-wise than i = min(all_digits, 8); (approx. 50
         tmp = ((uint8_t*)bcd.nibbles)[i >> 1];
         // iterate tmp over BCD chars
         if (i & 1) {
@@ -261,19 +261,12 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
         } else {
             tmp = tmp & 0x0F; // tmp = nibble.low
         }
-        if (tmp) {
-            print = 2;
-        }
-        if (i == frac_digits) { // a pre-point number hit
-            print = 2;
-        }
-        if ((i < all_digits) && (print < 2)) {
-            print = 1;
-            tmp = 10;
-        }
-        if (print) {
+        
+        if (tmp || (i <= frac_digits)) {
+            // either real digits to display or padding 0
             print_digit(tmp, glyph_size, width, position);
-            position.x += glyph_size.x + width;
         }
+
+        position.x += glyph_size.x + width;
     }
 }
