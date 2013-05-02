@@ -22,6 +22,7 @@
 #define RSTDIR DDRC
 #define RSTPORT PORTC
 #define RSTPIN PC1
+#include "../src/display/bcd.c"
 #include "../src/display/pcd8544.c"
 #include "../src/display/drawing.c"
 

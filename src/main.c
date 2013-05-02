@@ -37,6 +37,7 @@
 
 /* imports depending on constants */
 #include "display/pcd8544.c"
+#include "display/bcd.c"
 #include "display/drawing.c"
 
 
