@@ -247,32 +247,29 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
     uint8_t all_digits = digits.integer + frac_digits;
 
     bcd32_t bcd = int_to_bcd32(bin);
-    bcd_nibble_t* ptr;
-    
-    uint8_t tmp;
+
+    uint8_t tmp; // should be bcd_nibble_t
     uint8_t print = 0; // 0: don't print
                        // 1: leave space
                        // 2: print
-    
-    ptr = &(bcd.nibbles[3]);
-    
-    for (uint8_t i = 8; i > 0; i--) {
+
+    for (int8_t i = 7; i >= 0; i--) {
+        tmp = ((uint8_t*)bcd.nibbles)[(i) >> 1];
         // iterate tmp over BCD chars
-        if (i & 1) {
-            tmp = (*((uint8_t*)ptr)) & 0x0F;
+        if ((i & 1) == 0) {
+            tmp = tmp & 0x0F;
 //            tmp = ((bcd_nibble_t*)ptr)->low; // gcc tries to access these uring shifts
-            ptr--;
         } else {
-            tmp = (*((uint8_t*)ptr)) >> 4;
+            tmp = tmp >> 4;
 //            tmp = ((bcd_nibble_t*)ptr)->high;
         }
         if (tmp) {
             print = 2;
         }
-        if (i == frac_digits + 1) { // a pre-point number hit
+        if (i == frac_digits) { // a pre-point number hit
             print = 2;
         }
-        if ((i <= all_digits) && (print < 2)) {
+        if ((i < all_digits) && (print < 2)) {
             print = 1;
             tmp = 10;
         }
@@ -280,20 +277,5 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
             print_digit(tmp, glyph_size, width, position);
             position.x += glyph_size.x + width;
         }
-    } // 1452 bytes
-    /*
-    for (ptr = ((uint8_t*)&bcd) + 3; ptr >= ((uint8_t*)&bcd); ptr--) { //ptr points to MSB
-        tmp = *ptr;
-        if (tmp) {
-            print = true;
-        }
-        if (print) {
-            if (tmp >> 4) {
-                print_digit(tmp >> 4, 8, 8, 1);
-            }
-            if (tmp & 0x0F) {
-                print_digit(tmp & 0x0F, 8, 8, 1);
-            }
-        }
-    } 1474 bytes*/
+    }
 }
