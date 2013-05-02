@@ -171,23 +171,20 @@ void print_digit(const uint8_t digit, const upoint_t glyph_size, const uint8_t w
    }
 }
 
-/* bin: raw number to display
-   position: row, column
-   glyph_size: size in pixels
-   width: line width of the glyph
-   digits: total digits (to be spaced), fractional part digits
-*/
-void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const number_display_t digits) {
-    
-// prints a number, aligned to right, throwing in 0's when necessary
- // TODO: fake decimal point?
-// TODO: move to 16-bit (ifdef 32?)
-    // integer only
-    uint32_t bcd = 0;
-    register uint8_t *ptr;
-    uint8_t frac_digits = digits.fractional;
-    uint8_t all_digits = digits.integer + frac_digits;
 
+typedef struct bcd_nibble_struct {
+    int high:4;
+    int low:4;
+} bcd_nibble_t;
+
+typedef union bcd32_union {
+    bcd_nibble_t nibbles[4];
+    uint32_t bin;
+} bcd32_t;
+
+static bcd32_t int_to_bcd32(uint32_t value) {
+    bcd32_t bcd = {.bin=0};
+    
     // BCD conversion
     for (int8_t i = 31; ; i--) { //32 should be size of int - FRACBITS
         asm("lsl    %A0" "\n"
@@ -197,16 +194,16 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
             "rol    %A1" "\n" // reduce this shit
             "rol    %B1" "\n"
             "rol    %C1" "\n"
-            "rol    %D1" "\n" : "+r" (bin), "+r" (bcd));
+            "rol    %D1" "\n" : "+r" (value), "+r" (bcd.bin));
         if (i == 0) {
             break;
         }
         
         // WARNING: Endianness
-        // while (ptr > &bcd)
-        for (ptr = ((uint8_t*)&bcd) + 3; ptr >= ((uint8_t*)&bcd); ptr--) { //ptr points to MSB
+        // while ptr >= bcd.nibbles
+        for (bcd_nibble_t* n_ptr = &(bcd.nibbles[3]); n_ptr >= &(bcd.nibbles[0]); n_ptr--) { // ptr points to MSB
         // roll two parts into one to save space. example below with printing
-//            print_digit(ptr - (uint8_t*)&bcd, 8, 8, 1);
+            uint8_t* ptr = (uint8_t*)n_ptr;
             if (((*ptr) + 0x03) & _BV(3)) {
                 *ptr += 0x03;
             }
@@ -231,7 +228,27 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
             "cp r30, %3" "\n"
             "brne incloops%=" "\n" : "+r" (bcd), "+z" (ptr), "=d" (tmp) : "x" (resptr)); */
     }    
- 
+    return bcd;
+}
+
+/* bin: raw number to display
+   position: row, column
+   glyph_size: size in pixels
+   width: line width of the glyph
+   digits: total digits (to be spaced), fractional part digits
+*/
+void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, const uint8_t width, const number_display_t digits) {
+    
+// prints a number, aligned to right, throwing in 0's when necessary
+ // TODO: fake decimal point?
+// TODO: move to 16-bit (ifdef 32?)
+    // integer only
+    uint8_t frac_digits = digits.fractional;
+    uint8_t all_digits = digits.integer + frac_digits;
+
+    uint32_t bcd = int_to_bcd32(bin).bin;
+    register uint8_t* ptr;
+    
     uint8_t tmp;
     uint8_t print = 0; // 0: don't print
                        // 1: leave space
@@ -242,10 +259,10 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
     for (uint8_t i = 8; i > 0; i--) {
         // iterate tmp over BCD chars
         if (i & 1) {
-            tmp = (*ptr) & 0x0F;
+            tmp = (*((uint8_t*)ptr)) & 0x0F;
             ptr--;
         } else {
-            tmp = (*ptr) >> 4;
+            tmp = (*((uint8_t*)ptr)) >> 4;
         }
         if (tmp) {
             print = 2;
