@@ -254,14 +254,12 @@ void print_number(uint32_t bin, upoint_t position, const upoint_t glyph_size, co
                        // 2: print
 
     for (int8_t i = 7; i >= 0; i--) {
-        tmp = ((uint8_t*)bcd.nibbles)[(i) >> 1];
+        tmp = ((uint8_t*)bcd.nibbles)[i >> 1];
         // iterate tmp over BCD chars
-        if ((i & 1) == 0) {
-            tmp = tmp & 0x0F;
-//            tmp = ((bcd_nibble_t*)ptr)->low; // gcc tries to access these uring shifts
+        if (i & 1) {
+            tmp = tmp >> 4; // should be tmp = nibble.high, but gcc tries that using shifts 
         } else {
-            tmp = tmp >> 4;
-//            tmp = ((bcd_nibble_t*)ptr)->high;
+            tmp = tmp & 0x0F; // tmp = nibble.low
         }
         if (tmp) {
             print = 2;
