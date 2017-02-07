@@ -27,8 +27,10 @@ What *Jazda* isn't?
 
 It's not a smartphone strapped to a bicycle. it will not keep your passwords, you will not have to charge it every day or carry it around. It's unlikely to have loadable apps, or connect to the internet, or order food for you.
 
-Show me details!
+Show me more!
 ----------------
+
+If you like the idea, motivate us on [Bountysource](https://salt.bountysource.com/teams/jazda) - spread the word!
 
 ### [Photos (old)](gallery.html)
 
@@ -38,7 +40,7 @@ Show me details!
 
 ### [Source code](http://github.com/rhn/jazda/)
 
-Contact me at gihu.rhn at porcupinefactory.org or drop an email to the mailing list: <jazda@librelist.com> .
+Questions? Drop an email to the mailing list: <jazda@librelist.com>. Guaranteed answer!
 
 Current features
 ----------------
@@ -61,13 +63,11 @@ Jazda is already useful, but it's not finished. Current goals:
 - make a dedicated case
 - **make a complete package available for purchase**
 
-To motivate us to reach the goals, check out the [Bountysource](https://salt.bountysource.com/teams/jazda) and spread the word!
-
 Why start a new project?
 ------------------------
 
 Off-the-shelf bicycle computers are well made, but what if we want to see a real-time speed profile? Or log the track to SD card, or measure road shakiness, or ditch the batteries and go solar?
 
-Because the designs are closed, very little of this is possible. Apart from the seemingly dead [*Obico*](https://sourceforge.net/projects/obico/), which took the smartphone-like approach, there are no other bicycle designs. *Jazda* wants to plug that hole.
+Because the designs are closed, very little of this is possible. Apart from the seemingly dead [*Obico*](https://sourceforge.net/projects/obico/), which took the smartphone-like approach, there are no other bicycle designs. *Jazda* wants to fill that void.
 
 [jazda]: media/svtplot.JPG "The bicycle screen showing current speed and speed/time plot"
