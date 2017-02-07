@@ -1,7 +1,7 @@
 Jazda
 =====
 
-[picture]
+![jazda]
 
 What is *Jazda*?
 ----------------
@@ -70,4 +70,4 @@ Off-the-shelf bicycle computers are well made, but what if we want to see a real
 
 Because the designs are closed, very little of this is possible. Apart from the seemingly dead [*Obico*](https://sourceforge.net/projects/obico/), which took the smartphone-like approach, there are no other bicycle designs. *Jazda* wants to plug that hole.
 
-[picture]:media/svtplot.JPG
+[jazda]: media/svtplot.JPG "The bicycle screen showing current speed and speed/time plot"
