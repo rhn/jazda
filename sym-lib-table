@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name licznik)(type Legacy)(uri /home/rhn/play/licznik/licznik.lib)(options "")(descr ""))
+  (lib (name New_Library)(type Legacy)(uri /home/rhn/play/licznik/New_Library.lib)(options "")(descr ""))
+  (lib (name licznik-rescue)(type Legacy)(uri ${KIPRJMOD}/licznik-rescue.lib)(options "")(descr ""))
+)
