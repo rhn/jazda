@@ -2,7 +2,7 @@
 
   (general
     (thickness 1.6)
-    (drawings 16)
+    (drawings 18)
     (tracks 267)
     (zones 0)
     (modules 32)
@@ -21,7 +21,7 @@
     (33 F.Adhes user)
     (34 B.Paste user)
     (35 F.Paste user)
-    (36 B.SilkS user hide)
+    (36 B.SilkS user)
     (37 F.SilkS user)
     (38 B.Mask user)
     (39 F.Mask user)
@@ -68,11 +68,11 @@
     (aux_axis_origin 128.778 126.746)
     (visible_elements FFFFFF7F)
     (pcbplotparams
-      (layerselection 0x00030_80000001)
+      (layerselection 0x010f0_ffffffff)
       (usegerberextensions false)
-      (usegerberattributes false)
+      (usegerberattributes true)
       (usegerberadvancedattributes false)
-      (creategerberjobfile false)
+      (creategerberjobfile true)
       (excludeedgelayer true)
       (linewidth 0.100000)
       (plotframeref false)
@@ -88,12 +88,12 @@
       (plotvalue true)
       (plotinvisibletext false)
       (padsonsilk false)
-      (subtractmaskfromsilk false)
+      (subtractmaskfromsilk true)
       (outputformat 1)
       (mirror false)
-      (drillshape 1)
+      (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ""))
+      (outputdirectory "/home/rhn/play/licznik_compact/gerber_prototypy/"))
   )
 
   (net 0 "")
@@ -1589,14 +1589,14 @@
   )
 
   (module Symbol:OSHW-Logo2_7.3x6mm_SilkScreen (layer B.Cu) (tedit 0) (tstamp 5C12AA7E)
-    (at 53.34 175.26)
+    (at 52.07 173.99 180)
     (descr "Open Source Hardware Symbol")
     (tags "Logo Symbol OSHW")
     (attr virtual)
-    (fp_text reference REF** (at 0 0) (layer B.SilkS) hide
+    (fp_text reference REF** (at 0 0 180) (layer B.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
-    (fp_text value OSHW-Logo2_7.3x6mm_SilkScreen (at 0.75 0) (layer B.Fab) hide
+    (fp_text value OSHW-Logo2_7.3x6mm_SilkScreen (at 0.75 0 180) (layer B.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)) (justify mirror))
     )
     (fp_poly (pts (xy 0.10391 2.757652) (xy 0.182454 2.757222) (xy 0.239298 2.756058) (xy 0.278105 2.753793)
@@ -2366,14 +2366,14 @@
   )
 
   (module Licznik:logo_ss (layer B.Cu) (tedit 5BF86AFA) (tstamp 5C12CA81)
-    (at 54.61 189.23)
+    (at 53.34 186.69 180)
     (descr "Imported from /home/rhn/mnt/gateway/play/jazda/logo_text_kicad.svg")
     (tags svg2mod)
     (attr smd)
-    (fp_text reference logo (at 0 11.9938) (layer B.SilkS) hide
+    (fp_text reference logo (at 0 11.9938 180) (layer B.SilkS) hide
       (effects (font (size 1.524 1.524) (thickness 0.3048)) (justify mirror))
     )
-    (fp_text value G*** (at 0 -11.9938) (layer B.SilkS) hide
+    (fp_text value G*** (at 0 -11.9938 180) (layer B.SilkS) hide
       (effects (font (size 1.524 1.524) (thickness 0.3048)) (justify mirror))
     )
     (fp_circle (center -0.997435 8.29433) (end -0.997435 8.29433) (layer B.SilkS) (width 1.302939))
@@ -2496,6 +2496,12 @@
       (xy 5.473769 2.362728) (xy 5.272436 2.49054) (xy 5.058595 2.60173) (xy 5.169915 2.84196)) (layer B.SilkS) (width 0))
   )
 
+  (gr_text v0.9.1 (at 53.34 196.85) (layer B.SilkS) (tstamp 5C12E43B)
+    (effects (font (size 1 1) (thickness 0.2)) (justify mirror))
+  )
+  (gr_text v0.9.1 (at 53.34 198.12) (layer F.SilkS) (tstamp 5C12CACE)
+    (effects (font (size 1 1) (thickness 0.2)))
+  )
   (gr_text Wheel (at 71.12 199.39) (layer B.SilkS) (tstamp 5C12CACE)
     (effects (font (size 1.5 1.5) (thickness 0.3)) (justify mirror))
   )
@@ -2634,7 +2640,6 @@
   (segment (start 71.12 171.835622) (end 71.12 170.898122) (width 0.25) (layer F.Cu) (net 13))
   (segment (start 43.18 196.115622) (end 43.18 189.615622) (width 0.25) (layer F.Cu) (net 14))
   (segment (start 45.615622 187.18) (end 43.18 189.615622) (width 0.25) (layer F.Cu) (net 14))
-  (segment (start 59.69 187.18) (end 45.615622 187.18) (width 0.25) (layer F.Cu) (net 14))
   (segment (start 73.740622 179.455622) (end 73.66 179.375) (width 0.25) (layer F.Cu) (net 14))
   (segment (start 76.2 179.455622) (end 73.740622 179.455622) (width 0.25) (layer F.Cu) (net 14))
   (segment (start 70.658388 180.801612) (end 72.085 179.375) (width 0.25) (layer F.Cu) (net 14))
@@ -2642,6 +2647,7 @@
   (segment (start 69.388388 180.801612) (end 70.658388 180.801612) (width 0.25) (layer F.Cu) (net 14))
   (segment (start 59.69 187.18) (end 63.01 187.18) (width 0.25) (layer F.Cu) (net 14))
   (segment (start 63.01 187.18) (end 69.388388 180.801612) (width 0.25) (layer F.Cu) (net 14))
+  (segment (start 59.69 187.18) (end 45.615622 187.18) (width 0.25) (layer F.Cu) (net 14))
   (segment (start 76.119378 181.915) (end 76.2 181.995622) (width 0.25) (layer F.Cu) (net 15))
   (segment (start 63.5 188.45) (end 63.99 187.96) (width 0.25) (layer F.Cu) (net 15))
   (segment (start 63.5 190.885622) (end 63.5 188.45) (width 0.25) (layer F.Cu) (net 15))
