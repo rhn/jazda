@@ -190,8 +190,6 @@ Wire Wire Line
 	3500 900  3500 1000
 Connection ~ 3500 1000
 Wire Wire Line
-	2400 2700 2400 3800
-Wire Wire Line
 	2400 3800 3400 3800
 Wire Wire Line
 	3400 3800 3500 3800
@@ -310,7 +308,7 @@ Wire Wire Line
 	2800 1300 2400 1300
 Connection ~ 2400 1300
 Wire Wire Line
-	2400 1300 2400 2400
+	2400 1300 2400 2250
 Wire Wire Line
 	5000 3850 5000 4050
 Connection ~ 4250 3950
@@ -553,4 +551,31 @@ F 3 "" H 4550 3650 50  0001 C CNN
 	1    4550 3650
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	2400 2250 2100 2250
+Connection ~ 2400 2250
+Wire Wire Line
+	2400 2250 2400 2400
+$Comp
+L Device:C C7
+U 1 1 5C1FFB03
+P 2100 2550
+F 0 "C7" H 2215 2596 50  0000 L CNN
+F 1 "100µF" H 2215 2505 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1210_3225Metric_Pad1.42x2.65mm_HandSolder" H 2138 2400 50  0001 C CNN
+F 3 "~" H 2100 2550 50  0001 C CNN
+	1    2100 2550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2400 2700 2400 2800
+Wire Wire Line
+	2100 2250 2100 2400
+Wire Wire Line
+	2100 2700 2100 2800
+Wire Wire Line
+	2100 2800 2400 2800
+Connection ~ 2400 2800
+Wire Wire Line
+	2400 2800 2400 3800
 $EndSCHEMATC

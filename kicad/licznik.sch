@@ -162,7 +162,7 @@ L Device:Battery_Cell BT1
 U 1 1 5BED93AE
 P 2400 2600
 F 0 "BT1" H 2518 2696 50  0000 L CNN
-F 1 "2xAA (2.8V)" H 2518 2605 50  0000 L CNN
+F 1 "2xAA (2.4V)" H 2518 2605 50  0000 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" V 2400 2660 50  0001 C CNN
 F 3 "~" V 2400 2660 50  0001 C CNN
 	1    2400 2600
@@ -578,4 +578,8 @@ Wire Wire Line
 Connection ~ 2400 2800
 Wire Wire Line
 	2400 2800 2400 3800
+Text Notes -150 2600 0    50   ~ 0
+RTC backup capacitor. Optional.\nValue not established - no current usage estimate yet.
+Text Notes 5050 2350 0    50   ~ 0
+TODO: Use the display SPI bus for all peripherals.
 $EndSCHEMATC
