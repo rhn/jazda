@@ -208,7 +208,7 @@ Wire Wire Line
 	4250 2900 4000 2900
 Connection ~ 5650 4350
 $Comp
-L New_Library:SW_CONN_x6 SW3
+L licznik-rescue:SW_CONN_x6-New_Library SW3
 U 1 1 5BED9366
 P 6000 4150
 F 0 "SW3" H 6000 4485 50  0000 C CNN
@@ -221,7 +221,7 @@ $EndComp
 Wire Wire Line
 	5650 4350 5900 4350
 $Comp
-L New_Library:SW_CONN_x6 SW4
+L licznik-rescue:SW_CONN_x6-New_Library SW4
 U 1 1 5BEDBF4F
 P 6450 4150
 F 0 "SW4" H 6450 4485 50  0000 C CNN
@@ -232,7 +232,7 @@ F 3 "" H 6450 4150 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L New_Library:SW_CONN_x6 SW5
+L licznik-rescue:SW_CONN_x6-New_Library SW5
 U 1 1 5BEDBF99
 P 6950 4150
 F 0 "SW5" H 6950 4485 50  0000 C CNN
@@ -243,7 +243,7 @@ F 3 "" H 6950 4150 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L New_Library:SW_CONN_x6 SW6
+L licznik-rescue:SW_CONN_x6-New_Library SW6
 U 1 1 5BEDC017
 P 7500 4150
 F 0 "SW6" H 7500 4485 50  0000 C CNN
